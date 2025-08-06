@@ -63,7 +63,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (mainCam == null) return;
 
-        Gizmos.color = Color.yellow;
+        Gizmos.color = Color.red;
         Gizmos.DrawLine(mainCam.transform.position, mainCam.transform.position + mainCam.transform.forward * interactionRange);
     }
 
