@@ -12,6 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2da67293e480ecc48a8de1dbca635f8a, type: 3}
   m_Name: MainCharacter
   m_EditorClassIdentifier: 
-  currentHealth: 0
-  maxHealth: 100
-  maxHealthLimit: 500
+  level: 0
+  currentHealth: 59.3
+  maxHealth: 107.4
+  currentHunger: 109.5
+  maxHunger: 100
+  currentThirst: 114
+  maxThirst: 100
+  currentPoison: 22.04
+  maxPoison: 100
+  currentWeight: 100
+  maxWeight: 100
