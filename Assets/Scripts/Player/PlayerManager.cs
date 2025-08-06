@@ -1,16 +1,17 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public InputActionAsset InputActions;
+
+    private void OnEnable()
     {
-        
+        InputActions.FindActionMap("PlayerController").Enable();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDisable()
     {
-        
+        InputActions.FindActionMap("PlayerController").Disable();
     }
 }

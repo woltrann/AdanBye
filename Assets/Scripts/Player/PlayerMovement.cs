@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public InputActionAsset InputActions;
+    private InputActionAsset InputActions;
     public Animator animator;
 
     [Header("Movement Settings")]
@@ -18,18 +18,11 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private float turnSmoothVelocity;
 
-    private void OnEnable()
-    {
-        InputActions.FindActionMap("PlayerController").Enable();
-    }
-
-    private void OnDisable()
-    {
-        InputActions.FindActionMap("PlayerController").Disable();
-    }
 
     private void Awake()
     {
+        InputActions = GetComponent<PlayerManager>().InputActions;
+
         moveAction = InputActions.FindAction("PlayerController/Move");
         rb = GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0, -0.5f, 0);
