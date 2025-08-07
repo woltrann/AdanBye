@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MainCharacter
   m_EditorClassIdentifier: 
   level: 0
-  currentHealth: 59.3
-  maxHealth: 107.4
-  currentHunger: 109.5
+  currentHealth: 100
+  maxHealth: 100
+  currentHunger: 93.2
   maxHunger: 100
-  currentThirst: 114
+  currentThirst: 47
   maxThirst: 100
-  currentPoison: 22.04
+  currentPoison: 21.7
   maxPoison: 100
   currentWeight: 100
   maxWeight: 100

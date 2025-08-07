@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 743647b5753f57548ba09533015a6f31
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 174157
+  packageName: Untitled
+  packageVersion: 1.0
+  assetPath: Assets/VariableInventorySystem/Sample/Resources/StandardCell.prefab
+  uploadId: 379785

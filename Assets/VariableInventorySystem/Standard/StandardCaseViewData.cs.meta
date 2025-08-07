@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: d730c1acbdd42fe4d9bd5a227dcef10f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 174157
+  packageName: Untitled
+  packageVersion: 1.0
+  assetPath: Assets/VariableInventorySystem/Standard/StandardCaseViewData.cs
+  uploadId: 379785

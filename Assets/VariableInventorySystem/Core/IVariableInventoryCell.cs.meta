@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 3446e55b2350b0c42869f403aa7a69fd
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 174157
+  packageName: Untitled
+  packageVersion: 1.0
+  assetPath: Assets/VariableInventorySystem/Core/IVariableInventoryCell.cs
+  uploadId: 379785

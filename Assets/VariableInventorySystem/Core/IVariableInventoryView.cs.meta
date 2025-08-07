@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: df5dc427e661f544a8623dbf97d29547
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 174157
+  packageName: Untitled
+  packageVersion: 1.0
+  assetPath: Assets/VariableInventorySystem/Core/IVariableInventoryView.cs
+  uploadId: 379785
