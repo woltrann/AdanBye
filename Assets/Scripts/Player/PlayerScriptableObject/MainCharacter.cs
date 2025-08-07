@@ -1,13 +1,23 @@
-using System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MainCharacter", menuName = "Character/MainCharacter")]
 public class MainCharacter : ScriptableObject
 {
-    [Header("Health Stats")]
+    [Header("Level")]
     public int level;
-    public float currentHealth = 100;
-    public float maxHealth = 100;
+
+    [Header("Body Part Health")]
+    public float headHealth = 100;
+    public float maxHeadHealth = 100;
+    public float torsoHealth = 100;
+    public float maxTorsoHealth = 100;
+    public float armsHealth = 100;
+    public float maxArmsHealth = 100;
+    public float legsHealth = 100;
+    public float maxLegsHealth = 100;
+
+    public float currentHealth => Mathf.Clamp(headHealth + torsoHealth + armsHealth + legsHealth, 0, maxHealth);
+    public float maxHealth => Mathf.Clamp(maxHeadHealth + maxTorsoHealth + maxArmsHealth + maxLegsHealth, 0, 1000);
 
     [Header("Hunger Stats")]
     public float currentHunger = 100;
@@ -25,46 +35,86 @@ public class MainCharacter : ScriptableObject
     public float currentWeight = 100;
     public float maxWeight = 100;
 
-    #region Health Functions
-    public void UpgradeHealth(float amount)
+    #region Body Part Functions
+    public void HealPart(string part, float amount)
     {
-        maxHealth = Mathf.Min(maxHealth + amount, 500);
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        switch (part.ToLower())
+        {
+            case "head": headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
+            case "torso": torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
+            case "arms": armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
+            case "legs": legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
+        }
     }
-    public void TakeDamage(float amount)
+
+    public void DamagePart(string part, float amount)
     {
-        currentHealth -= amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        switch (part.ToLower())
+        {
+            case "head": headHealth = Mathf.Clamp(headHealth - amount, 0, maxHeadHealth); break;
+            case "torso": torsoHealth = Mathf.Clamp(torsoHealth - amount, 0, maxTorsoHealth); break;
+            case "arms": armsHealth = Mathf.Clamp(armsHealth - amount, 0, maxArmsHealth); break;
+            case "legs": legsHealth = Mathf.Clamp(legsHealth - amount, 0, maxLegsHealth); break;
+        }
     }
-    public void Heal(float amount)
+    public void IncreaseMaxHealth(float amount)
     {
-        currentHealth += amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        maxHeadHealth = Mathf.Clamp(maxHeadHealth + amount, 0, 250); 
+        maxTorsoHealth = Mathf.Clamp(maxTorsoHealth + amount, 0, 250); 
+        maxArmsHealth = Mathf.Clamp(maxArmsHealth + amount, 0, 250); 
+        maxLegsHealth = Mathf.Clamp(maxLegsHealth + amount, 0, 250);
+        headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth);
+        torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); 
+        armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); 
+        legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); 
     }
-    public void Injured(float amount)
+    public void Injured(string part, float amount)
     {
-        maxHealth -= amount;
-        maxHealth = Mathf.Clamp(maxHealth, 0, 500);
+        switch (part.ToLower())
+        {
+            case "head":
+                maxHeadHealth = Mathf.Clamp(maxHeadHealth - amount, 0, 250);
+                headHealth = Mathf.Clamp(headHealth - amount*2, 0, maxHeadHealth); break;
+            case "torso":
+                maxTorsoHealth = Mathf.Clamp(maxTorsoHealth - amount, 0, 250);
+                torsoHealth = Mathf.Clamp(torsoHealth - amount*2, 0, maxTorsoHealth); break;
+            case "arms":
+                maxArmsHealth = Mathf.Clamp(maxArmsHealth - amount, 0, 250);
+                armsHealth = Mathf.Clamp(armsHealth - amount*2, 0, maxArmsHealth); break;
+            case "legs":
+                maxLegsHealth = Mathf.Clamp(maxLegsHealth - amount, 0, 250);
+                legsHealth = Mathf.Clamp(legsHealth - amount*2, 0, maxLegsHealth); break;
+        }
     }
-    public void InjuredOverTime(float amount)
+    public void OverTimeInjured(string part, float amount)
     {
-        maxHealth += amount;
-        maxHealth = Mathf.Clamp(maxHealth, 0, 500);
+        switch (part.ToLower())
+        {
+            case "head":
+                maxHeadHealth = Mathf.Clamp(maxHeadHealth + amount, 0, 250);
+                headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
+            case "torso":
+                maxTorsoHealth = Mathf.Clamp(maxTorsoHealth + amount, 0, 250);
+                torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
+            case "arms":
+                maxArmsHealth = Mathf.Clamp(maxArmsHealth + amount, 0, 250);
+                armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
+            case "legs":
+                maxLegsHealth = Mathf.Clamp(maxLegsHealth + amount, 0, 250);
+                legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
+        }
     }
     #endregion
 
     #region Hunger Functions
     public void DecreaseHunger(float amount)
     {
-        currentHunger -= amount;
-        currentHunger = Mathf.Clamp(currentHunger, 0, maxHunger);
+        currentHunger = Mathf.Clamp(currentHunger - amount, 0, maxHunger);
     }
 
     public void EatFood(float amount)
     {
-        currentHunger += amount;
-        currentHunger = Mathf.Clamp(currentHunger, 0, maxHunger);
+        currentHunger = Mathf.Clamp(currentHunger + amount, 0, maxHunger);
     }
 
     public void IncreaseMaxHunger(float amount)
@@ -77,14 +127,12 @@ public class MainCharacter : ScriptableObject
     #region Thirst Functions
     public void DecreaseThirst(float amount)
     {
-        currentThirst -= amount;
-        currentThirst = Mathf.Clamp(currentThirst, 0, maxThirst);
+        currentThirst = Mathf.Clamp(currentThirst - amount, 0, maxThirst);
     }
 
     public void DrinkWater(float amount)
     {
-        currentThirst += amount;
-        currentThirst = Mathf.Clamp(currentThirst, 0, maxThirst);
+        currentThirst = Mathf.Clamp(currentThirst + amount, 0, maxThirst);
     }
 
     public void IncreaseMaxThirst(float amount)
@@ -97,14 +145,12 @@ public class MainCharacter : ScriptableObject
     #region Poison Functions
     public void IncreasePoison(float amount)
     {
-        currentPoison += amount;
-        currentPoison = Mathf.Clamp(currentPoison, 0, maxPoison);
+        currentPoison = Mathf.Clamp(currentPoison + amount, 0, maxPoison);
     }
 
     public void DecreasePoison(float amount)
     {
-        currentPoison -= amount;
-        currentPoison = Mathf.Clamp(currentPoison, 0, maxPoison);
+        currentPoison = Mathf.Clamp(currentPoison - amount, 0, maxPoison);
     }
 
     public void CurePoison()
@@ -116,15 +162,14 @@ public class MainCharacter : ScriptableObject
     #region Weight Functions
     public void IncreaseWeight(float amount)
     {
-        currentWeight += amount;
-        currentWeight = Mathf.Clamp(currentWeight, 0, maxWeight);
+        currentWeight = Mathf.Clamp(currentWeight + amount, 0, maxWeight);
     }
 
     public void DecreaseWeight(float amount)
     {
-        currentWeight -= amount;
-        currentWeight = Mathf.Clamp(currentWeight, 0, maxWeight);
+        currentWeight = Mathf.Clamp(currentWeight - amount, 0, maxWeight);
     }
+
     public void IncreaseMaxWeight(float amount)
     {
         maxWeight += amount;

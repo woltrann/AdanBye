@@ -426,6 +426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterData: {fileID: 11400000, guid: bfc7d967b5943ae4bbbc83ead155f53a, type: 2}
+  statType: 0
   lowColor: {r: 1, g: 0, b: 0, a: 1}
   midColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   highColor: {r: 0, g: 1, b: 0, a: 1}
