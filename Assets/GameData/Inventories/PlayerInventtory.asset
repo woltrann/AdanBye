@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f72caf4992cd6f44980e103c2a5ece30, type: 3}
+  m_Name: PlayerInventtory
+  m_EditorClassIdentifier: 
+  currentWeight: 7
+  MaxWeight: 50
+  items:
+  - {fileID: 11400000, guid: cfae13876919b824483971549590b60e, type: 2}
+  - {fileID: 11400000, guid: e386c039773f76b4e90ce164ab140a51, type: 2}
+  - {fileID: 11400000, guid: 44f11b7150de7cc409964a4a49cc117e, type: 2}
+  - {fileID: 11400000, guid: 6d20a7b439eb8a44eb3ed2f5c9a387c0, type: 2}

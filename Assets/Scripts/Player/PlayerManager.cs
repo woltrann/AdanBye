@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerManager : MonoBehaviour
 {
     public InputActionAsset InputActions;
+    public InventoryData InventoryData;
 
     private void OnEnable()
     {
