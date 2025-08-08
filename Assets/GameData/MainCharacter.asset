@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: MainCharacter
   m_EditorClassIdentifier: 
   level: 0
-  headHealth: 100
-  maxHeadHealth: 100
-  torsoHealth: 100
-  maxTorsoHealth: 100
-  armsHealth: 100
-  maxArmsHealth: 100
-  legsHealth: 100
-  maxLegsHealth: 100
+  headHealth: 150
+  maxHeadHealth: 150
+  torsoHealth: 150
+  maxTorsoHealth: 150
+  armsHealth: 150
+  maxArmsHealth: 150
+  legsHealth: 150
+  maxLegsHealth: 150
   currentHunger: 60
   maxHunger: 100
   currentThirst: 80

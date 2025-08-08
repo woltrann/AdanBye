@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PanelSwitcher : MonoBehaviour
 {
+    public GameObject phonePanel;
     public List<GameObject> panels; // Inspector’dan ekle
     private int currentIndex = 0;
 
@@ -11,7 +12,21 @@ public class PanelSwitcher : MonoBehaviour
         // Baþlangýçta sadece currentIndex'teki panel açýk olsun
         ShowPanel(currentIndex);
     }
-
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            phonePanel.SetActive(!phonePanel.activeSelf);
+        }
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            PreviousPanel();
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            NextPanel();
+        }
+    }
     public void NextPanel()
     {
         currentIndex++;
