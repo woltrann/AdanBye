@@ -30,7 +30,7 @@ public class PanelSwitcher : MonoBehaviour
         ShowPanel(currentIndex);
     }
 
-    private void ShowPanel(int index)
+    public void ShowPanel(int index)
     {
         for (int i = 0; i < panels.Count; i++)
         {
