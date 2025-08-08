@@ -10,6 +10,8 @@ public class InventoryUI : MonoBehaviour
     public GameObject itemPrefab;
     public TextMeshProUGUI weightText;
 
+    [SerializeField] private GameObject freelookcamera;
+
     private void Awake()
     {
 
@@ -21,10 +23,14 @@ public class InventoryUI : MonoBehaviour
         if (InventoryCanvas.activeSelf)
         {
             InventoryCanvas.SetActive(false);
+            freelookcamera.SetActive(true);
             return;
         }
         else
+        {
             InventoryCanvas.SetActive(true);
+            freelookcamera.SetActive(false);
+        }
 
 
         foreach (Transform child in contentParent)
