@@ -1,55 +1,44 @@
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PanelSwitcher : MonoBehaviour
+public class PanelSlider : MonoBehaviour
 {
-    public GameObject phonePanel;
-    public List<GameObject> panels; // Inspector’dan ekle
+    public GameObject PhonePanel;
+    public RectTransform panelParent;  // Panellerin parent objesi
+    public float slideSpeed = 5f;      // Kayma hýzý
+    public Image image;
+    public float width;
+    public int panelCount = 4;         // Kaç panel var
     private int currentIndex = 0;
+    private Vector2 targetPosition;
 
-    private void Start()
+    void Start()
     {
-        // Baþlangýçta sadece currentIndex'teki panel açýk olsun
-        ShowPanel(currentIndex);
+        targetPosition = panelParent.anchoredPosition;
+        width = image.rectTransform.rect.width; // width deðerini kullanabilirsiniz
     }
-    private void Update()
+
+    void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            phonePanel.SetActive(!phonePanel.activeSelf);
+            PhonePanel.SetActive(!PhonePanel.activeSelf);
         }
-        if (Input.GetKeyDown(KeyCode.Z))
+        // Sað
+        if (Input.GetKeyDown(KeyCode.X) && currentIndex < panelCount - 1)
         {
-            PreviousPanel();
+            currentIndex++;
+            targetPosition = new Vector2(-currentIndex * width, 0);
         }
-        if (Input.GetKeyDown(KeyCode.X))
+
+        // Sol
+        if (Input.GetKeyDown(KeyCode.Z) && currentIndex > 0)
         {
-            NextPanel();
+            currentIndex--;
+            targetPosition = new Vector2(-currentIndex * width, 0);
         }
-    }
-    public void NextPanel()
-    {
-        currentIndex++;
-        if (currentIndex >= panels.Count)
-            currentIndex = panels.Count - 1; // En sondaysa ileri gitmesin
 
-        ShowPanel(currentIndex);
-    }
-
-    public void PreviousPanel()
-    {
-        currentIndex--;
-        if (currentIndex < 0)
-            currentIndex = 0; // En baþtaysa geri gitmesin
-
-        ShowPanel(currentIndex);
-    }
-
-    public void ShowPanel(int index)
-    {
-        for (int i = 0; i < panels.Count; i++)
-        {
-            panels[i].SetActive(i == index);
-        }
+        // Yumuþak geçiþ
+        panelParent.anchoredPosition = Vector2.Lerp(panelParent.anchoredPosition, targetPosition, Time.deltaTime * slideSpeed);
     }
 }
