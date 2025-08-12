@@ -13,11 +13,19 @@ MonoBehaviour:
   m_Name: MainCharacter
   m_EditorClassIdentifier: 
   level: 0
-  headHealth: 50
+  RandomDialogues:
+  - {fileID: 11400000, guid: 2413f165164b8f949b8320fc1a1c0749, type: 2}
+  LowHealthDialogues:
+  - {fileID: 11400000, guid: 2413f165164b8f949b8320fc1a1c0749, type: 2}
+  LowStaminaDialogues: []
+  HighHungerDialogues: []
+  HighThirstyDialogues: []
+  HighToxicityDialogues: []
+  headHealth: 0
   maxHeadHealth: 100
-  torsoHealth: 50
+  torsoHealth: 0
   maxTorsoHealth: 100
-  armsHealth: 90
+  armsHealth: 10
   maxArmsHealth: 100
   legsHealth: 0
   maxLegsHealth: 100

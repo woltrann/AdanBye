@@ -1190,8 +1190,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   InventoryData: {fileID: 11400000, guid: 0e0aa96832d5580439b145694b7d0381, type: 2}
+  PlayerAudio: {fileID: 0}
   mainCharacter: {fileID: 11400000, guid: bfc7d967b5943ae4bbbc83ead155f53a, type: 2}
-  audioSource: {fileID: 179089314}
 --- !u!54 &179089312
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10353,8 +10353,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1422084986}
   - {fileID: 1215860590}
+  - {fileID: 1422084986}
   - {fileID: 127187299}
   - {fileID: 1705483719}
   m_Father: {fileID: 1651765985}
