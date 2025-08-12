@@ -9,6 +9,7 @@ public class Interactable : MonoBehaviour
         if (itemData != null && InteractionManager.Instance != null)
         {
             InteractionManager.Instance.Interact(itemData);
+            Debug.Log(itemData);
         }
         else
         {

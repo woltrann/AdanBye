@@ -14,6 +14,8 @@ public class MainCharacter : ScriptableObject
     public List<DialogueData> HighHungerDialogues;
     public List<DialogueData> HighThirstyDialogues;
     public List<DialogueData> HighToxicityDialogues;
+    public List<DialogueData> ScenerioDialogues;
+    
 
 
     [Header("Body Part Health")]

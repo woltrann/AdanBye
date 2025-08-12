@@ -21,6 +21,8 @@ MonoBehaviour:
   HighHungerDialogues: []
   HighThirstyDialogues: []
   HighToxicityDialogues: []
+  ScenerioDialogues:
+  - {fileID: 11400000, guid: 92e354f38296b2b4e94f5fd4b369da09, type: 2}
   headHealth: 0
   maxHeadHealth: 100
   torsoHealth: 0

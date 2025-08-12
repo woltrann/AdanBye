@@ -1,3 +1,4 @@
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class PlayerAudio : MonoBehaviour
@@ -8,14 +9,14 @@ public class PlayerAudio : MonoBehaviour
 
     private void Start()
     {
-        mainCharacter = GetComponent<MainCharacter>();
+        mainCharacter = GetComponent<PlayerManager>().mainCharacter;
     }
 
     public void PlayHighToxicityDialogue()
     {
         if (mainCharacter.HighToxicityDialogues.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, mainCharacter.RandomDialogues.Count);
+            int randomIndex = Random.Range(0, mainCharacter.RandomDialogues.Count);
             DialogueData dialogue = mainCharacter.HighToxicityDialogues[randomIndex];
             PlayDialogueClip(dialogue);
         }
@@ -25,7 +26,7 @@ public class PlayerAudio : MonoBehaviour
     {
         if (mainCharacter.HighThirstyDialogues.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, mainCharacter.HighThirstyDialogues.Count);
+            int randomIndex = Random.Range(0, mainCharacter.HighThirstyDialogues.Count);
             DialogueData dialogue = mainCharacter.HighThirstyDialogues[randomIndex];
             PlayDialogueClip(dialogue);
         }
@@ -35,7 +36,7 @@ public class PlayerAudio : MonoBehaviour
     {
         if (mainCharacter.HighHungerDialogues.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, mainCharacter.HighHungerDialogues.Count);
+            int randomIndex = Random.Range(0, mainCharacter.HighHungerDialogues.Count);
             DialogueData dialogue = mainCharacter.HighHungerDialogues[randomIndex];
             PlayDialogueClip(dialogue);
         }
@@ -45,7 +46,7 @@ public class PlayerAudio : MonoBehaviour
     {
         if (mainCharacter.LowStaminaDialogues.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, mainCharacter.LowStaminaDialogues.Count);
+            int randomIndex = Random.Range(0, mainCharacter.LowStaminaDialogues.Count);
             DialogueData dialogue = mainCharacter.LowStaminaDialogues[randomIndex];
             PlayDialogueClip(dialogue);
         }
@@ -55,7 +56,7 @@ public class PlayerAudio : MonoBehaviour
     {
         if (mainCharacter.LowHealthDialogues.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, mainCharacter.LowHealthDialogues.Count);
+            int randomIndex = Random.Range(0, mainCharacter.LowHealthDialogues.Count);
             DialogueData dialogue = mainCharacter.LowHealthDialogues[randomIndex];
             PlayDialogueClip(dialogue);
         }
@@ -63,11 +64,19 @@ public class PlayerAudio : MonoBehaviour
 
     public void PlayRandomDialogue()
     {
-
         if (mainCharacter.RandomDialogues.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, mainCharacter.RandomDialogues.Count);
+            int randomIndex = Random.Range(0, mainCharacter.RandomDialogues.Count);
             DialogueData dialogue = mainCharacter.RandomDialogues[randomIndex];
+            PlayDialogueClip(dialogue);
+        }
+    }
+
+    public void PlayScenarioDialogue(string dialogueName)
+    {
+        if (mainCharacter.ScenerioDialogues.Count > 0)
+        {
+            DialogueData dialogue = mainCharacter.ScenerioDialogues.Find(d => d.dialogueName == dialogueName);
             PlayDialogueClip(dialogue);
         }
     }
@@ -81,6 +90,5 @@ public class PlayerAudio : MonoBehaviour
         {
             PlayDialogueClip(dialogue.nextDialogue);
         }
-
     }
 }

@@ -9,9 +9,10 @@ public class PlayerManager : MonoBehaviour
 
     public PlayerAudio PlayerAudio;
 
-    [SerializeField] private MainCharacter mainCharacter;
-
+    public MainCharacter mainCharacter;
     
+    private string currentScenarioName;
+
 
     private void OnEnable()
     {
@@ -44,6 +45,9 @@ public class PlayerManager : MonoBehaviour
                 break;
             case Condition.HighToxicity:
                 PlayerAudio.PlayHighToxicityDialogue();
+                break;
+            case Condition.Scenario:
+                PlayerAudio.PlayScenarioDialogue(currentScenarioName);
                 break;
         }
     }

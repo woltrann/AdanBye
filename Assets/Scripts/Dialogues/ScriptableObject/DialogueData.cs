@@ -21,4 +21,5 @@ public enum Condition
     HighHunger,
     HighThristy,
     HighToxicity,
+    Scenario,
 }
