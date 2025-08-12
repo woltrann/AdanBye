@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,6 +6,12 @@ public class PlayerManager : MonoBehaviour
 {
     public InputActionAsset InputActions;
     public InventoryData InventoryData;
+
+    public PlayerAudio PlayerAudio;
+
+    [SerializeField] private MainCharacter mainCharacter;
+
+    
 
     private void OnEnable()
     {
@@ -15,4 +22,31 @@ public class PlayerManager : MonoBehaviour
     {
         InputActions.FindActionMap("PlayerController").Disable();
     }
+
+    private void PlayDialogue(Condition condition)
+    {
+        
+        switch(condition) {
+            case Condition.Random:
+                PlayerAudio.PlayRandomDialogue();
+                break;
+            case Condition.LowHealth:
+                PlayerAudio.PlayLowHealthDialogue();
+                break;
+            case Condition.LowStamina:
+                PlayerAudio.PlayLowStaminaDialogue();
+                break;
+            case Condition.HighHunger:
+                PlayerAudio.PlayHighHungerDialogue();
+                break;
+            case Condition.HighThristy:
+                PlayerAudio.PlayHighThirstyDialogue();
+                break;
+            case Condition.HighToxicity:
+                PlayerAudio.PlayHighToxicityDialogue();
+                break;
+        }
+    }
+
+    
 }

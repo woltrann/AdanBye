@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MainCharacter", menuName = "Character/MainCharacter")]
@@ -5,6 +6,15 @@ public class MainCharacter : ScriptableObject
 {
     [Header("Level")]
     public int level;
+
+    [Header("Dialogues")]
+    public List<DialogueData> RandomDialogues;
+    public List<DialogueData> LowHealthDialogues;
+    public List<DialogueData> LowStaminaDialogues;
+    public List<DialogueData> HighHungerDialogues;
+    public List<DialogueData> HighThirstyDialogues;
+    public List<DialogueData> HighToxicityDialogues;
+
 
     [Header("Body Part Health")]
     public float headHealth = 100;
@@ -176,4 +186,5 @@ public class MainCharacter : ScriptableObject
         currentWeight = Mathf.Clamp(currentWeight, 0, maxWeight);
     }
     #endregion
+
 }
