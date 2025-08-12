@@ -12,7 +12,8 @@ public enum CharacterStatType
     Head,
     Torso,
     Arms,
-    Legs
+    Legs,
+    DroidCharge
 }
 
 [RequireComponent(typeof(Slider))]
@@ -90,6 +91,11 @@ public class SliderColorChanger : MonoBehaviour
             case CharacterStatType.Legs:
                 current = characterData.legsHealth;
                 max = characterData.maxLegsHealth;
+                break;
+
+            case CharacterStatType.DroidCharge:
+                current = characterData.droidCharge;
+                max = characterData.maxDroidCharge;
                 break;
         }
 

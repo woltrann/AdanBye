@@ -5,7 +5,6 @@ public class Deneme : MonoBehaviour
 {
     public MainCharacter characterData;
 
-
     public void HeadDamage(float damage)
     {
         characterData.DamagePart("head", damage);
@@ -22,7 +21,6 @@ public class Deneme : MonoBehaviour
     {
         characterData.DamagePart("legs", damage);
     }
-
 
     public void HeadHeal(float heal)
     {
@@ -41,13 +39,10 @@ public class Deneme : MonoBehaviour
         characterData.HealPart("legs", heal);
     }
 
-
-
     public void IncreaseMaxHealth(float heal)
     {
         characterData.IncreaseMaxHealth(heal);
     }
-
 
 
     public void HeadInjured(float damage)
@@ -64,5 +59,11 @@ public class Deneme : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
         OverTimeInjured(damage);
+    }
+
+
+    public void IncreaseMaxHunger()
+    {
+        characterData.IncreaseMaxHunger(50);
     }
 }

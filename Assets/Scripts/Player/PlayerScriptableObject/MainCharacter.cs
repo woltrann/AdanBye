@@ -45,6 +45,10 @@ public class MainCharacter : ScriptableObject
     public float currentWeight = 100;
     public float maxWeight = 100;
 
+    [Header("Droid Stats")]
+    public float droidCharge = 100;
+    public float maxDroidCharge = 100;
+
     #region Body Part Functions
     public void HealPart(string part, float amount)
     {
@@ -130,7 +134,8 @@ public class MainCharacter : ScriptableObject
     public void IncreaseMaxHunger(float amount)
     {
         maxHunger += amount;
-        currentHunger = Mathf.Clamp(currentHunger, 0, maxHunger);
+        maxHunger = Mathf.Clamp(maxHunger, 0, 200);
+        currentHunger = Mathf.Clamp(currentHunger + amount, 0, maxHunger);
     }
     #endregion
 
@@ -148,7 +153,8 @@ public class MainCharacter : ScriptableObject
     public void IncreaseMaxThirst(float amount)
     {
         maxThirst += amount;
-        currentThirst = Mathf.Clamp(currentThirst, 0, maxThirst);
+        maxThirst = Mathf.Clamp(maxThirst, 0, 200);
+        currentThirst = Mathf.Clamp(currentThirst + amount, 0, maxThirst);
     }
     #endregion
 
@@ -183,7 +189,26 @@ public class MainCharacter : ScriptableObject
     public void IncreaseMaxWeight(float amount)
     {
         maxWeight += amount;
-        currentWeight = Mathf.Clamp(currentWeight, 0, maxWeight);
+        maxWeight = Mathf.Clamp(maxWeight, 0, 200);
+        currentWeight = Mathf.Clamp(currentWeight + amount, 0, maxWeight);
+    }
+    #endregion
+
+    #region Droid Charge Functions
+    public void IncreaseDroidCharge(float amount)
+    {
+        droidCharge = Mathf.Clamp(droidCharge + amount, 0, maxDroidCharge);
+    }
+
+    public void DecreaseDroidCharge(float amount)
+    {
+        droidCharge = Mathf.Clamp(droidCharge - amount, 0, maxDroidCharge);
+    }
+    public void IncreaseMaxDroidCharge(float amount)
+    {
+        maxDroidCharge += amount;
+        maxDroidCharge = Mathf.Clamp(maxDroidCharge, 0, 200);
+        droidCharge = Mathf.Clamp(droidCharge + amount, 0, maxDroidCharge);
     }
     #endregion
 
