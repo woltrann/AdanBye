@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PanelSlider : MonoBehaviour
+public class PanelSwitcher : MonoBehaviour
 {
     public GameObject PhonePanel;
     public RectTransform panelParent;  // Panellerin parent objesi

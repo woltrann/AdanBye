@@ -59,6 +59,12 @@ public class DayCycle : MonoBehaviour
     {
         return sunIntensityOverTime.Evaluate(timeOfDay);
     }
+    public string GetFormattedTime()
+    {
+        int hour = Mathf.FloorToInt(CurrentHour);
+        int minute = Mathf.FloorToInt((CurrentHour % 1f) * 60);
+        return $"{hour:00}:{minute:00}";
+    }
 
 #if UNITY_EDITOR
     private void OnGUI()
