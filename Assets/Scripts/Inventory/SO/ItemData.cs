@@ -1,12 +1,26 @@
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
-[CreateAssetMenu(fileName = "ItemData", menuName = "Inventory/ItemData")]
+public enum InteractionType
+{
+    Collect, // Toplanabilir
+    Examine, // Ýncelenebilir
+    Use      // Kullanýlabilir
+}
+
+[CreateAssetMenu(fileName = "NewItemData", menuName = "Interaction/Item Data")]
 public class ItemData : ScriptableObject
 {
+    [Header("Temel Bilgiler")]
     public string itemName;
-    public float weight;
+    public int itemID; // Oyundaki benzersiz ID
+    public InteractionType interactionType;
 
+    [Header("Görsel & Ses")]
+    public Sprite icon;
+    public AudioClip voiceLine;
+
+    [Header("Ek Bilgi")]
+    [TextArea] public string description;
     public Sprite sprite;
-
+    public float weight;
 }

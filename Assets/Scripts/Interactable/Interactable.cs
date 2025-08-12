@@ -1,29 +1,23 @@
 using UnityEngine;
-using UnityEngine.Events;
 
-[RequireComponent(typeof(Collider))]
 public class Interactable : MonoBehaviour
 {
-    public InteractableData interactionData;
+    public ItemData itemData; // ScriptableObject verisi
 
-
-    public string GetPromptText()
+    public void Interact()
     {
-        return interactionData != null ? interactionData.promptText : "Etki Yok";
-    }
-
-    public InteractionType GetInteractionType()
-    {
-        return interactionData != null ? interactionData.interactionType : InteractionType.Look;
-    }
-
-    public string GetDescription()
-    {
-        return interactionData != null ? interactionData.interactionDescription : "";
+        if (itemData != null && InteractionManager.Instance != null)
+        {
+            InteractionManager.Instance.Interact(itemData);
+        }
+        else
+        {
+            Debug.LogWarning("ItemData veya InteractionManager eksik!");
+        }
     }
 
     public AudioClip GetVoiceLine()
     {
-        return interactionData != null ? interactionData.voiceLine : null;
+        return itemData != null ? itemData.voiceLine : null;
     }
 }

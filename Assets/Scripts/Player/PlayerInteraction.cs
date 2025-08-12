@@ -51,7 +51,7 @@ public class PlayerInteraction : MonoBehaviour
             if (interactable != null)
             {
                 currentInteractable = interactable;
-                //Debug.Log("Yakýnda etkileþilebilecek þey var: " + currentInteractable.GetPromptText());
+                // Ýstersen burada UI prompt gösterebilirsin
                 return;
             }
         }
@@ -71,17 +71,10 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (currentInteractable == null) return;
 
-        switch (currentInteractable.GetInteractionType())
-        {
-            case InteractionType.Look:
-                Debug.Log("Ýncelendi: " + currentInteractable.GetDescription());
-                break;
-            case InteractionType.Use:
-                break;
-            case InteractionType.Collect:
-                break;
-        }
+        // Artýk Interactable içindeki Interact fonksiyonunu çaðýrýyoruz
+        currentInteractable.Interact();
 
+        // Ses varsa çal
         var voice = currentInteractable.GetVoiceLine();
         if (voice != null)
         {
