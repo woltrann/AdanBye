@@ -4,7 +4,8 @@ public enum InteractionType
 {
     Collect, // Toplanabilir
     Examine, // Ýncelenebilir
-    Use      // Kullanýlabilir
+    Use,      // Kullanýlabilir
+    Chip
 }
 
 [CreateAssetMenu(fileName = "NewItemData", menuName = "Interaction/Item Data")]

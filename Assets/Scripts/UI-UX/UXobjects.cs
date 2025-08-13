@@ -5,6 +5,7 @@ using System.Collections;
 
 public class UXobjects : MonoBehaviour
 {
+    public static UXobjects Instance;
     [Header("Character Data")]
     public MainCharacter characterData;
 
@@ -18,6 +19,13 @@ public class UXobjects : MonoBehaviour
     public Image image2;
     public float duration = 1f; // 0-1 arasý geçiþ süresi
 
+    [Header("Other UX")]
+    public GameObject NotificationPanel;
+
+    void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         StartCoroutine(FillLoop());
@@ -30,7 +38,16 @@ public class UXobjects : MonoBehaviour
         }
     }
 
-
+    public void NotificationPanelOpen()
+    {
+        NotificationPanel.SetActive(true);
+        StartCoroutine(NotificationPanelClose());
+    }
+    IEnumerator NotificationPanelClose()
+    {
+        yield return new WaitForSeconds(1.5f);
+        NotificationPanel.SetActive(false);    
+    }
     IEnumerator FillLoop()
     {
         while (true)

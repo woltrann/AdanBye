@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MainCharacter
   m_EditorClassIdentifier: 
   level: 0
+  InventoryData: {fileID: 11400000, guid: 0e0aa96832d5580439b145694b7d0381, type: 2}
   RandomDialogues:
   - {fileID: 11400000, guid: 2413f165164b8f949b8320fc1a1c0749, type: 2}
   LowHealthDialogues:
@@ -23,6 +24,7 @@ MonoBehaviour:
   HighToxicityDialogues: []
   ScenerioDialogues:
   - {fileID: 11400000, guid: 92e354f38296b2b4e94f5fd4b369da09, type: 2}
+  ExamineDialogues: []
   headHealth: 0
   maxHeadHealth: 100
   torsoHealth: 0

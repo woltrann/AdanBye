@@ -12,6 +12,8 @@ public class PanelSwitcher : MonoBehaviour
     private int currentIndex = 0;
     private Vector2 targetPosition;
 
+    public Animator phoneAnimator;
+
     void Start()
     {
         targetPosition = panelParent.anchoredPosition;
@@ -22,7 +24,8 @@ public class PanelSwitcher : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            PhonePanel.SetActive(!PhonePanel.activeSelf);
+            phoneAnimator.SetTrigger("Open");
+            //PhonePanel.SetActive(!PhonePanel.activeSelf);
         }
         // Sað
         if (Input.GetKeyDown(KeyCode.X) && currentIndex < panelCount - 1)

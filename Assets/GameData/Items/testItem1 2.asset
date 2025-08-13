@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: testItem1 2
   m_EditorClassIdentifier: 
   itemName: "\xE7ip"
-  itemID: 0
-  interactionType: 0
+  itemID: 4
+  interactionType: 3
   icon: {fileID: 21300000, guid: ae0b67785112f524dbb32914d8b7aafe, type: 3}
   voiceLine: {fileID: 0}
   description: "\xE7ip1"
