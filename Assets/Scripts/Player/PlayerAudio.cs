@@ -80,7 +80,16 @@ public class PlayerAudio : MonoBehaviour
             PlayDialogueClip(dialogue);
         }
     }
-
+    /*
+    public void PlayExamineDialogue(int itemID)
+    {
+        if (mainCharacter.ScenerioDialogues.Count > 0)
+        {
+            DialogueData dialogue = mainCharacter.ScenerioDialogues.Find(d => d.dialogueName == dialogueName);
+            PlayDialogueClip(dialogue);
+        }
+    }
+    */
     private void PlayDialogueClip(DialogueData dialogue)
     {
         audioSource.clip = dialogue.voiceLine;

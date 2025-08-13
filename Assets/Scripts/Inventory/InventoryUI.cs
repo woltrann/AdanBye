@@ -14,8 +14,7 @@ public class InventoryUI : MonoBehaviour
 
     private void Awake()
     {
-
-        inventoryData = GameObject.FindWithTag("Player").GetComponent<PlayerManager>().InventoryData;
+        inventoryData = GameObject.FindWithTag("Player").GetComponent<PlayerManager>().mainCharacter.InventoryData;
     }
 
     public void RefreshUI()

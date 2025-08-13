@@ -7,6 +7,9 @@ public class MainCharacter : ScriptableObject
     [Header("Level")]
     public int level;
 
+    [Header("Inventory")]
+    public InventoryData InventoryData;
+
     [Header("Dialogues")]
     public List<DialogueData> RandomDialogues;
     public List<DialogueData> LowHealthDialogues;
@@ -15,7 +18,9 @@ public class MainCharacter : ScriptableObject
     public List<DialogueData> HighThirstyDialogues;
     public List<DialogueData> HighToxicityDialogues;
     public List<DialogueData> ScenerioDialogues;
-    
+    public List<DialogueData> ExamineDialogues;
+
+
 
 
     [Header("Body Part Health")]

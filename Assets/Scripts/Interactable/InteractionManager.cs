@@ -4,8 +4,11 @@ public class InteractionManager : MonoBehaviour
 {
     public static InteractionManager Instance;
 
+    private InventoryData inventoryData;
+
     private void Awake()
     {
+        inventoryData = GetComponent<PlayerManager>().mainCharacter.InventoryData;
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
@@ -28,7 +31,17 @@ public class InteractionManager : MonoBehaviour
 
     private void HandleCollect(ItemData itemData)
     {
-        Debug.Log($"[Collect] {itemData.itemName} (ID: {itemData.itemID}) toplandý!");
+        
+
+        if (inventoryData.AddItem(itemData))
+        {
+            Debug.Log($"[Collect] {itemData.itemName} (ID: {itemData.itemID}) toplandý!");
+        }
+        else
+        {
+            Debug.LogWarning($"[Collect] {itemData.itemName} (ID: {itemData.itemID}) toplanamadý, envanter dolu!");
+            return;
+        }
         if (itemData.itemName.Contains("Çip"))
         {
             if (itemData.itemID == 4)
@@ -39,6 +52,7 @@ public class InteractionManager : MonoBehaviour
     private void HandleExamine(ItemData itemData)
     {
         Debug.Log($"[Examine] {itemData.itemName}  {itemData.description}");
+        //Examine Diyaloðu oynatýlacak
     }
 
     private void HandleUse(ItemData itemData)
