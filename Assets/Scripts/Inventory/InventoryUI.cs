@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class InventoryUI : MonoBehaviour
 {
     private InventoryData inventoryData;
-    public GameObject InventoryCanvas;
+    public bool isOpenInventory = false;
     public Transform contentParent; // ScrollView -> Content
     public GameObject itemPrefab;
     public TextMeshProUGUI weightText;
@@ -21,17 +21,17 @@ public class InventoryUI : MonoBehaviour
 
     public void RefreshUI()
     {
-        //if (InventoryCanvas.activeSelf)
-        //{
-        //    InventoryCanvas.SetActive(false);
-        //    freelookcamera.SetActive(true);
-        //    return;
-        //}
-        //else
-        //{
-        //    InventoryCanvas.SetActive(true);
-        //    freelookcamera.SetActive(false);
-        //}
+        if (isOpenInventory)
+        {
+            isOpenInventory= false;
+            freelookcamera.SetActive(true);
+            return;
+        }
+        else
+        {
+            isOpenInventory= true;
+            freelookcamera.SetActive(false);
+        }
 
 
         foreach (Transform child in contentParent)
