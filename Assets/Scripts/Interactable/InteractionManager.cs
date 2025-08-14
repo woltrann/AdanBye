@@ -95,5 +95,10 @@ public class InteractionManager : MonoBehaviour
     private void HandleUse(ItemData itemData)
     {
         Debug.Log($"[Use] {itemData.itemName} kullanýldý!");
+        if (itemData.itemID == 99)//99 campfire, save point
+        {
+            SaveManager.Instance.SaveGame();
+            Debug.Log("Oyun kaydedildi!");
+        }
     }
 }
