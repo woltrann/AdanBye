@@ -18,12 +18,17 @@ public class DayCycle : MonoBehaviour
 
     private float timeOfDay = 0f;
 
+    private bool isLoaded;
+
     public float CurrentHour => (timeOfDay % 1f) * 24f;
     public bool IsNight => GetSunIntensity() < 0.2f;
 
     private void Start()
     {
-        timeOfDay = startTime;
+        if (!isLoaded)
+        {
+            timeOfDay = startTime;
+        }
         UpdateLighting();
     }
 
@@ -64,6 +69,11 @@ public class DayCycle : MonoBehaviour
         int hour = Mathf.FloorToInt(CurrentHour);
         int minute = Mathf.FloorToInt((CurrentHour % 1f) * 60);
         return $"{hour:00}:{minute:00}";
+    }
+    
+    public void setIsLoaded(bool value)
+    {
+        isLoaded = value;
     }
 
 #if UNITY_EDITOR

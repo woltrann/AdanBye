@@ -150,6 +150,7 @@ public class SaveManager : MonoBehaviour
                 if (timeField != null)
                 {
                     timeField.SetValue(dayCycle, data.timeOfDay);
+                    dayCycle.setIsLoaded(true); // Set loaded state to true
                 }
                 else
                 {

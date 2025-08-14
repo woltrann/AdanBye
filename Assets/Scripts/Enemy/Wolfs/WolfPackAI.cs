@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using UnityEditor;
 
 public class WolfPackAI : MonoBehaviour
 {
@@ -8,10 +10,16 @@ public class WolfPackAI : MonoBehaviour
     public WolfPackAI alphaWolf; // Beta'lar için lider referansý
     public List<WolfPackAI> packMembers; // Alpha'nýn ekibi
 
+    [Header("Alpha Attack Settings")]
+    public float attackDistance = 1.5f;
+    public float attackDamage = 20f; // Saldýrý hasarý
+    [Header("Attack Pause")]
+    public float attackPauseDuration = 0.5f; // Time to pause after attacking
+    public BodyParts damagePart;
+
     [Header("Movement")]
     public float speed = 3f;
     public float chaseDistance = 8f;
-    public float attackDistance = 1.5f;
     public float attackCooldown = 2f;
     public float formationRadius = 3f; // kovalamada oyuncunun etrafýnda durma mesafesi
 
@@ -37,15 +45,25 @@ public class WolfPackAI : MonoBehaviour
     // Chase optimization
     private Vector3 currentTarget;
     private Vector3 lastPosition;
+    private float attackPauseTimer = 0f;    // Timer to track the pause
+
+    [SerializeField] private Animator animator;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
         lastPosition = transform.position;
     }
 
     void Update()
     {
+        // Handle attack pause
+        if (attackPauseTimer > 0)
+        {
+            attackPauseTimer -= Time.deltaTime;
+            return; // Skip behavior updates while paused
+        }
 
         if (isAlpha)
         {
@@ -224,7 +242,22 @@ public class WolfPackAI : MonoBehaviour
     void Attack()
     {
         lastAttackTime = Time.time;
-        Debug.Log($"{name} attacks player!");
+
+        // Play attack animation (if any)
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }
+
+        // Attack logic: Deal damage to the player if within range
+        if (playerTransform != null)
+        {
+            playerTransform.GetComponent<PlayerManager>().mainCharacter.DamagePart(damagePart, attackDamage);
+        }
+
+        // Pause movement after attacking
+        attackPauseTimer = attackPauseDuration;
     }
 
     void WanderAround(Vector3 center, float radius, float moveSpeed)

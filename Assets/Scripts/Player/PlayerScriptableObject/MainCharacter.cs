@@ -4,6 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MainCharacter", menuName = "Character/MainCharacter")]
 public class MainCharacter : ScriptableObject
 {
+    
+
     [Header("Level")]
     public int level;
 
@@ -57,25 +59,25 @@ public class MainCharacter : ScriptableObject
     public float maxDroidCharge = 100;
 
     #region Body Part Functions
-    public void HealPart(string part, float amount)
+    public void HealPart(BodyParts part, float amount)
     {
-        switch (part.ToLower())
+        switch (part)
         {
-            case "head": headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
-            case "torso": torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
-            case "arms": armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
-            case "legs": legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
+            case BodyParts.Head: headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
+            case BodyParts.Torso: torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
+            case BodyParts.Arms: armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
+            case BodyParts.Legs: legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
         }
     }
 
-    public void DamagePart(string part, float amount)
+    public void DamagePart(BodyParts part, float amount)
     {
-        switch (part.ToLower())
+        switch (part)
         {
-            case "head": headHealth = Mathf.Clamp(headHealth - amount, 0, maxHeadHealth); break;
-            case "torso": torsoHealth = Mathf.Clamp(torsoHealth - amount, 0, maxTorsoHealth); break;
-            case "arms": armsHealth = Mathf.Clamp(armsHealth - amount, 0, maxArmsHealth); break;
-            case "legs": legsHealth = Mathf.Clamp(legsHealth - amount, 0, maxLegsHealth); break;
+            case BodyParts.Head: headHealth = Mathf.Clamp(headHealth - amount, 0, maxHeadHealth); break;
+            case BodyParts.Torso: torsoHealth = Mathf.Clamp(torsoHealth - amount, 0, maxTorsoHealth); break;
+            case BodyParts.Arms: armsHealth = Mathf.Clamp(armsHealth - amount, 0, maxArmsHealth); break;
+            case BodyParts.Legs: legsHealth = Mathf.Clamp(legsHealth - amount, 0, maxLegsHealth); break;
         }
     }
     public void IncreaseMaxHealth(float amount)
@@ -89,38 +91,38 @@ public class MainCharacter : ScriptableObject
         armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); 
         legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); 
     }
-    public void Injured(string part, float amount)
+    public void Injured(BodyParts part, float amount)
     {
-        switch (part.ToLower())
+        switch (part)
         {
-            case "head":
+            case BodyParts.Head:
                 maxHeadHealth = Mathf.Clamp(maxHeadHealth - amount, 0, 250);
                 headHealth = Mathf.Clamp(headHealth - amount*2, 0, maxHeadHealth); break;
-            case "torso":
+            case BodyParts.Torso:
                 maxTorsoHealth = Mathf.Clamp(maxTorsoHealth - amount, 0, 250);
                 torsoHealth = Mathf.Clamp(torsoHealth - amount*2, 0, maxTorsoHealth); break;
-            case "arms":
+            case BodyParts.Arms:
                 maxArmsHealth = Mathf.Clamp(maxArmsHealth - amount, 0, 250);
                 armsHealth = Mathf.Clamp(armsHealth - amount*2, 0, maxArmsHealth); break;
-            case "legs":
+            case BodyParts.Legs:
                 maxLegsHealth = Mathf.Clamp(maxLegsHealth - amount, 0, 250);
                 legsHealth = Mathf.Clamp(legsHealth - amount*2, 0, maxLegsHealth); break;
         }
     }
-    public void OverTimeInjured(string part, float amount)
+    public void OverTimeInjured(BodyParts part, float amount)
     {
-        switch (part.ToLower())
+        switch (part)
         {
-            case "head":
+            case BodyParts.Head:
                 maxHeadHealth = Mathf.Clamp(maxHeadHealth + amount, 0, 250);
                 headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
-            case "torso":
+            case BodyParts.Torso:
                 maxTorsoHealth = Mathf.Clamp(maxTorsoHealth + amount, 0, 250);
                 torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
-            case "arms":
+            case BodyParts.Arms:
                 maxArmsHealth = Mathf.Clamp(maxArmsHealth + amount, 0, 250);
                 armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
-            case "legs":
+            case BodyParts.Legs:
                 maxLegsHealth = Mathf.Clamp(maxLegsHealth + amount, 0, 250);
                 legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
         }
@@ -219,4 +221,11 @@ public class MainCharacter : ScriptableObject
     }
     #endregion
 
+}
+public enum BodyParts
+{
+    Head,
+    Torso,
+    Arms,
+    Legs
 }

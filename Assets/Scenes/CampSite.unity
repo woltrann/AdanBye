@@ -5106,15 +5106,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &500541277
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10397,15 +10401,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &1424783472
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10792,15 +10800,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 6
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &1522951783
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -12150,7 +12162,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1714065073
 MeshRenderer:
@@ -12988,15 +13000,19 @@ MonoBehaviour:
   - {fileID: 500541276}
   - {fileID: 1424783471}
   - {fileID: 1522951782}
+  attackDistance: 2.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 3
   minFollowDistance: 1
   maxFollowDistance: 1000
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!1 &1850897891
 GameObject:
   m_ObjectHideFlags: 0
@@ -13466,15 +13482,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &1907132466
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -15044,15 +15064,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &2106694589
 Rigidbody:
   m_ObjectHideFlags: 0
