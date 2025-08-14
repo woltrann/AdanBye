@@ -309,7 +309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.0037310282, y: 0.6567629}
   m_AnchorMax: {x: 0.28504863, y: 0.9999975}
-  m_AnchoredPosition: {x: -99.99951, y: 75}
+  m_AnchoredPosition: {x: -99.999756, y: 75}
   m_SizeDelta: {x: -200, y: -150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &72376112
@@ -2843,12 +2843,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAAAQIeytqYjKUAIAABEFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGFVE1z2jAQ/SuMzk0HEpKU3lqHkB6SMKGdXHxZrDXWIEsefQRIhv/elSxshx56wrz3dvfth/3BhLINFk6bhRH8UXNk30csPLMvo558wD1stFqJdzxpXgV3VRBB1LyAE5rwSQizukZnRPFDbWQQjwn0SpTa1HO+wUxbZwkuQVokymgXohVBHyO2TwGH9PsefkdHeipQOTT/U3lVSKgb5MFtL56MT3J6ikJFnSTN+Ot1yK+lFDYZYe7QxEYzaKynNkjABVBj0ULos0KxqVz60wU/l6VFl2wZONwJQ/Nps7Kfuh1aDXbbensD6UOd68lldNUmffyHv5hEujS6fujqxp5cJYrtCxwKsG4w1SF899m4VzuQW1hLfK1QPemF0V5xIp3xIdRbvLwbpOp6yyostr2u9XoG+ubfDU36DR1j9/tMinodJz9tgZXUcd6zEIOGdvOLDMe7sCkTocHEH4u/YTM8oETcC2MdUamgCu7W2psgZfM4s9CMd5k2CiOcPDeoQLrDktK48xWecYOyZ8w9hFclFU/c6Q04C4lwrx+Pz6il3nXLspXePaKtnr2TQmFvOhBPNKdMK9Ve2HAmp7CVNyUUg7CNF/zzaTEOs6tvV8U1R7rCm9ntBUynwPnlbTGd3ZRrfsPi7QlFfYJctkbTeGhrqk+u6M5OX5DRwkATr50b2C3Ee60HIxeq1KvCIKrnNkNnHA0VofeSz7mgAa3QOaHivtlHzqQutsjzLlEeO53vnYG8z5KzRrxpF5CcZfG7kbMAd6e8NPgmcBeKn5Id2fEvUEsDBBQAAAgIAAAQIewoCxwYbQAAAHgAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz0jM011FQSi9KLMgoBooYgjilmSkgdrRSSqKlsYVxsmlKqqmhkZmluW6iiUliSoqRebKJpVlaUoqZUixQfUllQapfYm4qRE9AYklGWmZeSmZeup57UWaKO8hopdhaAFBLAQItABQAAAgIAAAQIeytqYjKUAIAABEFAAALACQAAAAAAAAAAAAAAAAAAABncmFwaDAuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLAQItABQAAAgIAAAQIewoCxwYbQAAAHgAAAAJACQAAAAAAAAAAAAAAJ0CAABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwUGAAAAAAIAAgC4AAAAVQMAAAAA
+    dataString: UEsDBBQAAAgIAAAQIeyGJCMITgIAAA8FAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGFVE1T2zAQ/SsZnUsngQClt9aE0AOQIXS4+LKx1rEmsuTRB0lg8t+7khXbhENPlve9fXr7YX8woWyDhdNmbgR/0BzZzxELZ/Zt1IP3uIO1VkvxjkfOq+CuCiSInGdwQlN8EtKsrtEZUfxSaxnIYwp6JUpt6hlfY6atsxQuQVokyGgXshWFPkZslxL26fkenqMDnQpUDs3/WF4VEuoGeXDbkyfjI51OkaioksQZf78M+lpKYZMR5vZNLDSDxnoqgwhcABUWLYQ6KxTryqWXLvmpLC26ZMvA/lYY6k+ryn7rtmk12E3r7Q2kD/dcTs6jq1b04Qt+NolwaXR9390ba3KVKDbPsC/AukFXh+Hbz8a92oLcwEria4XqUc+N9ooT6IwPqd7i+e1Aqqstq7DY9LzW60nQN18nNOkndIjV7zIp6lVC6HUpdez2NMwBDU3mD9mNW2GTDkWDhb8WX2A9XJ8E3AljHUFJVAVvK+1NoLJZ7FgoxbtMG4UxnBw3qEC6/YJk3OkAT7DBtSfIHYQPJV2esOP+n6TEcM8fj0+ghd52o7KV3j6grZ68k0JhbzoAj9SnTCvV7tewJ8e0pTclFIO0tRf882IxDjcXPy6KS460g1c312cwnQLn59fF9OaqXPErFjdPKKoT5KI1mtpDU1O9uKItO/4/RnMDTdx1bmA7F++1HrRcqFIvC4OonlqFzjgauoS+Sj7jghq0ROeEivNmHzmTutggzzuhPFY62zkDea+Ss0a8aRciOcviXyNnIdwt8sLgm8BtuPwodmCHf1BLAwQUAAAICAAAECHsKAscGG0AAAB4AAAACQAkAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAatWKkstKs7Mz1OyUjDRM9IzNNdRUEovSizIKAaKGII4pZkpIHa0UkqipbGFcbJpSqqpoZGZpbluoolJYkqKkXmyiaVZWlKKmVIsUH1JZUGqX2JuKkRPQGJJRlpmXkpmXrqee1FmijvIaKXYWgBQSwECLQAUAAAICAAAECHshiQjCE4CAAAPBQAACwAkAAAAAAAAAAAAAAAAAAAAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwECLQAUAAAICAAAECHsKAscGG0AAAB4AAAACQAkAAAAAAAAAAAAAACbAgAAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsFBgAAAAACAAIAuAAAAFMDAAAAAA==
     upgradeData: 
     file_cachedStartup: {fileID: 4900000, guid: 53d0019fa0b2fb5469bfbfdc774e163b, type: 3}
     data_cachedStartup: 
     cacheStartup: 0
-  showNavGraphs: 0
+  showNavGraphs: 1
   showUnwalkableNodes: 1
   debugMode: 0
   debugFloor: 0
@@ -4279,7 +4279,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3.6
+  m_fontSize: 3.55
   m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4342,7 +4342,7 @@ GameObject:
   - component: {fileID: 500541278}
   - component: {fileID: 500541277}
   - component: {fileID: 500541276}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BetaWolf3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4369,7 +4369,7 @@ MonoBehaviour:
   chaseDistance: 10
   attackDistance: 1.5
   attackCooldown: 2
-  formationRadius: 5
+  formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
@@ -4409,13 +4409,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 500541275}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.3999996, y: 1, z: 21.7}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.3, y: 0, z: 5.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1186248577}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1756326494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &513201921
 GameObject:
@@ -4504,7 +4504,7 @@ GameObject:
   - component: {fileID: 519711554}
   - component: {fileID: 519711553}
   - component: {fileID: 519711552}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4823,7 +4823,7 @@ GameObject:
   - component: {fileID: 547886259}
   - component: {fileID: 547886258}
   - component: {fileID: 547886257}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5368,7 +5368,7 @@ GameObject:
   - component: {fileID: 687552059}
   - component: {fileID: 687552058}
   - component: {fileID: 687552061}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Droid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6686,10 +6686,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9cc44e6309af94a94e629c73b2ee77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InventoryCanvas: {fileID: 1273268961}
+  isOpenInventory: 0
   contentParent: {fileID: 735719927}
   itemPrefab: {fileID: 4614600516278613826, guid: 07dc1ecbbd056f645a4c1a10b8ef7017, type: 3}
   weightText: {fileID: 1854693176}
+  InventoryAnimator: {fileID: 0}
   freelookcamera: {fileID: 241020162}
 --- !u!4 &1026253910
 Transform:
@@ -7026,7 +7027,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3.6
+  m_fontSize: 3.55
   m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -7604,7 +7605,7 @@ GameObject:
   - component: {fileID: 1186248580}
   - component: {fileID: 1186248579}
   - component: {fileID: 1186248578}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8046,7 +8047,7 @@ GameObject:
   - component: {fileID: 1247093190}
   - component: {fileID: 1247093189}
   - component: {fileID: 1247093188}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8470,7 +8471,7 @@ GameObject:
   - component: {fileID: 1296958010}
   - component: {fileID: 1296958009}
   - component: {fileID: 1296958008}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9129,7 +9130,7 @@ GameObject:
   - component: {fileID: 1424783473}
   - component: {fileID: 1424783472}
   - component: {fileID: 1424783471}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BetaWolf4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9156,7 +9157,7 @@ MonoBehaviour:
   chaseDistance: 10
   attackDistance: 1.5
   attackCooldown: 2
-  formationRadius: 5
+  formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
@@ -9196,13 +9197,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1424783470}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -19.4, y: 1, z: 32.7}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 8.19, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1950941946}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1756326494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1450797382
 GameObject:
@@ -9401,7 +9402,7 @@ GameObject:
   - component: {fileID: 1522951784}
   - component: {fileID: 1522951783}
   - component: {fileID: 1522951782}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BetaWolf5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9428,7 +9429,7 @@ MonoBehaviour:
   chaseDistance: 10
   attackDistance: 1.5
   attackCooldown: 2
-  formationRadius: 5
+  formationRadius: 7
   minFollowDistance: 6
   maxFollowDistance: 15
   retreatDuration: 3
@@ -9468,13 +9469,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1522951781}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -28.4, y: 1, z: 18.7}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.92, y: 0, z: -9.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1559296345}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1756326494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1530415709
 GameObject:
@@ -9579,7 +9580,7 @@ GameObject:
   - component: {fileID: 1559296348}
   - component: {fileID: 1559296347}
   - component: {fileID: 1559296346}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10714,6 +10715,43 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1756326493
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1756326494}
+  m_Layer: 0
+  m_Name: Wolfs
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1756326494
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756326493}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.38268322, z: -0, w: 0.9238797}
+  m_LocalPosition: {x: -32.520443, y: 0, z: 28.430914}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1831719931}
+  - {fileID: 2106694590}
+  - {fileID: 1907132467}
+  - {fileID: 500541278}
+  - {fileID: 1424783473}
+  - {fileID: 1522951784}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
 --- !u!1 &1756445567
 GameObject:
   m_ObjectHideFlags: 0
@@ -11318,7 +11356,7 @@ GameObject:
   - component: {fileID: 1831719931}
   - component: {fileID: 1831719935}
   - component: {fileID: 1831719936}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: AlphaWolf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11333,13 +11371,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1831719930}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.4, y: 1, z: 23.7}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.04, y: 0, z: -4.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 547886256}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1756326494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &1831719935
 Rigidbody:
@@ -11839,7 +11877,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25.2
+  m_fontSize: 25.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12088,7 +12126,7 @@ GameObject:
   - component: {fileID: 1907132467}
   - component: {fileID: 1907132466}
   - component: {fileID: 1907132465}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BetaWolf2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12115,7 +12153,7 @@ MonoBehaviour:
   chaseDistance: 10
   attackDistance: 1.5
   attackCooldown: 2
-  formationRadius: 5
+  formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
@@ -12155,13 +12193,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1907132464}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.4, y: 1, z: 30.7}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -7.81, y: 0, z: 2.87}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1296958007}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1756326494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1916635146
 GameObject:
@@ -12459,7 +12497,7 @@ GameObject:
   - component: {fileID: 1950941949}
   - component: {fileID: 1950941948}
   - component: {fileID: 1950941947}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13439,7 +13477,7 @@ GameObject:
   - component: {fileID: 2106694590}
   - component: {fileID: 2106694589}
   - component: {fileID: 2106694588}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BetaWolf1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13466,7 +13504,7 @@ MonoBehaviour:
   chaseDistance: 10
   attackDistance: 1.5
   attackCooldown: 2
-  formationRadius: 5
+  formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
@@ -13506,13 +13544,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2106694587}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -29.4, y: 1, z: 27.7}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -12.9, y: 0, z: -3.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 519711551}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1756326494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2114803955
 GameObject:
@@ -13610,9 +13648,4 @@ SceneRoots:
   - {fileID: 1756445572}
   - {fileID: 749777181}
   - {fileID: 436993470}
-  - {fileID: 1831719931}
-  - {fileID: 2106694590}
-  - {fileID: 1907132467}
-  - {fileID: 500541278}
-  - {fileID: 1424783473}
-  - {fileID: 1522951784}
+  - {fileID: 1756326494}
