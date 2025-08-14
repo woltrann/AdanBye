@@ -43,6 +43,13 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (mainCam == null) return;
 
+        // 1- Önce tüm CanvasLookAtCamera objelerini "pointImage açýk / pressImage kapalý" yap
+        foreach (CanvasLookAtCamera canvas in FindObjectsOfType<CanvasLookAtCamera>())
+        {
+            canvas.SetPressMode(false);
+        }
+
+        // 2- Ray at
         Ray ray = new Ray(mainCam.transform.position, mainCam.transform.forward);
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer))
@@ -51,7 +58,13 @@ public class PlayerInteraction : MonoBehaviour
             if (interactable != null)
             {
                 currentInteractable = interactable;
-                // Ýstersen burada UI prompt gösterebilirsin
+
+                // Çocuklarda CanvasLookAtCamera ara
+                CanvasLookAtCamera canvasScript = hit.collider.GetComponentInChildren<CanvasLookAtCamera>();
+                if (canvasScript != null)
+                {
+                    canvasScript.SetPressMode(true); // Sadece baktýðýn objeyi press moduna al
+                }
                 return;
             }
         }
