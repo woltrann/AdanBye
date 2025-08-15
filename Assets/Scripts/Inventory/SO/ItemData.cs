@@ -22,6 +22,5 @@ public class ItemData : ScriptableObject
 
     [Header("Ek Bilgi")]
     [TextArea] public string description;
-    public Sprite sprite;
     public float weight;
 }

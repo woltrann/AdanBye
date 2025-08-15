@@ -10,7 +10,7 @@ public class InventoryItemUI : MonoBehaviour
 
     public void Setup(ItemData data)
     {
-        icon.sprite = data.sprite;
+        icon.sprite = data.icon;
         itemNameText.text = data.itemName;
         weightText.text = $"{data.weight} kg";
     }

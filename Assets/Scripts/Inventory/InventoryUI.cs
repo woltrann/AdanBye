@@ -25,12 +25,15 @@ public class InventoryUI : MonoBehaviour
         {
             isOpenInventory= false;
             freelookcamera.SetActive(true);
+            PlayerManager.Instance.OnEnable();
             return;
         }
         else
         {
             isOpenInventory= true;
             freelookcamera.SetActive(false);
+            PlayerManager.Instance.OnDisable();
+
         }
 
 

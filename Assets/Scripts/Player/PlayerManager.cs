@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
+    public static PlayerManager Instance;
+
     public InputActionAsset InputActions;
 
     public PlayerAudio PlayerAudio;
@@ -12,13 +14,16 @@ public class PlayerManager : MonoBehaviour
     
     private string currentScenarioName;
 
-
-    private void OnEnable()
+    private void Awake()
+    {
+        Instance = this;
+    }
+    public void OnEnable()
     {
         InputActions.FindActionMap("PlayerController").Enable();
     }
 
-    private void OnDisable()
+    public void OnDisable()
     {
         InputActions.FindActionMap("PlayerController").Disable();
     }

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff589f0b1efda7b48b0f16c0ee462071, type: 3}
-  m_Name: testItem1 2
+  m_Name: kamp atesi
   m_EditorClassIdentifier: 
-  itemName: "\xE7ip"
-  itemID: 4
-  interactionType: 3
-  icon: {fileID: 21300000, guid: ae0b67785112f524dbb32914d8b7aafe, type: 3}
+  itemName: "Kamp Ate\u015Fi"
+  itemID: 99
+  interactionType: 2
+  icon: {fileID: 21300000, guid: 714cc64c136ad6340afb27f9234a478e, type: 3}
   voiceLine: {fileID: 0}
-  description: "\xE7ip1"
-  sprite: {fileID: 21300000, guid: ae0b67785112f524dbb32914d8b7aafe, type: 3}
+  description: save point
+  sprite: {fileID: 21300000, guid: 714cc64c136ad6340afb27f9234a478e, type: 3}
   weight: 2

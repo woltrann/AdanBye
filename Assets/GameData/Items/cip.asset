@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff589f0b1efda7b48b0f16c0ee462071, type: 3}
-  m_Name: testItem1
+  m_Name: cip
   m_EditorClassIdentifier: 
-  itemName: tahta
-  itemID: 6
-  interactionType: 0
-  icon: {fileID: 21300000, guid: 096c38be7939aaa49b8e58c5cabfc52d, type: 3}
+  itemName: "\xE7ip"
+  itemID: 4
+  interactionType: 3
+  icon: {fileID: 21300000, guid: ae0b67785112f524dbb32914d8b7aafe, type: 3}
   voiceLine: {fileID: 0}
-  description: tahta
-  sprite: {fileID: 21300000, guid: bd8212389795365419b2a38b902b00f6, type: 3}
-  weight: 1
+  description: "\xE7ip1"
+  sprite: {fileID: 21300000, guid: ae0b67785112f524dbb32914d8b7aafe, type: 3}
+  weight: 2

@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff589f0b1efda7b48b0f16c0ee462071, type: 3}
-  m_Name: testItem1 1
+  m_Name: balta
   m_EditorClassIdentifier: 
-  itemName: su
-  itemID: 9
+  itemName: Balta
+  itemID: 11
   interactionType: 0
-  icon: {fileID: 21300000, guid: 7a7b78e2049a431498be2fe0153f2790, type: 3}
+  icon: {fileID: 21300000, guid: 0dd666b75f792a64e8fc6eee7c045c21, type: 3}
   voiceLine: {fileID: 0}
-  description: "i\xE7me suyu"
-  sprite: {fileID: 21300000, guid: 7a7b78e2049a431498be2fe0153f2790, type: 3}
-  weight: 0.5
+  description: balta
+  weight: 2.5
