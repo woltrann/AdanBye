@@ -76,6 +76,7 @@ public class CraftingUI : MonoBehaviour
         {
             craftingAnimator.SetTrigger("Open");
             LockCamrea();
+            RefreshUI();
         }
     }
 
