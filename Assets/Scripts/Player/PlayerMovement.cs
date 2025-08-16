@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float runSpeed = 10f;
     [SerializeField] private float rotationSmoothTime = 0.1f;
 
     [Header("Jump Settings")]
@@ -18,11 +19,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody rb;
+
     private PlayerInput input;
     private InputAction moveAction;
     private InputAction jumpAction;
+    private InputAction runAction;
 
     private Vector2 moveInput;
+    private bool runInput;
     private float turnSmoothVelocity;
     private bool isGrounded;
 
@@ -31,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
         var input = GetComponent<PlayerManager>().InputActions;
         moveAction = input.FindAction("PlayerController/Move");
         jumpAction = input.FindAction("PlayerController/Jump");
+        runAction = input.FindAction("PlayerController/Run");
 
         rb = GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0, -0.5f, 0); // daha dengeli zıplama
@@ -53,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         moveInput = moveAction.ReadValue<Vector2>();
+        runInput = runAction.ReadValue<float>() > 0.5f;
         isGrounded = CheckGrounded();
 
         // Animator güncelleme
@@ -85,7 +91,10 @@ public class PlayerMovement : MonoBehaviour
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, rotationSmoothTime);
 
         rb.MoveRotation(Quaternion.Euler(0f, angle, 0f));
-        rb.MovePosition(rb.position + moveDir.normalized * moveSpeed * Time.fixedDeltaTime);
+        if(runInput)
+            rb.MovePosition(rb.position + moveDir.normalized * runSpeed * Time.fixedDeltaTime);
+        else
+            rb.MovePosition(rb.position + moveDir.normalized * moveSpeed * Time.fixedDeltaTime);
     }
 
     private void OnJump(InputAction.CallbackContext ctx)
