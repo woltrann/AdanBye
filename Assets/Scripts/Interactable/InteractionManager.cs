@@ -146,25 +146,33 @@ public class InteractionManager : MonoBehaviour
         {
             case ConsumableType.Food:
                 character.EatFood(itemData.consumableValue);
-                Debug.Log($"Yemek yendi: {itemData.itemName}");
                 break;
             case ConsumableType.ToksinFood:
                 character.EatFood(itemData.consumableValue);
-                character.IncreaseHalfPoison(itemData.consumableValue);
+                character.IncreasePoison(itemData.consumableValue/4);
                 break;
             case ConsumableType.Water:
                 character.DrinkWater(itemData.consumableValue);
-                Debug.Log($"Su içildi: {itemData.itemName}");
                 break;
-
+            case ConsumableType.ToksinRiverWater:
+                character.DrinkWater(itemData.consumableValue);
+                character.IncreasePoison(itemData.consumableValue/2);
+                break;
+            case ConsumableType.ToksinPoolWater:
+                character.DrinkWater(itemData.consumableValue);
+                character.IncreasePoison(itemData.consumableValue / 4);
+                break;
             case ConsumableType.Medkit:
+                character.HealPart(BodyParts.Head, itemData.consumableValue);
                 character.HealPart(BodyParts.Torso, itemData.consumableValue);
-                Debug.Log($"Medkit kullanýldý: {itemData.itemName}");
+                character.HealPart(BodyParts.Arms, itemData.consumableValue);
+                character.HealPart(BodyParts.Legs, itemData.consumableValue);
                 break;
-
+            case ConsumableType.Bandage:
+                character.HealLowestPart(itemData.consumableValue);
+                break;
             case ConsumableType.Antidote:
                 character.DecreasePoison(itemData.consumableValue);
-                Debug.Log($"Panzehir kullanýldý: {itemData.itemName}");
                 break;
         }
 

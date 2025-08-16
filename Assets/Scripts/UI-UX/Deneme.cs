@@ -54,6 +54,7 @@ public class Deneme : MonoBehaviour
     {
         characterData.OverTimeInjured(BodyParts.Head, damage);
         characterData.OverTimeInjured(BodyParts.Torso, damage);
+        characterData.OverTimeInjured(BodyParts.Arms, damage);
         characterData.OverTimeInjured(BodyParts.Legs, damage);
 
     }

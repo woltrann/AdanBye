@@ -14,7 +14,10 @@ public enum ConsumableType
     Food,
     ToksinFood,
     Water,
+    ToksinRiverWater,
+    ToksinPoolWater,
     Medkit,
+    Bandage,
     Antidote
 }
 

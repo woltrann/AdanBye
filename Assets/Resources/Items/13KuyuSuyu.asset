@@ -19,3 +19,5 @@ MonoBehaviour:
   voiceLine: {fileID: 0}
   description: Kuyu Suyu
   weight: 0.5
+  consumableType: 5
+  consumableValue: 40

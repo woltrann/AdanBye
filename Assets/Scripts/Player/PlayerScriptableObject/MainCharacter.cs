@@ -127,6 +127,39 @@ public class MainCharacter : ScriptableObject
                 legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
         }
     }
+
+    public void HealLowestPart(float amount)
+    {
+        float[] healths = { headHealth, torsoHealth, armsHealth, legsHealth };
+        float[] maxHealths = { maxHeadHealth, maxTorsoHealth, maxArmsHealth, maxLegsHealth };
+
+        float lowestPercent = 1f;
+        List<int> lowestIndexes = new List<int>();
+
+        // önce en düþük oraný bul
+        for (int i = 0; i < healths.Length; i++)
+        {
+            float percent = healths[i] / maxHealths[i];
+            if (percent < lowestPercent)
+            {
+                lowestPercent = percent;
+                lowestIndexes.Clear();
+                lowestIndexes.Add(i);
+            }
+            else if (Mathf.Approximately(percent, lowestPercent)) // eþitse ekle
+            {
+                lowestIndexes.Add(i);
+            }
+        }
+
+        if (lowestIndexes.Count > 0)
+        {
+            int chosen = lowestIndexes[Random.Range(0, lowestIndexes.Count)];
+            HealPart((BodyParts)chosen, amount);
+            Debug.Log($"[{(BodyParts)chosen}] {amount} iyileþtirildi!");
+        }
+    }
+
     #endregion
 
     #region Hunger Functions
@@ -171,10 +204,6 @@ public class MainCharacter : ScriptableObject
     public void IncreasePoison(float amount)
     {
         currentPoison = Mathf.Clamp(currentPoison + amount, 0, maxPoison);
-    }
-    public void IncreaseHalfPoison(float amount)
-    {
-        currentPoison = Mathf.Clamp(currentPoison + amount/4, 0, maxPoison);
     }
     public void DecreasePoison(float amount)
     {

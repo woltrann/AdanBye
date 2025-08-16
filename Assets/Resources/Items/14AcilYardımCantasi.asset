@@ -19,5 +19,5 @@ MonoBehaviour:
   voiceLine: {fileID: 0}
   description: "Acil Yard\u0131m \xC7antas\u0131"
   weight: 1.5
-  consumableType: 3
-  consumableValue: 20
+  consumableType: 6
+  consumableValue: 50

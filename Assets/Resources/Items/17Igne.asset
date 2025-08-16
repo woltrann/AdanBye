@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u0130\u011Fne"
   itemID: 17
-  interactionType: 0
+  interactionType: 4
   icon: {fileID: 21300000, guid: 096c38be7939aaa49b8e58c5cabfc52d, type: 3}
   voiceLine: {fileID: 0}
   description: "\u0130\u011Fne"
   weight: 0.25
+  consumableType: 7
+  consumableValue: 40

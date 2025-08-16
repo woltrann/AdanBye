@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Nehir Suyu
   itemID: 12
-  interactionType: 0
+  interactionType: 4
   icon: {fileID: 21300000, guid: 096c38be7939aaa49b8e58c5cabfc52d, type: 3}
   voiceLine: {fileID: 0}
   description: Nehir Suyu
   weight: 0.5
+  consumableType: 4
+  consumableValue: 40
