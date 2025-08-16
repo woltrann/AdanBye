@@ -23,12 +23,8 @@ public class Interactable : MonoBehaviour
                     Debug.LogWarning("SpawnPoint not found as a sibling of Campfire!");
                 }
             }
+        }
             InteractionManager.Instance.Interact(itemData);
-        }
-        else
-        {
-            Debug.LogWarning("ItemData or InteractionManager is missing!");
-        }
     }
 
     public AudioClip GetVoiceLine()
