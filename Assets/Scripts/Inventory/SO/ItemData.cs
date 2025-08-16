@@ -5,7 +5,16 @@ public enum InteractionType
     Collect, // Toplanabilir
     Examine, // Ýncelenebilir
     Use,      // Kullanýlabilir
-    Chip
+    Chip,
+    Consumable
+}
+public enum ConsumableType
+{
+    None,
+    Food,
+    Water,
+    Medkit,
+    Antidote
 }
 
 [CreateAssetMenu(fileName = "NewItemData", menuName = "Interaction/Item Data")]
@@ -23,4 +32,8 @@ public class ItemData : ScriptableObject
     [Header("Ek Bilgi")]
     [TextArea] public string description;
     public float weight;
+
+    [Header("Consumable")]
+    public ConsumableType consumableType;
+    public float consumableValue; // Ne kadar iyileþtirecek, doyuracak, su verecek vs.
 }

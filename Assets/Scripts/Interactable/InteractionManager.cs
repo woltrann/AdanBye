@@ -33,6 +33,9 @@ public class InteractionManager : MonoBehaviour
             case InteractionType.Chip:
                 HandleChipCollect(itemData);
                 break;
+            case InteractionType.Consumable:
+                HandleCollect(itemData); // önce envantere ekle
+                break;
 
         }
     }
@@ -70,6 +73,7 @@ public class InteractionManager : MonoBehaviour
             return;
         }
     }
+
     private void HandleCollect(ItemData itemData)
     {
        
@@ -101,4 +105,70 @@ public class InteractionManager : MonoBehaviour
             Debug.Log("Oyun kaydedildi!");
         }
     }
+
+    private void HandleConsumable(ItemData itemData)
+    {
+        var character = GetComponent<PlayerManager>().mainCharacter;
+
+        switch (itemData.consumableType)
+        {
+            case ConsumableType.Food:
+                character.EatFood(itemData.consumableValue);
+                Debug.Log($"Yemek yendi: {itemData.itemName}, Hunger +{itemData.consumableValue}");
+                break;
+
+            case ConsumableType.Water:
+                character.DrinkWater(itemData.consumableValue);
+                Debug.Log($"Su içildi: {itemData.itemName}, Thirst +{itemData.consumableValue}");
+                break;
+
+            case ConsumableType.Medkit:
+                character.HealPart(BodyParts.Torso, itemData.consumableValue);
+                Debug.Log($"Medkit kullanýldý: {itemData.itemName}, Health +{itemData.consumableValue}");
+                break;
+
+            case ConsumableType.Antidote:
+                character.DecreasePoison(itemData.consumableValue);
+                Debug.Log($"Panzehir kullanýldý: {itemData.itemName}, Poison -{itemData.consumableValue}");
+                break;
+        }
+
+        // Envanterden çýkar
+        inventoryData.RemoveItem(itemData);
+        InventoryUI ui = FindObjectOfType<InventoryUI>();
+        ui.RefreshUI();
+    }
+    public void UseConsumable(ItemData itemData)
+    {
+        var character = GetComponent<PlayerManager>().mainCharacter;
+
+        switch (itemData.consumableType)
+        {
+            case ConsumableType.Food:
+                character.EatFood(itemData.consumableValue);
+                Debug.Log($"Yemek yendi: {itemData.itemName}");
+                break;
+
+            case ConsumableType.Water:
+                character.DrinkWater(itemData.consumableValue);
+                Debug.Log($"Su içildi: {itemData.itemName}");
+                break;
+
+            case ConsumableType.Medkit:
+                character.HealPart(BodyParts.Torso, itemData.consumableValue);
+                Debug.Log($"Medkit kullanýldý: {itemData.itemName}");
+                break;
+
+            case ConsumableType.Antidote:
+                character.DecreasePoison(itemData.consumableValue);
+                Debug.Log($"Panzehir kullanýldý: {itemData.itemName}");
+                break;
+        }
+
+        // Envanterden sil
+        inventoryData.RemoveItem(itemData);
+        FindObjectOfType<InventoryUI>().RefreshUI();
+    }
+
+
 }

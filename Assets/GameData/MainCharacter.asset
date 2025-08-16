@@ -33,7 +33,7 @@ MonoBehaviour:
   maxArmsHealth: 100
   legsHealth: 0
   maxLegsHealth: 100
-  currentHunger: 200
+  currentHunger: 70
   maxHunger: 200
   currentThirst: 79.1
   maxThirst: 100
