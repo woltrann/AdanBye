@@ -49,6 +49,19 @@ public class InventoryUI : MonoBehaviour
         weightText.text = $"Weight: {inventoryData.CurrentWeight}/{inventoryData.MaxWeight} kg";
     }
 
+    public void RefreshUIonly()
+    {
+        foreach (Transform child in contentParent)
+            Destroy(child.gameObject);
+
+        foreach (var item in inventoryData.items)
+        {
+            var itemUI = Instantiate(itemPrefab, contentParent);
+            itemUI.GetComponent<InventoryItemUI>().Setup(item);
+        }
+
+        weightText.text = $"Weight: {inventoryData.CurrentWeight}/{inventoryData.MaxWeight} kg";
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.I))

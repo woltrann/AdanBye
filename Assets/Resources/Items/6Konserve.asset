@@ -20,4 +20,4 @@ MonoBehaviour:
   description: konserve yemek
   weight: 0.5
   consumableType: 1
-  consumableValue: 10
+  consumableValue: 20

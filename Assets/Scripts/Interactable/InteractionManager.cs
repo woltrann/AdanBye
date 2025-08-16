@@ -148,7 +148,10 @@ public class InteractionManager : MonoBehaviour
                 character.EatFood(itemData.consumableValue);
                 Debug.Log($"Yemek yendi: {itemData.itemName}");
                 break;
-
+            case ConsumableType.ToksinFood:
+                character.EatFood(itemData.consumableValue);
+                character.IncreaseHalfPoison(itemData.consumableValue);
+                break;
             case ConsumableType.Water:
                 character.DrinkWater(itemData.consumableValue);
                 Debug.Log($"Su içildi: {itemData.itemName}");
@@ -167,7 +170,7 @@ public class InteractionManager : MonoBehaviour
 
         // Envanterden sil
         inventoryData.RemoveItem(itemData);
-        FindObjectOfType<InventoryUI>().RefreshUI();
+        FindObjectOfType<InventoryUI>().RefreshUIonly();
     }
 
 

@@ -172,7 +172,10 @@ public class MainCharacter : ScriptableObject
     {
         currentPoison = Mathf.Clamp(currentPoison + amount, 0, maxPoison);
     }
-
+    public void IncreaseHalfPoison(float amount)
+    {
+        currentPoison = Mathf.Clamp(currentPoison + amount/4, 0, maxPoison);
+    }
     public void DecreasePoison(float amount)
     {
         currentPoison = Mathf.Clamp(currentPoison - amount, 0, maxPoison);

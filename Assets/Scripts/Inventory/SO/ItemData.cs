@@ -12,6 +12,7 @@ public enum ConsumableType
 {
     None,
     Food,
+    ToksinFood,
     Water,
     Medkit,
     Antidote
