@@ -9,9 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f72caf4992cd6f44980e103c2a5ece30, type: 3}
-  m_Name: PlayerInventtory
+  m_Script: {fileID: 11500000, guid: ff589f0b1efda7b48b0f16c0ee462071, type: 3}
+  m_Name: 13KuyuSuyu
   m_EditorClassIdentifier: 
-  currentWeight: 0
-  MaxWeight: 50
-  items: []
+  itemName: Kuyu Suyu
+  itemID: 13
+  interactionType: 0
+  icon: {fileID: 21300000, guid: 096c38be7939aaa49b8e58c5cabfc52d, type: 3}
+  voiceLine: {fileID: 0}
+  description: Kuyu Suyu
+  weight: 0.5

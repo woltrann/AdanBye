@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b40f83bbe57c89748ba299b805213f97, type: 3}
+  m_Name: SuAritmaCiahzi
+  m_EditorClassIdentifier: 
+  recipeName: "Su Art\u0131ma Cihaz\u0131"
+  requirements:
+  - item: {fileID: 11400000, guid: b55d414fc8f35a14c8744a0a545719f3, type: 2}
+    amount: 4
+  - item: {fileID: 11400000, guid: cb57d61a22e9bb4479cbf16c0789f82f, type: 2}
+    amount: 2
+  resultItem: {fileID: 11400000, guid: eebea8e51d8971149a423dd78de6a8c7, type: 2}
+  resultAmount: 1

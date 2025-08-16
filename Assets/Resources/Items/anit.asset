@@ -9,9 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f72caf4992cd6f44980e103c2a5ece30, type: 3}
-  m_Name: PlayerInventtory
+  m_Script: {fileID: 11500000, guid: ff589f0b1efda7b48b0f16c0ee462071, type: 3}
+  m_Name: anit
   m_EditorClassIdentifier: 
-  currentWeight: 0
-  MaxWeight: 50
-  items: []
+  itemName: "An\u0131t"
+  itemID: 56
+  interactionType: 1
+  icon: {fileID: 21300000, guid: 714cc64c136ad6340afb27f9234a478e, type: 3}
+  voiceLine: {fileID: 0}
+  description: "An\u0131t"
+  weight: 2
