@@ -88,8 +88,6 @@ public class SaveManager : MonoBehaviour
         {
             Debug.LogWarning("Save file not found. Starting new game.");
             // Spawn player for new game
-            if (playerPrefab != null && spawnPoint != null)
-                Instantiate(playerPrefab, spawnPoint.transform.position, Quaternion.identity);
             return;
         }
 

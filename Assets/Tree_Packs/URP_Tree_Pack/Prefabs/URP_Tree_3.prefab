@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7038538021439106344}
   - component: {fileID: 873582998863499800}
   - component: {fileID: 7457692230273316472}
+  - component: {fileID: 4530380391448324004}
   m_Layer: 0
   m_Name: URP_Tree_3_LOD_3(Clone)
   m_TagString: Untagged
@@ -87,6 +88,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &4530380391448324004
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524479681965292202}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 799021023404360440, guid: 23f8413d694261647b08c546eb4953af, type: 3}
 --- !u!1 &3496828770556534297
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,6 +294,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4144939046933883186}
   - component: {fileID: 7250050877548821893}
+  - component: {fileID: -812697989477840296}
   m_Layer: 0
   m_Name: URP_Tree_3
   m_TagString: Untagged
@@ -328,6 +352,29 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7457692230273316472}
   m_Enabled: 1
+--- !u!136 &-812697989477840296
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5400752399725384465}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3
+  m_Height: 5
+  m_Direction: 1
+  m_Center: {x: 0, y: 2.4, z: 0}
 --- !u!1 &7271073098528902193
 GameObject:
   m_ObjectHideFlags: 0

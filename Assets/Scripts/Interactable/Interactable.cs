@@ -24,7 +24,7 @@ public class Interactable : MonoBehaviour
                 }
             }
         }
-            InteractionManager.Instance.Interact(itemData);
+        InteractionManager.Instance.Interact(itemData);
     }
 
     public AudioClip GetVoiceLine()
