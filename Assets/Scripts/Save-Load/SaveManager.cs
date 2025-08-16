@@ -7,10 +7,11 @@ public class SaveManager : MonoBehaviour
     public static SaveManager Instance;
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject droidPrefab;
-    public GameObject spawnPoint;
-    public GameObject droidSpawnPoint;
     public MainCharacter mainCharacter;
     public DayCycle dayCycle;
+
+    public Transform spawnPoint;
+    public Transform droidSpawnPoint;
 
     private string savePath;
 
@@ -27,6 +28,7 @@ public class SaveManager : MonoBehaviour
 
     public void SaveGame()
     {
+
         SaveData data = new SaveData();
 
         // Character data
@@ -60,6 +62,16 @@ public class SaveManager : MonoBehaviour
             // If your items have quantities, save them too
             // data.inventoryItemQuantities.Add(item.quantity);
         }
+
+        //Save spawn points
+        data.SpawnPointX = spawnPoint.transform.position.x;
+        data.SpawnPointY = spawnPoint.transform.position.y;
+        data.SpawnPointZ = spawnPoint.transform.position.z;
+
+        data.DroidSpawnPointX = droidSpawnPoint.transform.position.x;
+        data.DroidSpawnPointY = droidSpawnPoint.transform.position.y;
+        data.DroidSpawnPointZ = droidSpawnPoint.transform.position.z;
+
 
         // Day cycle
         data.timeOfDay = dayCycle.CurrentHour / 24f;
@@ -158,13 +170,15 @@ public class SaveManager : MonoBehaviour
                 }
             }
 
+            Vector3 PlayerSpawnPoint = new Vector3(data.SpawnPointX, data.SpawnPointY, data.SpawnPointZ);
+            Vector3 DroidSpawnPoint = new Vector3(data.DroidSpawnPointX, data.DroidSpawnPointY, data.DroidSpawnPointZ);
             // Spawn player
-            if (playerPrefab != null && spawnPoint != null && droidPrefab != null && droidSpawnPoint != null)
+            if (playerPrefab != null && PlayerSpawnPoint != null && droidPrefab != null && DroidSpawnPoint != null)
             {
-                playerPrefab.transform.position = spawnPoint.transform.position;
-                playerPrefab.transform.rotation = spawnPoint.transform.rotation;
-                droidPrefab.transform.position = droidSpawnPoint.transform.position;
-                droidPrefab.transform.rotation = droidSpawnPoint.transform.rotation;
+                playerPrefab.transform.position = PlayerSpawnPoint;
+                //playerPrefab.transform.rotation = spawnPoint.transform.rotation;
+                droidPrefab.transform.position = DroidSpawnPoint;
+                //droidPrefab.transform.rotation = droidSpawnPoint.transform.rotation;
             }
 
             Debug.Log("Game loaded successfully!");

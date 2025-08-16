@@ -16,6 +16,10 @@ public class SaveData
     public float currentWeight, maxWeight;
     public float droidCharge, maxDroidCharge;
 
+    public float SpawnPointX, SpawnPointY, SpawnPointZ; // Karakterin spawn noktasý
+    public float DroidSpawnPointX, DroidSpawnPointY, DroidSpawnPointZ; // Droidin spawn noktasý
+    
+
     // Inventory
     public List<int> inventoryItemIDs; // ItemData ID'sini sakla
 
