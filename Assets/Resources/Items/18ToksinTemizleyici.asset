@@ -19,5 +19,5 @@ MonoBehaviour:
   voiceLine: {fileID: 0}
   description: Toksin Temizleyici Serum
   weight: 1
-  consumableType: 7
+  consumableType: 8
   consumableValue: 50

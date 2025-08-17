@@ -4,13 +4,14 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    public static PlayerMovement Instance;
     [Header("References")]
     [SerializeField] private Animator animator;
     [SerializeField] private Transform cameraTransform;
 
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float runSpeed = 10f;
+    [SerializeField] public float moveSpeed = 5f;
+    [SerializeField] public float runSpeed = 10f;
     [SerializeField] private float rotationSmoothTime = 0.1f;
 
     [Header("Jump Settings")]
@@ -32,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         var input = GetComponent<PlayerManager>().InputActions;
         moveAction = input.FindAction("PlayerController/Move");
         jumpAction = input.FindAction("PlayerController/Jump");

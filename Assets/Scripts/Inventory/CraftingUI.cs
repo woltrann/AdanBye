@@ -33,7 +33,7 @@ public class CraftingUI : MonoBehaviour
             string reqText = "";
             foreach (var req in recipe.requirements)
             {
-                reqText += $"{req.item.itemName} x{req.amount}\n";
+                reqText += $"-{req.item.itemName} x{req.amount}\n";
             }
             recipeGO.transform.Find("RequirementsText").GetComponent<TextMeshProUGUI>().text = reqText;
 

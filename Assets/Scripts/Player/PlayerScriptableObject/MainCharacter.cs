@@ -80,6 +80,16 @@ public class MainCharacter : ScriptableObject
             case BodyParts.Legs: legsHealth = Mathf.Clamp(legsHealth - amount, 0, maxLegsHealth); break;
         }
     }
+    public void UpgradePart(BodyParts part, float amount)
+    {
+        switch (part)
+        {
+            case BodyParts.Head: maxHeadHealth += amount; headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
+            case BodyParts.Torso: maxTorsoHealth += amount; torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
+            case BodyParts.Arms: maxArmsHealth += amount; armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
+            case BodyParts.Legs: maxLegsHealth += amount; legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
+        }
+    }
     public void IncreaseMaxHealth(float amount)
     {
         maxHeadHealth = Mathf.Clamp(maxHeadHealth + amount, 0, 250); 

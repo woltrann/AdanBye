@@ -18,7 +18,13 @@ public enum ConsumableType
     ToksinPoolWater,
     Medkit,
     Bandage,
-    Antidote
+    Antidote,
+    PoweredHead,
+    PoweredTorso,
+    PoweredArm,
+    PoweredLeg,
+    UpgradeWeight,
+    UpgradeSpeed
 }
 
 [CreateAssetMenu(fileName = "NewItemData", menuName = "Interaction/Item Data")]

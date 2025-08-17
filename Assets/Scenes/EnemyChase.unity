@@ -1257,10 +1257,10 @@ RectTransform:
   - {fileID: 349259889}
   m_Father: {fileID: 83274370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 167.2193, y: -57.54315}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &178630852
 MonoBehaviour:
@@ -1355,6 +1355,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   cameraTransform: {fileID: 270513922}
   moveSpeed: 5
+  runSpeed: 10
   rotationSmoothTime: 0.1
   jumpForce: 5
   groundCheckDistance: 1.5
@@ -1769,7 +1770,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -4365,15 +4367,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &500541277
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4661,7 +4667,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -5144,7 +5151,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -5280,7 +5288,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -5946,10 +5955,10 @@ RectTransform:
   - {fileID: 1874933424}
   m_Father: {fileID: 83274370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 167.2193, y: -167.54315}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &795537735
 MonoBehaviour:
@@ -6022,10 +6031,10 @@ RectTransform:
   - {fileID: 1729569000}
   m_Father: {fileID: 83274370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 277.2193, y: -167.54315}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &891905319
 MonoBehaviour:
@@ -6126,7 +6135,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -6867,7 +6877,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -8206,7 +8217,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -8675,10 +8687,10 @@ RectTransform:
   - {fileID: 2063740553}
   m_Father: {fileID: 83274370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 57.2193, y: -167.54315}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1299675487
 MonoBehaviour:
@@ -8891,7 +8903,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -9153,15 +9166,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &1424783472
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9425,15 +9442,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 6
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &1522951783
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10565,7 +10586,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -11427,15 +11449,19 @@ MonoBehaviour:
   - {fileID: 500541276}
   - {fileID: 1424783471}
   - {fileID: 1522951782}
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 3
   minFollowDistance: 1
   maxFollowDistance: 1000
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!1 &1835997744
 GameObject:
   m_ObjectHideFlags: 0
@@ -11854,7 +11880,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -11877,7 +11904,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25.15
+  m_fontSize: 25.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12149,15 +12176,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &1907132466
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -12234,10 +12265,10 @@ RectTransform:
   - {fileID: 1925406732}
   m_Father: {fileID: 83274370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 57.2193, y: -57.54315}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1916635148
 MonoBehaviour:
@@ -12626,10 +12657,10 @@ RectTransform:
   - {fileID: 1243568607}
   m_Father: {fileID: 83274370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 277.2193, y: -57.54315}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1960571699
 MonoBehaviour:
@@ -13391,7 +13422,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -13500,15 +13532,19 @@ MonoBehaviour:
   playerTransform: {fileID: 179089309}
   alphaWolf: {fileID: 1831719936}
   packMembers: []
+  attackDistance: 1.5
+  attackDamage: 20
+  attackPauseDuration: 0.5
+  damagePart: 0
   speed: 7
   chaseDistance: 10
-  attackDistance: 1.5
   attackCooldown: 2
   formationRadius: 7
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
   currentState: 0
+  animator: {fileID: 0}
 --- !u!54 &2106694589
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -174,6 +174,25 @@ public class InteractionManager : MonoBehaviour
             case ConsumableType.Antidote:
                 character.DecreasePoison(itemData.consumableValue);
                 break;
+            case ConsumableType.PoweredHead:
+                character.UpgradePart(BodyParts.Head, itemData.consumableValue);
+                break;
+            case ConsumableType.PoweredTorso:
+                character.UpgradePart(BodyParts.Torso, itemData.consumableValue);
+                break;
+            case ConsumableType.PoweredArm:
+                character.UpgradePart(BodyParts.Arms, itemData.consumableValue);
+                break;
+            case ConsumableType.PoweredLeg:
+                character.UpgradePart(BodyParts.Legs, itemData.consumableValue);
+                break;
+            case ConsumableType.UpgradeWeight:
+                inventoryData.MaxWeight += itemData.consumableValue;
+                break;
+            case ConsumableType.UpgradeSpeed:
+                PlayerMovement.Instance.moveSpeed *= 1.5f;
+                PlayerMovement.Instance.runSpeed *= 1.5f;
+                break;
         }
 
         // Envanterden sil
