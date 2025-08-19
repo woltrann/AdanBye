@@ -9,6 +9,10 @@ public class InteractionManager : MonoBehaviour
 
     private InventoryData inventoryData;
 
+    public ItemData CleanWater;
+    public ItemData EmptyBottle;
+    public ItemData RiverWater;
+    public ItemData WellWater;
 
     private void Awake()
     {
@@ -36,7 +40,6 @@ public class InteractionManager : MonoBehaviour
             case InteractionType.Consumable:
                 HandleCollect(itemData); // önce envantere ekle
                 break;
-
         }
     }
     private void HandleChipCollect(ItemData itemData)
@@ -103,6 +106,19 @@ public class InteractionManager : MonoBehaviour
         {
             SaveManager.Instance.SaveGame();
             Debug.Log("Oyun kaydedildi!");
+        }
+
+        if (itemData.itemID == 51) //Kuyu objesi
+        {
+            FillBottleWithWater(EmptyBottle, WellWater);
+            return;
+        }
+
+        //  Eðer obje Nehir ise
+        if (itemData.itemID == 52) //Nehir objesi
+        {
+            FillBottleWithWater(EmptyBottle, RiverWater);
+            return;
         }
     }
 
@@ -193,6 +209,21 @@ public class InteractionManager : MonoBehaviour
                 PlayerMovement.Instance.moveSpeed *= 1.5f;
                 PlayerMovement.Instance.runSpeed *= 1.5f;
                 break;
+            case ConsumableType.ToksinMask:
+                PlayerMovement.Instance.isOutSide = false;
+                break;
+            case ConsumableType.WaterCleaner:
+                FillBottleWithWater(WellWater, CleanWater);
+                FillBottleWithWater(RiverWater, CleanWater);
+                break;
+            case ConsumableType.Recharger:
+                UXobjects.Instance.isRecharge = true;
+                break;
+        }
+        if (itemData.itemAfterUse != null)
+        {
+            inventoryData.AddItem(itemData.itemAfterUse);
+            Debug.Log($"{itemData.itemName} kullanýldý, {itemData.itemAfterUse.itemName} envantere eklendi!");
         }
 
         // Envanterden sil
@@ -200,5 +231,19 @@ public class InteractionManager : MonoBehaviour
         FindObjectOfType<InventoryUI>().RefreshUIonly();
     }
 
+
+    private void FillBottleWithWater(ItemData emptyBottle, ItemData filledWater)
+    {
+        if (inventoryData.items.Contains(emptyBottle))
+        {
+            // Boþ þiþeyi sil
+            inventoryData.RemoveItem(emptyBottle);
+            // Dolu þiþeyi ekle
+            inventoryData.AddItem(filledWater);
+
+            Debug.Log($"Boþ þiþe {filledWater.itemName} ile dolduruldu!");
+            FindObjectOfType<InventoryUI>().RefreshUIonly();
+        }
+    }
 
 }

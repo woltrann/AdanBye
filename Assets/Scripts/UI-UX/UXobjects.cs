@@ -22,6 +22,14 @@ public class UXobjects : MonoBehaviour
     [Header("Other UX")]
     public GameObject NotificationPanel;
 
+    [Header ("Charge")]
+    public TextMeshProUGUI phoneChargePercent;
+    public float phoneCharge = 100f;
+    public TextMeshProUGUI watchChargePercent;
+    public float watchCharge = 100f;
+    public bool isRecharge=false;
+
+
     void Awake()
     {
         Instance = this;
@@ -29,6 +37,10 @@ public class UXobjects : MonoBehaviour
     void Start()
     {
         StartCoroutine(FillLoop());
+        phoneChargePercent.text = phoneCharge.ToString() + "%";
+        watchChargePercent.text = watchCharge.ToString() + "%";
+        StartCoroutine(PhoneDecharge());
+        StartCoroutine(WatchDecharge());
     }
     void Update()
     {
@@ -95,5 +107,37 @@ public class UXobjects : MonoBehaviour
             }
         }
     }
+    IEnumerator PhoneDecharge()
+    {
+        while (!isRecharge)
+        {
+            phoneCharge = Mathf.Clamp(watchCharge - 1, 0, 100);
+            phoneChargePercent.text = phoneCharge.ToString() + "%";
+            yield return new WaitForSeconds(10);
+        }
+        while (isRecharge)
+        {
+            phoneCharge = Mathf.Clamp(watchCharge + 1, 0, 100);
+            phoneChargePercent.text = phoneCharge.ToString() + "%";
+            yield return new WaitForSeconds(10);
+        }
+    }
 
+    IEnumerator WatchDecharge()
+    {
+        while (!isRecharge)
+        {
+            watchCharge = Mathf.Clamp(watchCharge - 1, 0, 100);
+            watchChargePercent.text = watchCharge.ToString() + "%";
+            yield return new WaitForSeconds(15);
+        }
+        
+        while (isRecharge)
+        {
+            watchCharge = Mathf.Clamp(watchCharge + 1, 0, 100);
+            watchChargePercent.text = watchCharge.ToString() + "%";
+            yield return new WaitForSeconds(15);
+        }  
+
+    }
 }

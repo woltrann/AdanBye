@@ -14,6 +14,18 @@ public class CraftManager : MonoBehaviour
 
     public bool CanCraft(CraftRecipe recipe)
     {
+        // Limit kontrolü
+        if (recipe.craftOnce && PlayerPrefs.GetInt($"Crafted_{recipe.recipeName}", 0) == 1)
+            return false;
+
+        if (recipe.maxCraftCount > 0)
+        {
+            int craftedCount = PlayerPrefs.GetInt($"CraftedCount_{recipe.recipeName}", 0);
+            if (craftedCount >= recipe.maxCraftCount)
+                return false;
+        }
+
+        // Malzeme kontrolü
         foreach (var req in recipe.requirements)
         {
             int count = 0;
@@ -28,8 +40,26 @@ public class CraftManager : MonoBehaviour
         return true;
     }
 
+
     public bool Craft(CraftRecipe recipe)
     {
+        // Eğer sınırlı craft ise daha önce yapıldı mı kontrol et
+        if (recipe.craftOnce && PlayerPrefs.GetInt($"Crafted_{recipe.recipeName}", 0) == 1)
+        {
+            Debug.LogWarning($"{recipe.recipeName} sadece bir kere craftlanabilir!");
+            return false;
+        }
+
+        if (recipe.maxCraftCount > 0)
+        {
+            int craftedCount = PlayerPrefs.GetInt($"CraftedCount_{recipe.recipeName}", 0);
+            if (craftedCount >= recipe.maxCraftCount)
+            {
+                Debug.LogWarning($"{recipe.recipeName} maksimum {recipe.maxCraftCount} kere craftlanabilir!");
+                return false;
+            }
+        }
+
         if (!CanCraft(recipe))
         {
             Debug.LogWarning("Malzemeler eksik!");
@@ -55,6 +85,18 @@ public class CraftManager : MonoBehaviour
             inventoryData.AddItem(recipe.resultItem);
 
         Debug.Log($"{recipe.recipeName} başarıyla craft edildi!");
+
+        // Limit bilgisi kaydet
+        if (recipe.craftOnce)
+            PlayerPrefs.SetInt($"Crafted_{recipe.recipeName}", 1);
+
+        if (recipe.maxCraftCount > 0)
+        {
+            int craftedCount = PlayerPrefs.GetInt($"CraftedCount_{recipe.recipeName}", 0);
+            PlayerPrefs.SetInt($"CraftedCount_{recipe.recipeName}", craftedCount + 1);
+        }
+
         return true;
     }
+
 }

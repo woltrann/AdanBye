@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,10 +16,13 @@ public class PanelSwitcher : MonoBehaviour
 
     public Animator phoneAnimator;
 
+
+
     void Start()
     {
         targetPosition = panelParent.anchoredPosition;
         width = image.rectTransform.rect.width; // width deðerini kullanabilirsiniz
+
     }
 
     void Update()
@@ -44,4 +49,6 @@ public class PanelSwitcher : MonoBehaviour
         // Yumuþak geçiþ
         panelParent.anchoredPosition = Vector2.Lerp(panelParent.anchoredPosition, targetPosition, Time.deltaTime * slideSpeed);
     }
+
+
 }

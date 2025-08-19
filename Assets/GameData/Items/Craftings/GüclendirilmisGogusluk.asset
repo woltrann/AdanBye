@@ -22,3 +22,5 @@ MonoBehaviour:
     amount: 2
   resultItem: {fileID: 11400000, guid: 6b101eb3297c18e4184e6ffcc9d44b22, type: 2}
   resultAmount: 1
+  craftOnce: 1
+  maxCraftCount: -1

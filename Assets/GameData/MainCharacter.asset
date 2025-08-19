@@ -25,19 +25,19 @@ MonoBehaviour:
   ScenerioDialogues:
   - {fileID: 11400000, guid: 92e354f38296b2b4e94f5fd4b369da09, type: 2}
   ExamineDialogues: []
-  headHealth: 20
+  headHealth: 60
   maxHeadHealth: 100
-  torsoHealth: 20
+  torsoHealth: 100
   maxTorsoHealth: 100
-  armsHealth: 20
+  armsHealth: 100
   maxArmsHealth: 100
-  legsHealth: 20
+  legsHealth: 60
   maxLegsHealth: 100
-  currentHunger: 130
+  currentHunger: 170
   maxHunger: 200
-  currentThirst: 79.1
+  currentThirst: 62.4
   maxThirst: 100
-  currentPoison: 25
+  currentPoison: 0
   maxPoison: 100
   currentWeight: 100
   maxWeight: 100

@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Kuyu Suyu
   itemID: 13
-  interactionType: 0
+  interactionType: 4
   icon: {fileID: 21300000, guid: 096c38be7939aaa49b8e58c5cabfc52d, type: 3}
   voiceLine: {fileID: 0}
   description: Kuyu Suyu
   weight: 0.5
   consumableType: 5
   consumableValue: 40
+  itemAfterUse: {fileID: 11400000, guid: cb57d61a22e9bb4479cbf16c0789f82f, type: 2}

@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
     public static PlayerMovement Instance;
+    public MainCharacter mainCharacter;
     [Header("References")]
     [SerializeField] private Animator animator;
     [SerializeField] private Transform cameraTransform;
@@ -30,6 +32,10 @@ public class PlayerMovement : MonoBehaviour
     private bool runInput;
     private float turnSmoothVelocity;
     private bool isGrounded;
+
+    public bool isOutSide = true;
+    private Coroutine poisonRoutine;
+
 
     private void Awake()
     {
@@ -68,6 +74,19 @@ public class PlayerMovement : MonoBehaviour
         {
             animator.SetFloat("Speed", moveInput.magnitude);
             animator.SetBool("IsGrounded", isGrounded);
+        }
+
+        // Dışarı çıkınca coroutine başlasın
+        if (isOutSide && poisonRoutine == null)
+        {
+            poisonRoutine = StartCoroutine(PoisonOverTime());
+        }
+
+        // İçeri girince coroutine dursun
+        if (!isOutSide && poisonRoutine != null)
+        {
+            StopCoroutine(poisonRoutine);
+            poisonRoutine = null;
         }
     }
 
@@ -114,6 +133,14 @@ public class PlayerMovement : MonoBehaviour
     private bool CheckGrounded()
     {
         return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance, groundLayer);
+    }
+    private IEnumerator PoisonOverTime()
+    {
+        while (true)
+        {
+            mainCharacter.IncreasePoison(1); // senin zehir artırma fonksiyonun
+            yield return new WaitForSeconds(2f);
+        }
     }
 
 #if UNITY_EDITOR

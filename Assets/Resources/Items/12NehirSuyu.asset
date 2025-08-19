@@ -21,3 +21,4 @@ MonoBehaviour:
   weight: 0.5
   consumableType: 4
   consumableValue: 40
+  itemAfterUse: {fileID: 11400000, guid: cb57d61a22e9bb4479cbf16c0789f82f, type: 2}

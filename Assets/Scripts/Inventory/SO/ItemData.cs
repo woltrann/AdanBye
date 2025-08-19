@@ -6,7 +6,8 @@ public enum InteractionType
     Examine, // Ýncelenebilir
     Use,      // Kullanýlabilir
     Chip,
-    Consumable
+    Consumable,
+    Unconsumable
 }
 public enum ConsumableType
 {
@@ -24,7 +25,10 @@ public enum ConsumableType
     PoweredArm,
     PoweredLeg,
     UpgradeWeight,
-    UpgradeSpeed
+    UpgradeSpeed,
+    ToksinMask,
+    WaterCleaner,
+    Recharger
 }
 
 [CreateAssetMenu(fileName = "NewItemData", menuName = "Interaction/Item Data")]
@@ -46,4 +50,6 @@ public class ItemData : ScriptableObject
     [Header("Consumable")]
     public ConsumableType consumableType;
     public float consumableValue; // Ne kadar iyileþtirecek, doyuracak, su verecek vs.
+
+    public ItemData itemAfterUse;
 }

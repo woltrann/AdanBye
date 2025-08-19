@@ -16,9 +16,13 @@ MonoBehaviour:
   requirements:
   - item: {fileID: 11400000, guid: 4f08640a7d5917940b9dd82b8eb55a59, type: 2}
     amount: 3
+  - item: {fileID: 11400000, guid: 86996f44936d72642939e53f67cb0304, type: 2}
+    amount: 2
   - item: {fileID: 11400000, guid: cb57d61a22e9bb4479cbf16c0789f82f, type: 2}
-    amount: 1
+    amount: 2
   - item: {fileID: 11400000, guid: 603bcf7ffa2631b46b9eb4b7a13f25ad, type: 2}
     amount: 1
   resultItem: {fileID: 11400000, guid: 342218fadee769c45914189bcd9221c6, type: 2}
   resultAmount: 1
+  craftOnce: 1
+  maxCraftCount: -1
