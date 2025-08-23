@@ -141,8 +141,8 @@ public class PlayerMovement : MonoBehaviour
             if (UXobjects.Instance.gassFilter <= 0)
             {
                 mainCharacter.IncreasePoison(1); // senin zehir artırma fonksiyonun
-                yield return new WaitForSeconds(2f);
             }
+            yield return new WaitForSeconds(2f);
         }
     }
 

@@ -49,11 +49,11 @@ public class UXobjects : MonoBehaviour
         gassFilterPercent.text = gassFilter.ToString() + "%";
         StartCoroutine(PhoneDecharge());
         StartCoroutine(WatchDecharge());
-        //StartCoroutine(DroidDecharge());
-        //StartCoroutine(FlashDecharge());
-        //StartCoroutine(GassFilterDecrase());
-        //StartCoroutine(HungerDecrase());
-        //StartCoroutine(ThirstDecrase());
+        StartCoroutine(DroidDecharge());
+        StartCoroutine(FlashDecharge());
+        StartCoroutine(GassFilterDecrase());
+        StartCoroutine(HungerDecrase());
+        StartCoroutine(ThirstDecrase());
     }
     void Update()
     {
@@ -155,71 +155,71 @@ public class UXobjects : MonoBehaviour
         }
 
     }
-    //IEnumerator DroidDecharge()
-    //{
-    //    while (true)
-    //    {
-    //        if (!isRecharge)
-    //        {
-    //            characterData.DecreaseDroidCharge(1f);
-    //        }
-    //        else
-    //        {
-    //            characterData.IncreaseDroidCharge(1f);
-    //        }
-    //        yield return new WaitForSeconds(15);
-    //    }
-    //}
-    //IEnumerator FlashDecharge()
-    //{
-    //    while (true)
-    //    {
-    //        if (isFlash)
-    //        {
-    //            // Þarj azalýyor
-    //            flashCharge = Mathf.Clamp(flashCharge - 1, 0, 100);
-    //        }
-    //        else
-    //        {
-    //            // Þarj artýyor (doldurma)
-    //            flashCharge = Mathf.Clamp(flashCharge + 0, 0, 100);
-    //        }
+    IEnumerator DroidDecharge()
+    {
+        while (true)
+        {
+            if (!isRecharge)
+            {
+                characterData.DecreaseDroidCharge(1f);
+            }
+            else
+            {
+                characterData.IncreaseDroidCharge(1f);
+            }
+            yield return new WaitForSeconds(15);
+        }
+    }
+    IEnumerator FlashDecharge()
+    {
+        while (true)
+        {
+            if (isFlash)
+            {
+                // Þarj azalýyor
+                flashCharge = Mathf.Clamp(flashCharge - 1, 0, 100);
+            }
+            else
+            {
+                // Þarj artýyor (doldurma)
+                flashCharge = Mathf.Clamp(flashCharge + 0, 0, 100);
+            }
 
-    //        flashChargePercent.text = flashCharge.ToString() + "%";
-    //        yield return new WaitForSeconds(7);
-    //    }
-    //}
-    //IEnumerator GassFilterDecrase()
-    //{
-    //    while (true)
-    //    {
-    //        if (isOutsideforGassFilter)
-    //        {
-    //            gassFilter = Mathf.Clamp(gassFilter - 1, 0, 100);
-    //        }
-    //        else
-    //        {
-    //            gassFilter = Mathf.Clamp(gassFilter + 0, 0, 100);
-    //        }
+            flashChargePercent.text = flashCharge.ToString() + "%";
+            yield return new WaitForSeconds(7);
+        }
+    }
+    IEnumerator GassFilterDecrase()
+    {
+        while (true)
+        {
+            if (isOutsideforGassFilter)
+            {
+                gassFilter = Mathf.Clamp(gassFilter - 1, 0, 100);
+            }
+            else
+            {
+                gassFilter = Mathf.Clamp(gassFilter + 0, 0, 100);
+            }
 
-    //        gassFilterPercent.text = gassFilter.ToString() + "%";
-    //        yield return new WaitForSeconds(1);
-    //    }
-    //}
-    //IEnumerator HungerDecrase()
-    //{
-    //    while (true)
-    //    {
-    //        characterData.DecreaseHunger(1f);
-    //        yield return new WaitForSeconds(7);
-    //    }
-    //}
-    //IEnumerator ThirstDecrase()
-    //{
-    //    while (true)
-    //    {
-    //        characterData.DecreaseThirst(1f);
-    //        yield return new WaitForSeconds(5);
-    //    }
-    //}
+            gassFilterPercent.text = gassFilter.ToString() + "%";
+            yield return new WaitForSeconds(1);
+        }
+    }
+    IEnumerator HungerDecrase()
+    {
+        while (true)
+        {
+            characterData.DecreaseHunger(1f);
+            yield return new WaitForSeconds(7);
+        }
+    }
+    IEnumerator ThirstDecrase()
+    {
+        while (true)
+        {
+            characterData.DecreaseThirst(1f);
+            yield return new WaitForSeconds(5);
+        }
+    }
 }
