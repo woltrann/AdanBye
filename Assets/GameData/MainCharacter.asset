@@ -33,13 +33,13 @@ MonoBehaviour:
   maxArmsHealth: 100
   legsHealth: 60
   maxLegsHealth: 100
-  currentHunger: 170
+  currentHunger: 196
   maxHunger: 200
-  currentThirst: 62.4
+  currentThirst: 96
   maxThirst: 100
-  currentPoison: 0
+  currentPoison: 20
   maxPoison: 100
   currentWeight: 100
   maxWeight: 100
-  droidCharge: 100
+  droidCharge: 87
   maxDroidCharge: 100

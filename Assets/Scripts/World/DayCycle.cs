@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class DayCycle : MonoBehaviour
 {
+    public static DayCycle Instance;
     [Header("Sun Settings")]
     public Light sunLight;
     public Gradient sunColorOverTime;
@@ -23,6 +24,10 @@ public class DayCycle : MonoBehaviour
     public float CurrentHour => (timeOfDay % 1f) * 24f;
     public bool IsNight => GetSunIntensity() < 0.2f;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
     private void Start()
     {
         if (!isLoaded)

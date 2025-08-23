@@ -8,11 +8,17 @@ public class InteractionManager : MonoBehaviour
     public GameObject[] chips;
 
     private InventoryData inventoryData;
+    public MainCharacter characterData;
 
     public ItemData CleanWater;
     public ItemData EmptyBottle;
     public ItemData RiverWater;
     public ItemData WellWater;
+    public ItemData Apple;
+    public ItemData Battery;
+
+
+    public bool isHaveGES = false;
 
     private void Awake()
     {
@@ -20,7 +26,20 @@ public class InteractionManager : MonoBehaviour
         else Destroy(gameObject);
         inventoryData = GetComponent<PlayerManager>().mainCharacter.InventoryData;
     }
-
+    private void Update()
+    {
+        if (isHaveGES)
+        {
+            if (!DayCycle.Instance.IsNight)
+            {
+                UXobjects.Instance.isRecharge = true;
+            }
+            else
+            {
+                UXobjects.Instance.isRecharge = false;
+            }
+        }
+    }
     public void Interact(ItemData itemData)
     {
         switch (itemData.interactionType)
@@ -107,53 +126,32 @@ public class InteractionManager : MonoBehaviour
             SaveManager.Instance.SaveGame();
             Debug.Log("Oyun kaydedildi!");
         }
-
         if (itemData.itemID == 51) //Kuyu objesi
         {
             FillBottleWithWater(EmptyBottle, WellWater);
             return;
         }
-
-        //  Eðer obje Nehir ise
         if (itemData.itemID == 52) //Nehir objesi
         {
             FillBottleWithWater(EmptyBottle, RiverWater);
             return;
         }
-    }
-
-    private void HandleConsumable(ItemData itemData)
-    {
-        var character = GetComponent<PlayerManager>().mainCharacter;
-
-        switch (itemData.consumableType)
+        if (itemData.itemID == 53) //Agac
         {
-            case ConsumableType.Food:
-                character.EatFood(itemData.consumableValue);
-                Debug.Log($"Yemek yendi: {itemData.itemName}, Hunger +{itemData.consumableValue}");
-                break;
-
-            case ConsumableType.Water:
-                character.DrinkWater(itemData.consumableValue);
-                Debug.Log($"Su içildi: {itemData.itemName}, Thirst +{itemData.consumableValue}");
-                break;
-
-            case ConsumableType.Medkit:
-                character.HealPart(BodyParts.Torso, itemData.consumableValue);
-                Debug.Log($"Medkit kullanýldý: {itemData.itemName}, Health +{itemData.consumableValue}");
-                break;
-
-            case ConsumableType.Antidote:
-                character.DecreasePoison(itemData.consumableValue);
-                Debug.Log($"Panzehir kullanýldý: {itemData.itemName}, Poison -{itemData.consumableValue}");
-                break;
+            inventoryData.AddItem(Apple);
         }
-
-        // Envanterden çýkar
-        inventoryData.RemoveItem(itemData);
-        InventoryUI ui = FindObjectOfType<InventoryUI>();
-        ui.RefreshUI();
+        if (itemData.itemID == 54) //sarj istasyonu
+        {
+            UXobjects.Instance.phoneCharge = 100;
+            UXobjects.Instance.phoneChargePercent.text = UXobjects.Instance.phoneCharge.ToString();
+            UXobjects.Instance.watchCharge = 100;
+            UXobjects.Instance.watchChargePercent.text = UXobjects.Instance.watchCharge.ToString();
+            UXobjects.Instance.flashCharge = 100;
+            UXobjects.Instance.flashChargePercent.text = UXobjects.Instance.flashCharge.ToString();
+            characterData.IncreaseDroidCharge(100f);
+        }
     }
+
     public void UseConsumable(ItemData itemData)
     {
         var character = GetComponent<PlayerManager>().mainCharacter;
@@ -210,14 +208,15 @@ public class InteractionManager : MonoBehaviour
                 PlayerMovement.Instance.runSpeed *= 1.5f;
                 break;
             case ConsumableType.ToksinMask:
-                PlayerMovement.Instance.isOutSide = false;
+                UXobjects.Instance.gassFilter = 100;
+                UXobjects.Instance.gassFilterPercent.text = UXobjects.Instance.gassFilter.ToString() + "%";
                 break;
             case ConsumableType.WaterCleaner:
                 FillBottleWithWater(WellWater, CleanWater);
                 FillBottleWithWater(RiverWater, CleanWater);
                 break;
             case ConsumableType.Recharger:
-                UXobjects.Instance.isRecharge = true;
+                isHaveGES = true;
                 break;
         }
         if (itemData.itemAfterUse != null)
@@ -230,7 +229,6 @@ public class InteractionManager : MonoBehaviour
         inventoryData.RemoveItem(itemData);
         FindObjectOfType<InventoryUI>().RefreshUIonly();
     }
-
 
     private void FillBottleWithWater(ItemData emptyBottle, ItemData filledWater)
     {
@@ -245,5 +243,12 @@ public class InteractionManager : MonoBehaviour
             FindObjectOfType<InventoryUI>().RefreshUIonly();
         }
     }
-
+    public void ChangeDroidBattery()
+    {
+        if (inventoryData.items.Contains(Battery))
+        {
+            characterData.IncreaseDroidCharge(100f);
+            inventoryData.RemoveItem(Battery);
+        }
+    }
 }

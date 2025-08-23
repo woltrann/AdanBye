@@ -27,7 +27,13 @@ public class UXobjects : MonoBehaviour
     public float phoneCharge = 100f;
     public TextMeshProUGUI watchChargePercent;
     public float watchCharge = 100f;
+    public TextMeshProUGUI flashChargePercent;
+    public float flashCharge = 100f;
+    public TextMeshProUGUI gassFilterPercent;
+    public float gassFilter = 100f;
     public bool isRecharge=false;
+    public bool isFlash=false;
+    public bool isOutsideforGassFilter=false;
 
 
     void Awake()
@@ -39,8 +45,15 @@ public class UXobjects : MonoBehaviour
         StartCoroutine(FillLoop());
         phoneChargePercent.text = phoneCharge.ToString() + "%";
         watchChargePercent.text = watchCharge.ToString() + "%";
+        flashChargePercent.text = flashCharge.ToString() + "%";
+        gassFilterPercent.text = gassFilter.ToString() + "%";
         StartCoroutine(PhoneDecharge());
         StartCoroutine(WatchDecharge());
+        //StartCoroutine(DroidDecharge());
+        //StartCoroutine(FlashDecharge());
+        //StartCoroutine(GassFilterDecrase());
+        //StartCoroutine(HungerDecrase());
+        //StartCoroutine(ThirstDecrase());
     }
     void Update()
     {
@@ -109,35 +122,104 @@ public class UXobjects : MonoBehaviour
     }
     IEnumerator PhoneDecharge()
     {
-        while (!isRecharge)
+        while (true)
         {
-            phoneCharge = Mathf.Clamp(watchCharge - 1, 0, 100);
-            phoneChargePercent.text = phoneCharge.ToString() + "%";
-            yield return new WaitForSeconds(10);
-        }
-        while (isRecharge)
-        {
-            phoneCharge = Mathf.Clamp(watchCharge + 1, 0, 100);
+            if (!isRecharge)
+            {
+                phoneCharge = Mathf.Clamp(phoneCharge - 1, 0, 100);
+            }
+            else
+            {
+                phoneCharge = Mathf.Clamp(phoneCharge + 1, 0, 100);
+            }
+
             phoneChargePercent.text = phoneCharge.ToString() + "%";
             yield return new WaitForSeconds(10);
         }
     }
-
     IEnumerator WatchDecharge()
     {
-        while (!isRecharge)
+        while (true)
         {
-            watchCharge = Mathf.Clamp(watchCharge - 1, 0, 100);
+            if (!isRecharge)
+            {
+                watchCharge = Mathf.Clamp(watchCharge - 1, 0, 100);
+            }
+            else
+            {
+                watchCharge = Mathf.Clamp(watchCharge + 1, 0, 100);
+            }
+
             watchChargePercent.text = watchCharge.ToString() + "%";
             yield return new WaitForSeconds(15);
         }
-        
-        while (isRecharge)
-        {
-            watchCharge = Mathf.Clamp(watchCharge + 1, 0, 100);
-            watchChargePercent.text = watchCharge.ToString() + "%";
-            yield return new WaitForSeconds(15);
-        }  
 
     }
+    //IEnumerator DroidDecharge()
+    //{
+    //    while (true)
+    //    {
+    //        if (!isRecharge)
+    //        {
+    //            characterData.DecreaseDroidCharge(1f);
+    //        }
+    //        else
+    //        {
+    //            characterData.IncreaseDroidCharge(1f);
+    //        }
+    //        yield return new WaitForSeconds(15);
+    //    }
+    //}
+    //IEnumerator FlashDecharge()
+    //{
+    //    while (true)
+    //    {
+    //        if (isFlash)
+    //        {
+    //            // Þarj azalýyor
+    //            flashCharge = Mathf.Clamp(flashCharge - 1, 0, 100);
+    //        }
+    //        else
+    //        {
+    //            // Þarj artýyor (doldurma)
+    //            flashCharge = Mathf.Clamp(flashCharge + 0, 0, 100);
+    //        }
+
+    //        flashChargePercent.text = flashCharge.ToString() + "%";
+    //        yield return new WaitForSeconds(7);
+    //    }
+    //}
+    //IEnumerator GassFilterDecrase()
+    //{
+    //    while (true)
+    //    {
+    //        if (isOutsideforGassFilter)
+    //        {
+    //            gassFilter = Mathf.Clamp(gassFilter - 1, 0, 100);
+    //        }
+    //        else
+    //        {
+    //            gassFilter = Mathf.Clamp(gassFilter + 0, 0, 100);
+    //        }
+
+    //        gassFilterPercent.text = gassFilter.ToString() + "%";
+    //        yield return new WaitForSeconds(1);
+    //    }
+    //}
+    //IEnumerator HungerDecrase()
+    //{
+    //    while (true)
+    //    {
+    //        characterData.DecreaseHunger(1f);
+    //        yield return new WaitForSeconds(7);
+    //    }
+    //}
+    //IEnumerator ThirstDecrase()
+    //{
+    //    while (true)
+    //    {
+    //        characterData.DecreaseThirst(1f);
+    //        yield return new WaitForSeconds(5);
+    //    }
+    //}
 }
