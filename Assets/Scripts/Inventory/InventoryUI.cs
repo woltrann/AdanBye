@@ -11,6 +11,7 @@ public class InventoryUI : MonoBehaviour
     public TextMeshProUGUI weightText;
 
     public Animator InventoryAnimator;
+    public GameObject Flashlight;
 
     [SerializeField] private GameObject freelookcamera;
 
@@ -68,6 +69,11 @@ public class InventoryUI : MonoBehaviour
         {
             InventoryAnimator.SetTrigger("Open");
             RefreshUI();
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Flashlight.SetActive(!Flashlight.activeSelf);
+            UXobjects.Instance.isFlash = !UXobjects.Instance.isFlash;
         }
     }
 }

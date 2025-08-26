@@ -32,6 +32,7 @@ public class UXobjects : MonoBehaviour
     public TextMeshProUGUI gassFilterPercent;
     public float gassFilter = 100f;
     public bool isRecharge=false;
+    public bool droidRecharge=false;
     public bool isFlash=false;
     public bool isOutsideforGassFilter=false;
 
@@ -159,7 +160,7 @@ public class UXobjects : MonoBehaviour
     {
         while (true)
         {
-            if (!isRecharge)
+            if (!droidRecharge)
             {
                 characterData.DecreaseDroidCharge(1f);
             }
@@ -203,7 +204,7 @@ public class UXobjects : MonoBehaviour
             }
 
             gassFilterPercent.text = gassFilter.ToString() + "%";
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(7);
         }
     }
     IEnumerator HungerDecrase()
