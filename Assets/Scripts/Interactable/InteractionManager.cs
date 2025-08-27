@@ -70,6 +70,7 @@ public class InteractionManager : MonoBehaviour
                 case 0:
                     chips[0].gameObject.SetActive(true);
                     UXobjects.Instance.NotificationPanelOpen();
+                    UXobjects.Instance.droidRecharge=true;
                     break;
                 case 1:
                     chips[1].gameObject.SetActive(true);
