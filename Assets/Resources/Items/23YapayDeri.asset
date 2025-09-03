@@ -19,3 +19,8 @@ MonoBehaviour:
   voiceLine: {fileID: 0}
   description: "Yapay Deri\t"
   weight: 1
+  consumableType: 0
+  consumableValue: 0
+  itemAfterUse: {fileID: 0}
+  width: 1
+  height: 2

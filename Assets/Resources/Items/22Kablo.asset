@@ -19,3 +19,8 @@ MonoBehaviour:
   voiceLine: {fileID: 0}
   description: Kablo
   weight: 0.25
+  consumableType: 0
+  consumableValue: 0
+  itemAfterUse: {fileID: 0}
+  width: 1
+  height: 1

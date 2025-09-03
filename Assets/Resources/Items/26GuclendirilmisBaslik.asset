@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff589f0b1efda7b48b0f16c0ee462071, type: 3}
-  m_Name: "26G\xFCclendirilmisBaslik"
+  m_Name: 26GuclendirilmisBaslik
   m_EditorClassIdentifier: 
   itemName: "G\xFC\xE7lendirilmi\u015F Ba\u015Fl\u0131k"
   itemID: 26
@@ -21,3 +21,6 @@ MonoBehaviour:
   weight: 2
   consumableType: 9
   consumableValue: 50
+  itemAfterUse: {fileID: 0}
+  width: 2
+  height: 2

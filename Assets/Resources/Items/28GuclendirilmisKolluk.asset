@@ -10,14 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff589f0b1efda7b48b0f16c0ee462071, type: 3}
-  m_Name: "27G\xFCclendirilmisGogusluk"
+  m_Name: 28GuclendirilmisKolluk
   m_EditorClassIdentifier: 
-  itemName: "G\xFC\xE7lendirilmi\u015F G\xF6\u011F\xFCsl\xFCk"
-  itemID: 27
+  itemName: "G\xFC\xE7lendirilmi\u015F Kolluk"
+  itemID: 28
   interactionType: 4
   icon: {fileID: 21300000, guid: 096c38be7939aaa49b8e58c5cabfc52d, type: 3}
   voiceLine: {fileID: 0}
-  description: "G\xFC\xE7lendirilmi\u015F G\xF6\u011F\xFCsl\xFCk"
-  weight: 3
-  consumableType: 10
+  description: "G\xFC\xE7lendirilmi\u015F Kolluk"
+  weight: 2
+  consumableType: 11
   consumableValue: 50
+  itemAfterUse: {fileID: 0}
+  width: 2
+  height: 1

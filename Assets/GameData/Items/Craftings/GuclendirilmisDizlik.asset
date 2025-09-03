@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b40f83bbe57c89748ba299b805213f97, type: 3}
-  m_Name: "G\xFCclendirilmisKolluk"
+  m_Name: GuclendirilmisDizlik
   m_EditorClassIdentifier: 
-  recipeName: "G\xFC\xE7lendirilmi\u015F Kolluk"
+  recipeName: "G\xFC\xE7lendirilmi\u015F Dizlik"
   requirements:
   - item: {fileID: 11400000, guid: 4f08640a7d5917940b9dd82b8eb55a59, type: 2}
     amount: 2
@@ -20,7 +20,7 @@ MonoBehaviour:
     amount: 1
   - item: {fileID: 11400000, guid: d424423e2d3e34e4dabdaf73197ba0df, type: 2}
     amount: 1
-  resultItem: {fileID: 11400000, guid: 56da695fdad0c3544a95171f0c85cdc6, type: 2}
+  resultItem: {fileID: 11400000, guid: 6c6f4a73d22e4024eb05d22cb48ac834, type: 2}
   resultAmount: 1
   craftOnce: 1
   maxCraftCount: -1

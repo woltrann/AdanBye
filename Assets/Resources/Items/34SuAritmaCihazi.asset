@@ -22,3 +22,5 @@ MonoBehaviour:
   consumableType: 16
   consumableValue: 0
   itemAfterUse: {fileID: 11400000}
+  width: 2
+  height: 1

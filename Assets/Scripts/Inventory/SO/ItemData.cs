@@ -52,4 +52,5 @@ public class ItemData : ScriptableObject
     public float consumableValue; // Ne kadar iyileþtirecek, doyuracak, su verecek vs.
 
     public ItemData itemAfterUse;
+
 }

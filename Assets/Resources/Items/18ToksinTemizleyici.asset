@@ -21,3 +21,6 @@ MonoBehaviour:
   weight: 1
   consumableType: 8
   consumableValue: 50
+  itemAfterUse: {fileID: 0}
+  width: 2
+  height: 1
