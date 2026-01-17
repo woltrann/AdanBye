@@ -72,7 +72,8 @@ public class PlayerMovement : MonoBehaviour
         // Animator güncelleme
         if (animator)
         {
-            animator.SetFloat("Speed", moveInput.magnitude);
+            animator.SetFloat("x", moveInput.x);
+            animator.SetFloat("y", moveInput.y);
             animator.SetBool("IsGrounded", isGrounded);
         }
 

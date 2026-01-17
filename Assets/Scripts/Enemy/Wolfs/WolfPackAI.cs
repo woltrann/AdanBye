@@ -1,7 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using UnityEditor;
 
 public class WolfPackAI : MonoBehaviour
 {
@@ -54,6 +52,11 @@ public class WolfPackAI : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         lastPosition = transform.position;
+
+        // Baþlangýçta kýsa bir rastgele bekleme, hemen hedef seçilmesini engeller
+        wanderTimer = Random.Range(0f, 2f);
+        // Baþlangýç hedefini mevcut pozisyona koy
+        wanderTarget = transform.position;
     }
 
     void Update()
@@ -262,29 +265,53 @@ public class WolfPackAI : MonoBehaviour
 
     void WanderAround(Vector3 center, float radius, float moveSpeed)
     {
-        // Timer to control when to pick a new target
-        wanderTimer -= Time.deltaTime;
-
-        // If the timer runs out, pick a new random target within the radius
-        if (wanderTimer <= 0)
+        // Eðer mevcut wanderTarget merkezden çok uzaksa (ör. merkez hareket etti) yeni hedef seç
+        if (Vector3.Distance(wanderTarget, center) > radius + 0.5f)
         {
-            // Generate a random point within a circle
-            Vector2 randomCircle = Random.insideUnitCircle * radius;
-            wanderTarget = center + new Vector3(randomCircle.x, 0, randomCircle.y);
-
-            // Reset the timer with a random interval
-            wanderTimer = Random.Range(3f, 6f);
+            wanderTimer = 0f;
         }
 
-        // Smoothly move toward the wander target
-        Vector3 direction = (wanderTarget - transform.position).normalized;
-        Vector3 newPosition = Vector3.MoveTowards(transform.position, wanderTarget, moveSpeed * Time.deltaTime);
+        // Zamanlayýcýyý azalt
+        wanderTimer -= Time.deltaTime;
 
-        // Update position and rotation
-        rb.MovePosition(newPosition);
-        if (direction.magnitude > 0.1f)
+        // Hedefe çok yaklaþtýysak da yeni hedef seç
+        bool reachedTarget = Vector3.Distance(transform.position, wanderTarget) < 0.5f;
+
+        if (wanderTimer <= 0f || reachedTarget)
         {
-            LookAt(wanderTarget);
+            // Yeni rastgele hedef seçimi sadece burada yapýlýr
+            Vector2 randomCircle = Random.insideUnitCircle * radius;
+            Vector3 candidate = center + new Vector3(randomCircle.x, 0f, randomCircle.y);
+
+            RaycastHit hit;
+            // Yüksekten yere raycast atarak zeminin yüksekliðini öðren
+            if (Physics.Raycast(new Vector3(candidate.x, 500f, candidate.z), Vector3.down, out hit, 1000f))
+            {
+                wanderTarget = hit.point;
+            }
+            else
+            {
+                // Eðer zemine iþaret edilemezse kendi yüksekliðimizi koruyarak hedefi seç
+                wanderTarget = new Vector3(candidate.x, transform.position.y, candidate.z);
+            }
+
+            // Bir sonraki hedef deðiþimine kadar bekleme süresi
+            wanderTimer = Random.Range(2f, 5f);
+        }
+
+        // Yön ve hareket - sadece yatay eksende hesapla
+        Vector3 flatTarget = new Vector3(wanderTarget.x, transform.position.y, wanderTarget.z);
+        Vector3 dir = (flatTarget - transform.position);
+        float dist = dir.magnitude;
+
+        if (dist > 0.05f)
+        {
+            Vector3 newPosition = Vector3.MoveTowards(transform.position, wanderTarget, moveSpeed * Time.deltaTime);
+            rb.MovePosition(newPosition);
+
+            Vector3 lookDir = (wanderTarget - transform.position).normalized;
+            if (lookDir.magnitude > 0.1f)
+                LookAt(wanderTarget);
         }
     }
 
@@ -316,5 +343,9 @@ public class WolfPackAI : MonoBehaviour
             Gizmos.DrawLine(transform.position, currentTarget);
             Gizmos.DrawSphere(currentTarget, 0.2f);
         }
+
+        // Görsel olarak wander hedefini de çiz
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(wanderTarget, 0.12f);
     }
 }
