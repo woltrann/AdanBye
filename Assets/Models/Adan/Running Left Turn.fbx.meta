@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 90de7323712a1664bafba79526b5411c
+guid: 09bdc07ec07599048bcc8450e2152c35
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Tired
+      name: Running Left Turn
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 208
+      lastFrame: 23
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

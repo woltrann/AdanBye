@@ -5525,7 +5525,7 @@ MonoBehaviour:
     upgradeData: 
     file_cachedStartup: {fileID: 4900000, guid: 2649c1b51d2c9af4d87d0d8222944ec3, type: 3}
     data_cachedStartup: 
-    cacheStartup: 1
+    cacheStartup: 0
   showNavGraphs: 1
   showUnwalkableNodes: 1
   debugMode: 0

@@ -15,13 +15,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public float moveSpeed = 5f;
     [SerializeField] public float runSpeed = 10f;
     [SerializeField] private float rotationSmoothTime = 0.1f;
+    [SerializeField] private float moveSmoothTime = 0.1f;
 
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float groundCheckDistance = 0.2f;
     [SerializeField] private LayerMask groundLayer;
+    
 
     private Rigidbody rb;
+
+    private Vector3 currentMoveVelocity;
+    private Vector3 velocitySmoothRef;
 
     private PlayerInput input;
     private InputAction moveAction;
@@ -69,12 +74,20 @@ public class PlayerMovement : MonoBehaviour
         runInput = runAction.ReadValue<float>() > 0.5f;
         isGrounded = CheckGrounded();
 
-        // Animator güncelleme
         if (animator)
         {
-            animator.SetFloat("x", moveInput.x);
-            animator.SetFloat("y", moveInput.y);
+            // Koşma durumunu belirle
+            bool isRunning = runInput && moveInput.sqrMagnitude > 0.01f;
+            animator.SetBool("IsRunning", isRunning);
             animator.SetBool("IsGrounded", isGrounded);
+
+            Vector3 localVelocity = cameraTransform.InverseTransformDirection(currentMoveVelocity);
+
+            float animX = Mathf.Clamp(localVelocity.x / moveSpeed, -1f, 1f);
+            float animY = Mathf.Clamp(localVelocity.z / moveSpeed, -1f, 1f);
+
+            animator.SetFloat("x", animX);
+            animator.SetFloat("y", animY);
         }
 
         // Dışarı çıkınca coroutine başlasın
@@ -96,10 +109,10 @@ public class PlayerMovement : MonoBehaviour
         HandleMovement();
     }
 
+
     private void HandleMovement()
     {
-        if (moveInput.sqrMagnitude < 0.01f) return;
-
+        // Kamera yönlerine göre hareket yönünü hesapla
         Vector3 forward = cameraTransform.forward;
         Vector3 right = cameraTransform.right;
         forward.y = 0f;
@@ -107,16 +120,31 @@ public class PlayerMovement : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
+        // Input'a göre ham hareket yönü
         Vector3 moveDir = forward * moveInput.y + right * moveInput.x;
 
-        float targetAngle = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
-        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, rotationSmoothTime);
+        // Hedef hızı belirle (Input yoksa 0 olacak)
+        float targetSpeed = 0f;
 
-        rb.MoveRotation(Quaternion.Euler(0f, angle, 0f));
-        if(runInput)
-            rb.MovePosition(rb.position + moveDir.normalized * runSpeed * Time.fixedDeltaTime);
-        else
-            rb.MovePosition(rb.position + moveDir.normalized * moveSpeed * Time.fixedDeltaTime);
+        // Eğer oyuncu bir tuşa basıyorsa rotasyonu ve hedef hızı ayarla
+        if (moveInput.sqrMagnitude >= 0.01f)
+        {
+            targetSpeed = runInput ? runSpeed : moveSpeed;
+
+            // Rotasyon (Sadece hareket etmeye çalışırken dönmeli)
+            float targetAngle = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, rotationSmoothTime);
+            rb.MoveRotation(Quaternion.Euler(0f, angle, 0f));
+        }
+
+        // Karakterin o an ulaşmak istediği nihai vektör
+        Vector3 targetVelocity = moveDir.normalized * targetSpeed;
+
+        // Sihrin gerçekleştiği yer: Mevcut hızı, hedef hıza doğru yumuşakça (ivmeli) geçir
+        currentMoveVelocity = Vector3.SmoothDamp(currentMoveVelocity, targetVelocity, ref velocitySmoothRef, moveSmoothTime);
+
+        // Rigidbody'yi hesaplanan bu yumuşak hız ile hareket ettir
+        rb.MovePosition(rb.position + currentMoveVelocity * Time.fixedDeltaTime);
     }
 
     private void OnJump(InputAction.CallbackContext ctx)
