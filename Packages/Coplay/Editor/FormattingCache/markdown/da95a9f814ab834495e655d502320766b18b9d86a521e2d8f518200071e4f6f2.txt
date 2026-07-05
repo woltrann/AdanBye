@@ -1,0 +1,30 @@
+<size=20>Welcome to Coplay AI!</size>
+
+I'm your AI-powered Unity assistant for fast content generation and development automation inside your workflow.
+
+<size=18>Get help with Unity development tasks:</size>
+• Write and debug C# scripts
+• Create controllers and AI behaviors
+• Build UI from screenshots or descriptions
+• Fix console errors
+
+<size=18>Create assets:</size>
+• Textures & Images
+• 3D Models (characters, props, environments)
+• Sound Effects & Music & Voice Overs
+• VFX & Particles
+
+<size=18>Build and edit scenes using natural language:</size>
+• Place and arrange objects
+• Generate terrain
+• Create levels from descriptions
+• Edit transforms, materials, and components
+
+<size=18>Example Prompts</size>
+• "Create a player controller with smooth movement and camera follow"
+• "Generate a pixel art dragon image with a transparent background. Size: 768×1024"
+• "Generate a seamless brick wall texture with moss"
+• "Create a medieval sword 3D model"
+• "Make an explosion sound effect lasting 2 seconds"
+• "Make a fire particle effect with smoke and embers"
+• "Recreate this UI layout from the attached screenshot."

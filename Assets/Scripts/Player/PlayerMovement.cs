@@ -112,7 +112,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMovement()
     {
-        // Kamera yönlerine göre hareket yönünü hesapla
         Vector3 forward = cameraTransform.forward;
         Vector3 right = cameraTransform.right;
         forward.y = 0f;
@@ -120,30 +119,23 @@ public class PlayerMovement : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
-        // Input'a göre ham hareket yönü
         Vector3 moveDir = forward * moveInput.y + right * moveInput.x;
 
-        // Hedef hızı belirle (Input yoksa 0 olacak)
         float targetSpeed = 0f;
-
-        // Eğer oyuncu bir tuşa basıyorsa rotasyonu ve hedef hızı ayarla
+   
         if (moveInput.sqrMagnitude >= 0.01f)
         {
             targetSpeed = runInput ? runSpeed : moveSpeed;
 
-            // Rotasyon (Sadece hareket etmeye çalışırken dönmeli)
             float targetAngle = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, rotationSmoothTime);
             rb.MoveRotation(Quaternion.Euler(0f, angle, 0f));
         }
-
-        // Karakterin o an ulaşmak istediği nihai vektör
+       
         Vector3 targetVelocity = moveDir.normalized * targetSpeed;
 
-        // Sihrin gerçekleştiği yer: Mevcut hızı, hedef hıza doğru yumuşakça (ivmeli) geçir
         currentMoveVelocity = Vector3.SmoothDamp(currentMoveVelocity, targetVelocity, ref velocitySmoothRef, moveSmoothTime);
 
-        // Rigidbody'yi hesaplanan bu yumuşak hız ile hareket ettir
         rb.MovePosition(rb.position + currentMoveVelocity * Time.fixedDeltaTime);
     }
 
