@@ -29,13 +29,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5287911460590093580}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00077580847, y: 0.08908999, z: -0.00006939281, w: 0.9960233}
+  m_LocalRotation: {x: 0.00077354535, y: 0.08909421, z: -0.0000691936, w: 0.99602294}
   m_LocalPosition: {x: -421.658, y: 12.3, z: -220.294}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0.089, y: 10.223, z: 0}
 --- !u!114 &7615873345851618474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,17 +103,17 @@ MonoBehaviour:
   Orbits:
     Top:
       Radius: 0.5
-      Height: 0.7
+      Height: 0.35
     Center:
-      Radius: 0.75
-      Height: 0.3
+      Radius: 0.87
+      Height: 0.12
     Bottom:
-      Radius: 0.5
+      Radius: 0.64
       Height: -0.1
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: 0
+    Value: 11.417531
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -123,7 +123,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 17.5
+    Value: 3.2668254
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Composition:
-    ScreenPosition: {x: -0.13999999, y: 0.55}
+    ScreenPosition: {x: -0.13023391, y: 0.37898523}
     DeadZone:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
