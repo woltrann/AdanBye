@@ -9096,7 +9096,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 9.45
+  m_fontSize: 9.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10359,6 +10359,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6132033395751477506, guid: 965bf7eb702713946a83e08182194e3c, type: 3}
+      propertyPath: m_Data.m_MaxLimit
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6132033395751477506, guid: 965bf7eb702713946a83e08182194e3c, type: 3}
+      propertyPath: m_Data.m_MinLimit
+      value: -45
+      objectReference: {fileID: 0}
     - target: {fileID: 6382056400778235871, guid: 965bf7eb702713946a83e08182194e3c, type: 3}
       propertyPath: cameraTransform
       value: 
@@ -10605,7 +10613,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 434881418}
   m_HandleRect: {fileID: 434881417}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -11550,7 +11558,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3.55
+  m_fontSize: 3.6
   m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11952,7 +11960,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1177157158}
   m_HandleRect: {fileID: 1177157156}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -13123,7 +13131,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25.15
+  m_fontSize: 25.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -18382,7 +18390,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1685127569}
   m_HandleRect: {fileID: 1685127567}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -18709,7 +18717,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3.55
+  m_fontSize: 3.6
   m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -19177,7 +19185,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 921702557}
   m_HandleRect: {fileID: 921702556}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -20264,19 +20272,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6001487983604699715, guid: 466611e0b451c9f43bea94a4c327f584, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.97304773
+      value: 0.9730847
       objectReference: {fileID: 0}
     - target: {fileID: 6001487983604699715, guid: 466611e0b451c9f43bea94a4c327f584, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.14186728
+      value: -0.1418727
       objectReference: {fileID: 0}
     - target: {fileID: 6001487983604699715, guid: 466611e0b451c9f43bea94a4c327f584, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.17989951
+      value: 0.17969953
       objectReference: {fileID: 0}
     - target: {fileID: 6001487983604699715, guid: 466611e0b451c9f43bea94a4c327f584, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.026228784
+      value: 0.026199633
       objectReference: {fileID: 0}
     - target: {fileID: 6001487983604699715, guid: 466611e0b451c9f43bea94a4c327f584, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -20321,19 +20329,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7401795685721490592, guid: b214ae6703075264ab645282cf33f836, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.97304773
+      value: 0.9730847
       objectReference: {fileID: 0}
     - target: {fileID: 7401795685721490592, guid: b214ae6703075264ab645282cf33f836, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.1418673
+      value: -0.1418727
       objectReference: {fileID: 0}
     - target: {fileID: 7401795685721490592, guid: b214ae6703075264ab645282cf33f836, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.17989953
+      value: 0.17969953
       objectReference: {fileID: 0}
     - target: {fileID: 7401795685721490592, guid: b214ae6703075264ab645282cf33f836, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.026228784
+      value: 0.026199631
       objectReference: {fileID: 0}
     - target: {fileID: 7401795685721490592, guid: b214ae6703075264ab645282cf33f836, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
