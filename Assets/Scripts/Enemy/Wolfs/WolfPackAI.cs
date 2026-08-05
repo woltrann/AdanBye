@@ -29,34 +29,61 @@ public class WolfPackAI : MonoBehaviour
     public float retreatDuration = 3f;
     private float retreatTimer;
 
+    [Header("Howl")]
+    public float idleHowlChance = 0.15f;      // Idle'da yeni wander hedefi seçilince howl atma ihtimali
+    public float howlCooldown = 8f;
+    private float lastHowlTime = -999f;
+
+    [Header("Animation")]
+    public float animSpeedSmoothing = 8f;     // Speed parametresine geçiþi yumuþatýr
+
     private Rigidbody rb;
     private float lastAttackTime;
     public enum State { Idle, Chase, Search, Retreat }
     public State currentState = State.Idle;
 
     private Vector3 lastKnownPlayerPos;
+    private Vector3 homePosition; // Idle wander'ýn etrafýnda döneceði sabit nokta
 
-    // Wander deðiþkenleri
-    private Vector3 wanderTarget;
+    // Wander deðiþkenleri (artýk merkeze göre LOCAL offset olarak tutuluyor)
+    private Vector3 wanderOffset;
     private float wanderTimer;
+    private Vector3 lastWanderCenter;
 
     // Chase optimization
     private Vector3 currentTarget;
     private Vector3 lastPosition;
+    private Vector3 lastFixedPosition; // FixedUpdate tabanlý hýz ölçümü için
+    private float measuredSpeed;       // FixedUpdate'te hesaplanan, Update()'in okuduðu ham hýz
     private float attackPauseTimer = 0f;    // Timer to track the pause
 
     [SerializeField] private Animator animator;
+    private PlayerManager cachedPlayerManager;
+    private float currentAnimSpeed; // yumuþatýlmýþ hýz, animator'a bunu yolluyoruz
+
+    static readonly int SpeedHash = Animator.StringToHash("Speed");
+    static readonly int AttackHash = Animator.StringToHash("Attack");
+    static readonly int HowlHash = Animator.StringToHash("Howl");
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
+
         lastPosition = transform.position;
+        lastFixedPosition = transform.position;
+        homePosition = transform.position;
+
+        if (playerTransform != null)
+            cachedPlayerManager = playerTransform.GetComponent<PlayerManager>();
 
         // Baþlangýçta kýsa bir rastgele bekleme, hemen hedef seçilmesini engeller
         wanderTimer = Random.Range(0f, 2f);
-        // Baþlangýç hedefini mevcut pozisyona koy
-        wanderTarget = transform.position;
+        wanderOffset = Vector3.zero;
     }
 
     void Update()
@@ -65,6 +92,7 @@ public class WolfPackAI : MonoBehaviour
         if (attackPauseTimer > 0)
         {
             attackPauseTimer -= Time.deltaTime;
+            UpdateAnimator(0f); // saldýrý duraklamasýnda hýz 0'a insin
             return; // Skip behavior updates while paused
         }
 
@@ -76,9 +104,36 @@ public class WolfPackAI : MonoBehaviour
         {
             BetaBehavior();
         }
+
+        UpdateAnimator(measuredSpeed);
     }
 
+    void FixedUpdate()
+    {
+        // rb.MovePosition() ile yapýlan hareket transform.position'a ancak fizik
+        // adýmýnda yansýyor; bu yüzden hýz ölçümünü Update() yerine burada,
+        // Time.fixedDeltaTime ile yapýyoruz. Update() içinde ölçmek çoðu karede
+        // 0 delta (hareket henüz uygulanmamýþ) görmenize yol açar.
+        measuredSpeed = (transform.position - lastFixedPosition).magnitude / Time.fixedDeltaTime;
+        lastFixedPosition = transform.position;
+    }
 
+    // ------------------- ANIMASYON -------------------
+
+    void UpdateAnimator(float targetSpeed)
+    {
+        if (animator == null) return;
+        currentAnimSpeed = Mathf.Lerp(currentAnimSpeed, targetSpeed, Time.deltaTime * animSpeedSmoothing);
+        animator.SetFloat(SpeedHash, currentAnimSpeed);
+    }
+
+    void TryHowl()
+    {
+        if (animator == null) return;
+        if (Time.time < lastHowlTime + howlCooldown) return;
+        lastHowlTime = Time.time;
+        animator.SetTrigger(HowlHash);
+    }
 
     // ------------------- ALPHA -------------------
     void AlphaBehavior()
@@ -88,8 +143,12 @@ public class WolfPackAI : MonoBehaviour
         switch (currentState)
         {
             case State.Idle:
-                WanderAround(transform.position, 6f, speed * 0.5f);
-                if (distance <= chaseDistance) ChangeState(State.Chase);
+                WanderAround(homePosition, 6f, speed * 0.5f);
+                if (distance <= chaseDistance)
+                {
+                    TryHowl();
+                    ChangeState(State.Chase);
+                }
                 break;
 
             case State.Chase:
@@ -108,7 +167,6 @@ public class WolfPackAI : MonoBehaviour
                 {
                     Attack();
                 }
-
 
                 // Transition to Search state if the player moves too far away
                 if (distance > chaseDistance * 1.5f)
@@ -188,7 +246,8 @@ public class WolfPackAI : MonoBehaviour
             }
             else
             {
-                // Wander around alpha wolf
+                // Alpha'nýn etrafýnda dolaþ — merkez (alpha) her karede hareket ediyor,
+                // bu yüzden offset-tabanlý WanderAround kullanýyoruz (bkz. WanderAround yorumu)
                 WanderAround(alphaWolf.transform.position, maxFollowDistance, speed * 0.4f);
             }
         }
@@ -246,17 +305,15 @@ public class WolfPackAI : MonoBehaviour
     {
         lastAttackTime = Time.time;
 
-        // Play attack animation (if any)
-
         if (animator != null)
         {
-            animator.SetTrigger("Attack");
+            animator.SetTrigger(AttackHash);
         }
 
         // Attack logic: Deal damage to the player if within range
-        if (playerTransform != null)
+        if (cachedPlayerManager != null)
         {
-            playerTransform.GetComponent<PlayerManager>().mainCharacter.DamagePart(damagePart, attackDamage);
+            cachedPlayerManager.mainCharacter.DamagePart(damagePart, attackDamage);
         }
 
         // Pause movement after attacking
@@ -265,53 +322,40 @@ public class WolfPackAI : MonoBehaviour
 
     void WanderAround(Vector3 center, float radius, float moveSpeed)
     {
-        // Eðer mevcut wanderTarget merkezden çok uzaksa (ör. merkez hareket etti) yeni hedef seç
-        if (Vector3.Distance(wanderTarget, center) > radius + 0.5f)
-        {
-            wanderTimer = 0f;
-        }
-
-        // Zamanlayýcýyý azalt
         wanderTimer -= Time.deltaTime;
 
-        // Hedefe çok yaklaþtýysak da yeni hedef seç
-        bool reachedTarget = Vector3.Distance(transform.position, wanderTarget) < 0.5f;
+        Vector3 target = center + wanderOffset;
+        bool reachedTarget = Vector3.Distance(transform.position, target) < 0.5f;
 
         if (wanderTimer <= 0f || reachedTarget)
         {
-            // Yeni rastgele hedef seçimi sadece burada yapýlýr
             Vector2 randomCircle = Random.insideUnitCircle * radius;
-            Vector3 candidate = center + new Vector3(randomCircle.x, 0f, randomCircle.y);
-
-            RaycastHit hit;
-            // Yüksekten yere raycast atarak zeminin yüksekliðini öðren
-            if (Physics.Raycast(new Vector3(candidate.x, 500f, candidate.z), Vector3.down, out hit, 1000f))
-            {
-                wanderTarget = hit.point;
-            }
-            else
-            {
-                // Eðer zemine iþaret edilemezse kendi yüksekliðimizi koruyarak hedefi seç
-                wanderTarget = new Vector3(candidate.x, transform.position.y, candidate.z);
-            }
-
-            // Bir sonraki hedef deðiþimine kadar bekleme süresi
+            wanderOffset = new Vector3(randomCircle.x, 0f, randomCircle.y);
             wanderTimer = Random.Range(2f, 5f);
+
+            if (isAlpha && Random.value < idleHowlChance)
+                TryHowl();
+
+            target = center + wanderOffset;
         }
 
-        // Yön ve hareket - sadece yatay eksende hesapla
-        Vector3 flatTarget = new Vector3(wanderTarget.x, transform.position.y, wanderTarget.z);
-        Vector3 dir = (flatTarget - transform.position);
-        float dist = dir.magnitude;
+        // Zemin yüksekliðini raycast ile bul
+        RaycastHit hit;
+        float groundY = transform.position.y;
+        if (Physics.Raycast(new Vector3(target.x, 500f, target.z), Vector3.down, out hit, 1000f))
+        {
+            groundY = hit.point.y;
+        }
+        Vector3 groundedTarget = new Vector3(target.x, groundY, target.z);
+
+        Vector3 flatTarget = new Vector3(groundedTarget.x, transform.position.y, groundedTarget.z);
+        float dist = (flatTarget - transform.position).magnitude;
 
         if (dist > 0.05f)
         {
-            Vector3 newPosition = Vector3.MoveTowards(transform.position, wanderTarget, moveSpeed * Time.deltaTime);
+            Vector3 newPosition = Vector3.MoveTowards(transform.position, groundedTarget, moveSpeed * Time.deltaTime);
             rb.MovePosition(newPosition);
-
-            Vector3 lookDir = (wanderTarget - transform.position).normalized;
-            if (lookDir.magnitude > 0.1f)
-                LookAt(wanderTarget);
+            LookAt(groundedTarget);
         }
     }
 
@@ -336,7 +380,6 @@ public class WolfPackAI : MonoBehaviour
             Gizmos.DrawWireSphere(transform.position, formationRadius);
         }
 
-        // Draw current target
         if (currentState == State.Chase)
         {
             Gizmos.color = Color.magenta;
@@ -344,8 +387,7 @@ public class WolfPackAI : MonoBehaviour
             Gizmos.DrawSphere(currentTarget, 0.2f);
         }
 
-        // Görsel olarak wander hedefini de çiz
         Gizmos.color = Color.cyan;
-        Gizmos.DrawSphere(wanderTarget, 0.12f);
+        Gizmos.DrawSphere(transform.position + wanderOffset, 0.12f);
     }
 }
