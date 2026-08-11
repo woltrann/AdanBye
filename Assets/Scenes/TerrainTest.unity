@@ -282,6 +282,9 @@ MonoBehaviour:
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &17406187
@@ -1571,6 +1574,7 @@ MonoBehaviour:
   itemPrefab: {fileID: 4614600516278613826, guid: 07dc1ecbbd056f645a4c1a10b8ef7017, type: 3}
   weightText: {fileID: 1059137980}
   InventoryAnimator: {fileID: 2122748011}
+  Flashlight: {fileID: 0}
   freelookcamera: {fileID: 954984451}
 --- !u!4 &199360134
 Transform:
@@ -2521,6 +2525,9 @@ MonoBehaviour:
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &304363454
@@ -7316,6 +7323,9 @@ MonoBehaviour:
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &874624057
@@ -9269,6 +9279,9 @@ MonoBehaviour:
   minFollowDistance: 6
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &1024186386
@@ -10160,6 +10173,7 @@ MonoBehaviour:
   moveSpeed: 2
   runSpeed: 5
   rotationSmoothTime: 0.1
+  moveSmoothTime: 0.1
   jumpForce: 3
   groundCheckDistance: 1.5
   groundLayer:
@@ -12985,6 +12999,9 @@ MonoBehaviour:
   minFollowDistance: 1
   maxFollowDistance: 1000
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &1368109402
@@ -14579,7 +14596,12 @@ MonoBehaviour:
   watchCharge: 100
   flashChargePercent: {fileID: 0}
   flashCharge: 100
+  gassFilterPercent: {fileID: 0}
+  gassFilter: 100
   isRecharge: 0
+  droidRecharge: 0
+  isFlash: 0
+  isOutsideforGassFilter: 0
 --- !u!114 &1636958589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14832,6 +14854,9 @@ MonoBehaviour:
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &1654780777

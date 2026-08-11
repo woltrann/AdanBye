@@ -1837,16 +1837,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87c789d9363ddb54aa90b811ee4318cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCharacter: {fileID: 0}
   animator: {fileID: 0}
   cameraTransform: {fileID: 270513922}
   moveSpeed: 5
   runSpeed: 10
   rotationSmoothTime: 0.1
+  moveSmoothTime: 0.1
   jumpForce: 5
   groundCheckDistance: 1.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  isOutSide: 1
 --- !u!114 &179089311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2005,6 +2008,14 @@ MonoBehaviour:
   - {fileID: 2063740552}
   - {fileID: 1874933423}
   - {fileID: 1729568997}
+  characterData: {fileID: 0}
+  CleanWater: {fileID: 0}
+  EmptyBottle: {fileID: 0}
+  RiverWater: {fileID: 0}
+  WellWater: {fileID: 0}
+  Apple: {fileID: 0}
+  Battery: {fileID: 0}
+  isHaveGES: 0
 --- !u!136 &179089316
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3987,6 +3998,7 @@ MonoBehaviour:
   itemPrefab: {fileID: 4614600516278613826, guid: 07dc1ecbbd056f645a4c1a10b8ef7017, type: 3}
   weightText: {fileID: 1304531774}
   InventoryAnimator: {fileID: 176321240}
+  Flashlight: {fileID: 0}
   freelookcamera: {fileID: 241020162}
 --- !u!4 &352428058
 Transform:
@@ -5206,6 +5218,9 @@ MonoBehaviour:
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &500541277
@@ -10952,6 +10967,9 @@ MonoBehaviour:
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &1424783472
@@ -11351,6 +11369,9 @@ MonoBehaviour:
   minFollowDistance: 6
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &1522951783
@@ -11937,6 +11958,18 @@ MonoBehaviour:
   image2: {fileID: 1530415712}
   duration: 0.75
   NotificationPanel: {fileID: 1466874292}
+  phoneChargePercent: {fileID: 0}
+  phoneCharge: 100
+  watchChargePercent: {fileID: 0}
+  watchCharge: 100
+  flashChargePercent: {fileID: 0}
+  flashCharge: 100
+  gassFilterPercent: {fileID: 0}
+  gassFilter: 100
+  isRecharge: 0
+  droidRecharge: 0
+  isFlash: 0
+  isOutsideforGassFilter: 0
 --- !u!1 &1635157470
 GameObject:
   m_ObjectHideFlags: 0
@@ -13836,6 +13869,9 @@ MonoBehaviour:
   minFollowDistance: 1
   maxFollowDistance: 1000
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!1 &1850897891
@@ -14319,6 +14355,9 @@ MonoBehaviour:
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &1907132466
@@ -15902,6 +15941,9 @@ MonoBehaviour:
   minFollowDistance: 10
   maxFollowDistance: 15
   retreatDuration: 3
+  idleHowlChance: 0.15
+  howlCooldown: 8
+  animSpeedSmoothing: 8
   currentState: 0
   animator: {fileID: 0}
 --- !u!54 &2106694589

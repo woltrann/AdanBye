@@ -21,7 +21,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float groundCheckDistance = 0.2f;
     [SerializeField] private LayerMask groundLayer;
-    
+
+    [Header("Water Settings")]
+    [SerializeField] private float waterCheckDistance = 0.2f;
+    [SerializeField] private LayerMask waterLayer;
+
 
     private Rigidbody rb;
 
@@ -37,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
     private bool runInput;
     private float turnSmoothVelocity;
     private bool isGrounded;
+    private bool isInWater;
 
     public bool isOutSide = true;
     private Coroutine poisonRoutine;
@@ -73,6 +78,10 @@ public class PlayerMovement : MonoBehaviour
         moveInput = moveAction.ReadValue<Vector2>();
         runInput = runAction.ReadValue<float>() > 0.5f;
         isGrounded = CheckGrounded();
+        if (!isGrounded)
+        {
+            isInWater = IsInWater();
+        }      
 
         if (animator)
         {
@@ -80,6 +89,7 @@ public class PlayerMovement : MonoBehaviour
             bool isRunning = runInput && moveInput.sqrMagnitude > 0.01f;
             animator.SetBool("IsRunning", isRunning);
             animator.SetBool("IsGrounded", isGrounded);
+            animator.SetBool("IsInWater", isInWater);
 
             Vector3 localVelocity = cameraTransform.InverseTransformDirection(currentMoveVelocity);
 
@@ -149,6 +159,11 @@ public class PlayerMovement : MonoBehaviour
         {
             animator.SetTrigger("Jump");
         }
+    }
+
+    private bool IsInWater()
+    {
+        return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 1f, LayerMask.GetMask("Water"));
     }
 
     private bool CheckGrounded()
