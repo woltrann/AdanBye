@@ -26,6 +26,20 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float waterCheckDistance = 0.2f;
     [SerializeField] private LayerMask waterLayer;
 
+    [Header("Swim Rise (collider-based)")]
+    [Tooltip("İleri yüzerken karakterin ne kadar 'yükseleceği' (mesh için) - collider dünya pozisyonu sabit kalır")]
+    [SerializeField] private float maxSwimRise = 0.6f;
+    [SerializeField] private float swimRiseSpeed = 3f; // yavaşça geçiş için lerp hızı
+    [SerializeField] private float colliderCenterUpdateThreshold = 0.001f; // gereksiz collider rebuild'lerini önlemek için
+
+    [SerializeField] private CapsuleCollider capsuleCollider;
+    private Vector3 baseColliderCenter;  // orijinal (kara) center değeri
+    private float currentSwimRise;       // şu anki uygulanan rise miktarı
+    private float previousSwimRise;      // bir önceki frame'de uygulanmış rise (delta almak için)
+    private float lastAppliedColliderRise; // collider.center'a en son yazılan rise değeri
+
+    private bool wasInWater;
+
 
     private Rigidbody rb;
 
@@ -57,6 +71,15 @@ public class PlayerMovement : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0, -0.5f, 0); // daha dengeli zıplama
+
+        if (capsuleCollider == null)
+        {
+            Debug.LogWarning("CapsuleCollider is not assigned in PlayerMovement. Please assign it in the inspector.");
+            return;
+        }
+
+        baseColliderCenter = capsuleCollider.center;
+        lastAppliedColliderRise = 0f;
     }
 
     private void OnEnable()
@@ -78,14 +101,23 @@ public class PlayerMovement : MonoBehaviour
         moveInput = moveAction.ReadValue<Vector2>();
         runInput = runAction.ReadValue<float>() > 0.5f;
         isGrounded = CheckGrounded();
+
         if (!isGrounded)
         {
             isInWater = IsInWater();
-        }      
+        }
+        else
+        {
+            isInWater = false;
+        }
+
+        if (isInWater != wasInWater)
+        {
+            wasInWater = isInWater;
+        }
 
         if (animator)
         {
-            // Koşma durumunu belirle
             bool isRunning = runInput && moveInput.sqrMagnitude > 0.01f;
             animator.SetBool("IsRunning", isRunning);
             animator.SetBool("IsGrounded", isGrounded);
@@ -116,9 +148,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        HandleMovement();
+        if (isInWater)
+        {
+            UpdateSwimRise(); // sadece currentSwimRise ve collider.center'ı güncelle, pozisyona dokunma
+
+        }
+        HandleMovement(); // yatay hareket + rise deltasını tek MovePosition'da uygula
     }
 
+    private void UpdateSwimRise()
+    {
+        float speedRatio = Mathf.Clamp01(currentMoveVelocity.magnitude / moveSpeed);
+        float targetRise = isInWater ? maxSwimRise * speedRatio : 0f;
+
+        currentSwimRise = Mathf.Lerp(currentSwimRise, targetRise, Time.fixedDeltaTime * swimRiseSpeed);
+
+        if (Mathf.Abs(currentSwimRise - lastAppliedColliderRise) > colliderCenterUpdateThreshold)
+        {
+            capsuleCollider.center = baseColliderCenter - new Vector3(0f, currentSwimRise, 0f);
+            lastAppliedColliderRise = currentSwimRise;
+        }
+    }
 
     private void HandleMovement()
     {
@@ -132,21 +182,25 @@ public class PlayerMovement : MonoBehaviour
         Vector3 moveDir = forward * moveInput.y + right * moveInput.x;
 
         float targetSpeed = 0f;
-   
         if (moveInput.sqrMagnitude >= 0.01f)
         {
             targetSpeed = runInput ? runSpeed : moveSpeed;
-
             float targetAngle = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, rotationSmoothTime);
             rb.MoveRotation(Quaternion.Euler(0f, angle, 0f));
         }
-       
-        Vector3 targetVelocity = moveDir.normalized * targetSpeed;
 
+        Vector3 targetVelocity = moveDir.normalized * targetSpeed;
         currentMoveVelocity = Vector3.SmoothDamp(currentMoveVelocity, targetVelocity, ref velocitySmoothRef, moveSmoothTime);
 
-        rb.MovePosition(rb.position + currentMoveVelocity * Time.fixedDeltaTime);
+        Vector3 newPos = rb.position + currentMoveVelocity * Time.fixedDeltaTime;
+
+        // rb.position.y zaten önceki frame'in rise'ını içeriyor.
+        // Katlanarak büyümesini önlemek için sadece DELTA'yı ekliyoruz.
+        //newPos.y += currentSwimRise - previousSwimRise;
+        //previousSwimRise = currentSwimRise;
+
+        rb.MovePosition(newPos);
     }
 
     private void OnJump(InputAction.CallbackContext ctx)
@@ -163,12 +217,12 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsInWater()
     {
-        return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 1f, LayerMask.GetMask("Water"));
+        return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, waterCheckDistance + currentSwimRise, waterLayer);
     }
 
     private bool CheckGrounded()
     {
-        return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance, groundLayer);
+        return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + currentSwimRise, groundLayer);
     }
     private IEnumerator PoisonOverTime()
     {
