@@ -77,20 +77,20 @@ public class SliderColorChanger : MonoBehaviour
                 break;
 
             case CharacterStatType.Head:
-                current = characterData.headHealth;
-                max = characterData.maxHeadHealth;
+                current = characterData.head.current;
+                max = characterData.head.max;
                 break;
             case CharacterStatType.Torso:
-                current = characterData.torsoHealth;
-                max = characterData.maxTorsoHealth;
+                current = characterData.torso.current;
+                max = characterData.torso.max;
                 break;
             case CharacterStatType.Arms:
-                current = characterData.armsHealth;
-                max = characterData.maxArmsHealth;
+                current = characterData.arms.current;
+                max = characterData.arms.max;
                 break;
             case CharacterStatType.Legs:
-                current = characterData.legsHealth;
-                max = characterData.maxLegsHealth;
+                current = characterData.legs.current;
+                max = characterData.legs.max;
                 break;
 
             case CharacterStatType.DroidCharge:

@@ -33,14 +33,14 @@ public class SaveManager : MonoBehaviour
 
         // Character data
         data.level = mainCharacter.level;
-        data.headHealth = mainCharacter.headHealth;
-        data.torsoHealth = mainCharacter.torsoHealth;
-        data.armsHealth = mainCharacter.armsHealth;
-        data.legsHealth = mainCharacter.legsHealth;
-        data.maxHeadHealth = mainCharacter.maxHeadHealth;
-        data.maxTorsoHealth = mainCharacter.maxTorsoHealth;
-        data.maxArmsHealth = mainCharacter.maxArmsHealth;
-        data.maxLegsHealth = mainCharacter.maxLegsHealth;
+        data.headHealth = mainCharacter.head.current;
+        data.torsoHealth = mainCharacter.torso.current;
+        data.armsHealth = mainCharacter.arms.current;
+        data.legsHealth = mainCharacter.legs.current;
+        data.maxHeadHealth = mainCharacter.head.max;
+        data.maxTorsoHealth = mainCharacter.torso.max;
+        data.maxArmsHealth = mainCharacter.arms.max;
+        data.maxLegsHealth = mainCharacter.legs.max;
 
         data.currentHunger = mainCharacter.currentHunger;
         data.currentThirst = mainCharacter.currentThirst;
@@ -105,14 +105,14 @@ public class SaveManager : MonoBehaviour
 
             // Load character data
             mainCharacter.level = data.level;
-            mainCharacter.headHealth = data.headHealth;
-            mainCharacter.torsoHealth = data.torsoHealth;
-            mainCharacter.armsHealth = data.armsHealth;
-            mainCharacter.legsHealth = data.legsHealth;
-            mainCharacter.maxHeadHealth = data.maxHeadHealth;
-            mainCharacter.maxTorsoHealth = data.maxTorsoHealth;
-            mainCharacter.maxArmsHealth = data.maxArmsHealth;
-            mainCharacter.maxLegsHealth = data.maxLegsHealth;
+            mainCharacter.head.current = data.headHealth;
+            mainCharacter.torso.current = data.torsoHealth;
+            mainCharacter.arms.current = data.armsHealth;
+            mainCharacter.legs.current = data.legsHealth;
+            mainCharacter.head.max = data.maxHeadHealth;
+            mainCharacter.torso.max = data.maxTorsoHealth;
+            mainCharacter.arms.max = data.maxArmsHealth;
+            mainCharacter.legs.max = data.maxLegsHealth;
 
             mainCharacter.currentHunger = data.currentHunger;
             mainCharacter.currentThirst = data.currentThirst;

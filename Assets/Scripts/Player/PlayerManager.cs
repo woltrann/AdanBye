@@ -1,7 +1,10 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Tek iş: input action asset'e ve paylaşılan referanslara (PlayerAudio, MainCharacter)
+// erişim noktası olmak. Diyalog seçme mantığı (eskiden burada duran PlayDialogue/switch)
+// PlayerAudio'ya taşındı - hangi koşulda hangi diyaloğun çalacağını bilmek Audio'nun işi,
+// "manager"ın değil.
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
@@ -11,13 +14,12 @@ public class PlayerManager : MonoBehaviour
     public PlayerAudio PlayerAudio;
 
     public MainCharacter mainCharacter;
-    
-    private string currentScenarioName;
 
     private void Awake()
     {
         Instance = this;
     }
+
     public void OnEnable()
     {
         InputActions.FindActionMap("PlayerController").Enable();
@@ -27,34 +29,4 @@ public class PlayerManager : MonoBehaviour
     {
         InputActions.FindActionMap("PlayerController").Disable();
     }
-
-    private void PlayDialogue(Condition condition)
-    {
-        
-        switch(condition) {
-            case Condition.Random:
-                PlayerAudio.PlayRandomDialogue();
-                break;
-            case Condition.LowHealth:
-                PlayerAudio.PlayLowHealthDialogue();
-                break;
-            case Condition.LowStamina:
-                PlayerAudio.PlayLowStaminaDialogue();
-                break;
-            case Condition.HighHunger:
-                PlayerAudio.PlayHighHungerDialogue();
-                break;
-            case Condition.HighThristy:
-                PlayerAudio.PlayHighThirstyDialogue();
-                break;
-            case Condition.HighToxicity:
-                PlayerAudio.PlayHighToxicityDialogue();
-                break;
-            case Condition.Scenario:
-                PlayerAudio.PlayScenarioDialogue(currentScenarioName);
-                break;
-        }
-    }
-
-    
 }

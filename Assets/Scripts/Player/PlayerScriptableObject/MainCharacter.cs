@@ -1,11 +1,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MainCharacter", menuName = "Character/MainCharacter")]
-public class MainCharacter : ScriptableObject
+// Tek bir vücut parçasının can durumu ve davranışları.
+[System.Serializable]
+public class BodyPartHealth
 {
-    
+    public float current = 100f;
+    public float max = 100f;
 
+    public float Percent => max > 0f ? current / max : 0f;
+
+    public void Heal(float amount) => current = Mathf.Clamp(current + amount, 0, max);
+
+    public void Damage(float amount) => current = Mathf.Clamp(current - amount, 0, max);
+
+    public void UpgradeMax(float amount)
+    {
+        max += amount;
+        current = Mathf.Clamp(current + amount, 0, max);
+    }
+
+    public void Injure(float amount)
+    {
+        max = Mathf.Clamp(max - amount, 0, 250);
+        current = Mathf.Clamp(current - amount * 2, 0, max);
+    }
+
+    public void OverTimeInjure(float amount)
+    {
+        max = Mathf.Clamp(max + amount, 0, 250);
+        current = Mathf.Clamp(current + amount, 0, max);
+    }
+}
+
+[CreateAssetMenu(fileName = "MainCharacter", menuName = "Character/MainCharacter")]
+public class MainCharacter : ScriptableObject, ISaveable
+{
     [Header("Level")]
     public int level;
 
@@ -22,21 +52,14 @@ public class MainCharacter : ScriptableObject
     public List<DialogueData> ScenerioDialogues;
     public List<DialogueData> ExamineDialogues;
 
-
-
-
     [Header("Body Part Health")]
-    public float headHealth = 100;
-    public float maxHeadHealth = 100;
-    public float torsoHealth = 100;
-    public float maxTorsoHealth = 100;
-    public float armsHealth = 100;
-    public float maxArmsHealth = 100;
-    public float legsHealth = 100;
-    public float maxLegsHealth = 100;
+    public BodyPartHealth head = new BodyPartHealth();
+    public BodyPartHealth torso = new BodyPartHealth();
+    public BodyPartHealth arms = new BodyPartHealth();
+    public BodyPartHealth legs = new BodyPartHealth();
 
-    public float currentHealth => Mathf.Clamp(headHealth + torsoHealth + armsHealth + legsHealth, 0, maxHealth);
-    public float maxHealth => Mathf.Clamp(maxHeadHealth + maxTorsoHealth + maxArmsHealth + maxLegsHealth, 0, 1000);
+    public float currentHealth => Mathf.Clamp(head.current + torso.current + arms.current + legs.current, 0, maxHealth);
+    public float maxHealth => Mathf.Clamp(head.max + torso.max + arms.max + legs.max, 0, 1000);
 
     [Header("Hunger Stats")]
     public float currentHunger = 100;
@@ -58,105 +81,144 @@ public class MainCharacter : ScriptableObject
     public float droidCharge = 100;
     public float maxDroidCharge = 100;
 
-    #region Body Part Functions
-    public void HealPart(BodyParts part, float amount)
+    #region Save / Load (ISaveable)
+
+    // Kendi durumunu SaveData'ya yazar. SaveManager bu metodun içeriğini bilmez,
+    // sadece çağırır. Buradaki alanlardan biri değişirse SADECE burası güncellenir.
+    public void CaptureState(SaveData data)
     {
-        switch (part)
+        data.level = level;
+
+        data.headHealth = head.current;
+        data.torsoHealth = torso.current;
+        data.armsHealth = arms.current;
+        data.legsHealth = legs.current;
+        data.maxHeadHealth = head.max;
+        data.maxTorsoHealth = torso.max;
+        data.maxArmsHealth = arms.max;
+        data.maxLegsHealth = legs.max;
+
+        data.currentHunger = currentHunger;
+        data.currentThirst = currentThirst;
+        data.currentPoison = currentPoison;
+        data.maxHunger = maxHunger;
+        data.maxThirst = maxThirst;
+        data.maxPoison = maxPoison;
+        data.currentWeight = currentWeight;
+        data.maxWeight = maxWeight;
+        data.droidCharge = droidCharge;
+        data.maxDroidCharge = maxDroidCharge;
+
+        data.inventoryItemIDs = new List<int>();
+        if (InventoryData != null && InventoryData.items != null)
         {
-            case BodyParts.Head: headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
-            case BodyParts.Torso: torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
-            case BodyParts.Arms: armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
-            case BodyParts.Legs: legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
+            foreach (var item in InventoryData.items)
+            {
+                if (item != null) data.inventoryItemIDs.Add(item.itemID);
+            }
         }
     }
 
-    public void DamagePart(BodyParts part, float amount)
+    // SaveData'dan kendi durumunu geri yükler.
+    public void RestoreState(SaveData data)
+    {
+        level = data.level;
+
+        head.current = data.headHealth;
+        torso.current = data.torsoHealth;
+        arms.current = data.armsHealth;
+        legs.current = data.legsHealth;
+        head.max = data.maxHeadHealth;
+        torso.max = data.maxTorsoHealth;
+        arms.max = data.maxArmsHealth;
+        legs.max = data.maxLegsHealth;
+
+        currentHunger = data.currentHunger;
+        currentThirst = data.currentThirst;
+        currentPoison = data.currentPoison;
+        maxHunger = data.maxHunger;
+        maxThirst = data.maxThirst;
+        maxPoison = data.maxPoison;
+        currentWeight = data.currentWeight;
+        maxWeight = data.maxWeight;
+        droidCharge = data.droidCharge;
+        maxDroidCharge = data.maxDroidCharge;
+
+        if (InventoryData != null)
+        {
+            InventoryData.items.Clear();
+
+            if (data.inventoryItemIDs != null)
+            {
+                foreach (var id in data.inventoryItemIDs)
+                {
+                    ItemData item = ItemDatabase.GetItemById(id);
+                    if (item != null)
+                    {
+                        InventoryData.items.Add(item);
+                        Debug.Log($"Loaded item: {item.name} (ID: {id})");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Item with ID {id} not found in database!");
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("InventoryData is null!");
+        }
+    }
+
+    #endregion
+
+    #region Body Part Functions
+
+    private BodyPartHealth GetPart(BodyParts part)
     {
         switch (part)
         {
-            case BodyParts.Head: headHealth = Mathf.Clamp(headHealth - amount, 0, maxHeadHealth); break;
-            case BodyParts.Torso: torsoHealth = Mathf.Clamp(torsoHealth - amount, 0, maxTorsoHealth); break;
-            case BodyParts.Arms: armsHealth = Mathf.Clamp(armsHealth - amount, 0, maxArmsHealth); break;
-            case BodyParts.Legs: legsHealth = Mathf.Clamp(legsHealth - amount, 0, maxLegsHealth); break;
+            case BodyParts.Head: return head;
+            case BodyParts.Torso: return torso;
+            case BodyParts.Arms: return arms;
+            case BodyParts.Legs: return legs;
+            default: return null;
         }
     }
-    public void UpgradePart(BodyParts part, float amount)
-    {
-        switch (part)
-        {
-            case BodyParts.Head: maxHeadHealth += amount; headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
-            case BodyParts.Torso: maxTorsoHealth += amount; torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
-            case BodyParts.Arms: maxArmsHealth += amount; armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
-            case BodyParts.Legs: maxLegsHealth += amount; legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
-        }
-    }
+
+    public void HealPart(BodyParts part, float amount) => GetPart(part)?.Heal(amount);
+    public void DamagePart(BodyParts part, float amount) => GetPart(part)?.Damage(amount);
+    public void UpgradePart(BodyParts part, float amount) => GetPart(part)?.UpgradeMax(amount);
+    public void Injured(BodyParts part, float amount) => GetPart(part)?.Injure(amount);
+    public void OverTimeInjured(BodyParts part, float amount) => GetPart(part)?.OverTimeInjure(amount);
+
     public void IncreaseMaxHealth(float amount)
     {
-        maxHeadHealth = Mathf.Clamp(maxHeadHealth + amount, 0, 250); 
-        maxTorsoHealth = Mathf.Clamp(maxTorsoHealth + amount, 0, 250); 
-        maxArmsHealth = Mathf.Clamp(maxArmsHealth + amount, 0, 250); 
-        maxLegsHealth = Mathf.Clamp(maxLegsHealth + amount, 0, 250);
-        headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth);
-        torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); 
-        armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); 
-        legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); 
-    }
-    public void Injured(BodyParts part, float amount)
-    {
-        switch (part)
-        {
-            case BodyParts.Head:
-                maxHeadHealth = Mathf.Clamp(maxHeadHealth - amount, 0, 250);
-                headHealth = Mathf.Clamp(headHealth - amount*2, 0, maxHeadHealth); break;
-            case BodyParts.Torso:
-                maxTorsoHealth = Mathf.Clamp(maxTorsoHealth - amount, 0, 250);
-                torsoHealth = Mathf.Clamp(torsoHealth - amount*2, 0, maxTorsoHealth); break;
-            case BodyParts.Arms:
-                maxArmsHealth = Mathf.Clamp(maxArmsHealth - amount, 0, 250);
-                armsHealth = Mathf.Clamp(armsHealth - amount*2, 0, maxArmsHealth); break;
-            case BodyParts.Legs:
-                maxLegsHealth = Mathf.Clamp(maxLegsHealth - amount, 0, 250);
-                legsHealth = Mathf.Clamp(legsHealth - amount*2, 0, maxLegsHealth); break;
-        }
-    }
-    public void OverTimeInjured(BodyParts part, float amount)
-    {
-        switch (part)
-        {
-            case BodyParts.Head:
-                maxHeadHealth = Mathf.Clamp(maxHeadHealth + amount, 0, 250);
-                headHealth = Mathf.Clamp(headHealth + amount, 0, maxHeadHealth); break;
-            case BodyParts.Torso:
-                maxTorsoHealth = Mathf.Clamp(maxTorsoHealth + amount, 0, 250);
-                torsoHealth = Mathf.Clamp(torsoHealth + amount, 0, maxTorsoHealth); break;
-            case BodyParts.Arms:
-                maxArmsHealth = Mathf.Clamp(maxArmsHealth + amount, 0, 250);
-                armsHealth = Mathf.Clamp(armsHealth + amount, 0, maxArmsHealth); break;
-            case BodyParts.Legs:
-                maxLegsHealth = Mathf.Clamp(maxLegsHealth + amount, 0, 250);
-                legsHealth = Mathf.Clamp(legsHealth + amount, 0, maxLegsHealth); break;
-        }
+        head.UpgradeMax(amount);
+        torso.UpgradeMax(amount);
+        arms.UpgradeMax(amount);
+        legs.UpgradeMax(amount);
     }
 
     public void HealLowestPart(float amount)
     {
-        float[] healths = { headHealth, torsoHealth, armsHealth, legsHealth };
-        float[] maxHealths = { maxHeadHealth, maxTorsoHealth, maxArmsHealth, maxLegsHealth };
+        var parts = new[] { head, torso, arms, legs };
+        var partNames = new[] { BodyParts.Head, BodyParts.Torso, BodyParts.Arms, BodyParts.Legs };
 
         float lowestPercent = 1f;
         List<int> lowestIndexes = new List<int>();
 
-        // �nce en d���k oran� bul
-        for (int i = 0; i < healths.Length; i++)
+        for (int i = 0; i < parts.Length; i++)
         {
-            float percent = healths[i] / maxHealths[i];
+            float percent = parts[i].Percent;
             if (percent < lowestPercent)
             {
                 lowestPercent = percent;
                 lowestIndexes.Clear();
                 lowestIndexes.Add(i);
             }
-            else if (Mathf.Approximately(percent, lowestPercent)) // e�itse ekle
+            else if (Mathf.Approximately(percent, lowestPercent))
             {
                 lowestIndexes.Add(i);
             }
@@ -165,8 +227,8 @@ public class MainCharacter : ScriptableObject
         if (lowestIndexes.Count > 0)
         {
             int chosen = lowestIndexes[Random.Range(0, lowestIndexes.Count)];
-            HealPart((BodyParts)chosen, amount);
-            Debug.Log($"[{(BodyParts)chosen}] {amount} iyile�tirildi!");
+            parts[chosen].Heal(amount);
+            Debug.Log($"[{partNames[chosen]}] {amount} iyileştirildi!");
         }
     }
 
@@ -262,8 +324,8 @@ public class MainCharacter : ScriptableObject
         droidCharge = Mathf.Clamp(droidCharge + amount, 0, maxDroidCharge);
     }
     #endregion
-
 }
+
 public enum BodyParts
 {
     Head,

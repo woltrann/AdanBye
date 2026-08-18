@@ -1,4 +1,3 @@
-using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 public class InteractionManager : MonoBehaviour
@@ -70,7 +69,7 @@ public class InteractionManager : MonoBehaviour
                 case 0:
                     chips[0].gameObject.SetActive(true);
                     UXobjects.Instance.NotificationPanelOpen();
-                    UXobjects.Instance.droidRecharge=true;
+                    UXobjects.Instance.droidRecharge = true;
                     break;
                 case 1:
                     chips[1].gameObject.SetActive(true);
@@ -99,7 +98,7 @@ public class InteractionManager : MonoBehaviour
 
     private void HandleCollect(ItemData itemData)
     {
-       
+
 
         if (inventoryData.AddItem(itemData))
         {
@@ -110,7 +109,7 @@ public class InteractionManager : MonoBehaviour
             Debug.LogWarning($"[Collect] {itemData.itemName} (ID: {itemData.itemID}) toplanamadý, envanter dolu!");
             return;
         }
-       
+
     }
 
     private void HandleExamine(ItemData itemData)
@@ -164,14 +163,14 @@ public class InteractionManager : MonoBehaviour
                 break;
             case ConsumableType.ToksinFood:
                 character.EatFood(itemData.consumableValue);
-                character.IncreasePoison(itemData.consumableValue/4);
+                character.IncreasePoison(itemData.consumableValue / 4);
                 break;
             case ConsumableType.Water:
                 character.DrinkWater(itemData.consumableValue);
                 break;
             case ConsumableType.ToksinRiverWater:
                 character.DrinkWater(itemData.consumableValue);
-                character.IncreasePoison(itemData.consumableValue/2);
+                character.IncreasePoison(itemData.consumableValue / 2);
                 break;
             case ConsumableType.ToksinPoolWater:
                 character.DrinkWater(itemData.consumableValue);
@@ -205,8 +204,7 @@ public class InteractionManager : MonoBehaviour
                 inventoryData.MaxWeight += itemData.consumableValue;
                 break;
             case ConsumableType.UpgradeSpeed:
-                PlayerMovement.Instance.moveSpeed *= 1.5f;
-                PlayerMovement.Instance.runSpeed *= 1.5f;
+                PlayerManager.Instance.GetComponent<PlayerMotor>().MultiplySpeed(1.5f);
                 break;
             case ConsumableType.ToksinMask:
                 UXobjects.Instance.gassFilter = 100;
