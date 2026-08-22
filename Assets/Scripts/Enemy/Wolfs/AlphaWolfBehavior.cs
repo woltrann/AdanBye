@@ -7,7 +7,6 @@ using UnityEngine;
 // context/ayar kaynağıdır.
 public class AlphaWolfBehavior : IWolfBehavior
 {
-    private const float WanderRadius = 6f;
     private const float ApproachSmoothTime = 0.25f; // yaklaşım hedefinin kendisini yumuşatır
 
     private readonly WolfBehaviorController controller;
@@ -48,30 +47,34 @@ public class AlphaWolfBehavior : IWolfBehavior
 
         float distance = Vector3.Distance(transform.position, player.position);
 
-        // Kovalarken/ararken Territory'nin dışına çıkarsak ulu ve kendi başlangıç
-        // noktamıza geri dön - oyuncunun kaçmak için sonsuza kadar koşması gerekmesin.
-        // Territory atanmadıysa sınır yok (eski davranış). Idle zaten HomePosition
-        // etrafında dar bir alanda geziniyor (WanderRadius), bu yüzden sadece
-        // Chase/Search'te kontrol etmek yeterli.
+        // Oyuncu Territory dışına çıksa bile kovalamayı bırakmayız - oyuncu chase'ten kendi
+        // başına kaçamadıysa sınıra kadar kovalanır. Ancak KENDİMİZ sınırı geçersek (oyuncuyu
+        // izleyerek territory'nin dışına taştıysak) orada durup uluyarak bekleriz (Guard),
+        // oyuncu tekrar sınıra girerse kaldığımız yerden devam ederiz. Territory atanmadıysa
+        // sınır yok (eski davranış). Idle zaten HomePosition etrafında dar bir alanda geziniyor
+        // (WanderRadius), bu yüzden sadece Chase/Search'te kontrol etmek yeterli.
         if (territory != null
             && (controller.CurrentState == WolfState.Chase || controller.CurrentState == WolfState.Search)
             && territory.IsOutside(transform.position))
         {
-            howler.TryHowl();
-            controller.ChangeState(WolfState.Retreat);
+            controller.ChangeState(WolfState.Guard);
             return;
         }
 
         switch (controller.CurrentState)
         {
             case WolfState.Idle:
-                if (wanderer.Tick(identity.HomePosition, WanderRadius, controller.Speed * 0.5f)
+                if (wanderer.Tick(identity.HomePosition, controller.WanderRadius, controller.Speed * 0.5f)
                     && Random.value < controller.IdleHowlChance)
                 {
                     howler.TryHowl();
                 }
 
-                if (distance <= controller.ChaseDistance)
+                // Oyuncu territory dışındaysa (sınırın içindeki bir tuzağa düşmediyse) hiç
+                // kovalamaya başlamayız - territory "savunulan alan" olduğu için dışarıdaki
+                // bir oyuncu tehdit sayılmaz.
+                if (distance <= controller.ChaseDistance
+                    && (territory == null || !territory.IsOutside(player.position)))
                 {
                     howler.TryHowl();
                     controller.ChangeState(WolfState.Chase);
@@ -118,13 +121,32 @@ public class AlphaWolfBehavior : IWolfBehavior
                 break;
 
             case WolfState.Search:
-                if (wanderer.Tick(lastKnownPlayerPos, WanderRadius, controller.Speed * 0.5f)
+                if (wanderer.Tick(lastKnownPlayerPos, controller.WanderRadius, controller.Speed * 0.5f)
                     && Random.value < controller.IdleHowlChance)
                 {
                     howler.TryHowl();
                 }
 
                 if (distance <= controller.ChaseDistance) controller.ChangeState(WolfState.Chase);
+                break;
+
+            case WolfState.Guard:
+                // Sınırda dur, oyuncuya bak ve ulu - TryHowl kendi cooldown'unu yönetiyor,
+                // her karede çağırmak yeterli.
+                mover.LookAt(player.position);
+                howler.TryHowl();
+
+                if (territory != null && !territory.IsOutside(player.position) && distance <= controller.ChaseDistance)
+                {
+                    controller.ChangeState(WolfState.Chase);
+                    break;
+                }
+
+                // Oyuncu iyice uzaklaşırsa (Chase->Search geçişiyle aynı eşik) artık pes edip eve dön
+                if (distance > controller.ChaseDistance * 1.5f)
+                {
+                    controller.ChangeState(WolfState.Retreat);
+                }
                 break;
 
             case WolfState.Retreat:

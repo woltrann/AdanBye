@@ -13,6 +13,9 @@ public class WolfWanderer : MonoBehaviour
     private Vector3 wanderOffset;
     private float wanderTimer;
 
+    private Vector3 pendingPosition;
+    private bool hasPendingMove;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -20,6 +23,17 @@ public class WolfWanderer : MonoBehaviour
 
         // Başlangıçta kısa bir rastgele bekleme, hemen hedef seçilmesini engeller
         wanderTimer = Random.Range(0f, 2f);
+    }
+
+    // rb.MovePosition()'ı Tick() (Update-zinciri) içinden değil, fizik adımıyla senkron
+    // FixedUpdate'ten uyguluyoruz - aynı gerekçe için bkz. WolfMotor.FixedUpdate().
+    private void FixedUpdate()
+    {
+        if (hasPendingMove)
+        {
+            rb.MovePosition(pendingPosition);
+            hasPendingMove = false;
+        }
     }
 
     // center etrafında dolaşır; bu çağrıda yeni bir hedef seçtiyse true döner
@@ -55,8 +69,8 @@ public class WolfWanderer : MonoBehaviour
 
         if (dist > 0.05f)
         {
-            Vector3 newPosition = Vector3.MoveTowards(transform.position, groundedTarget, moveSpeed * Time.deltaTime);
-            rb.MovePosition(newPosition);
+            pendingPosition = Vector3.MoveTowards(transform.position, groundedTarget, moveSpeed * Time.deltaTime);
+            hasPendingMove = true;
             mover.LookAt(groundedTarget);
         }
 

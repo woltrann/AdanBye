@@ -60,6 +60,14 @@ PrefabInstance:
       propertyPath: isAlpha
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8449147088271517884, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: MaxDistance
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 8449147088271517884, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

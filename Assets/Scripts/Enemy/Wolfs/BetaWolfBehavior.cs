@@ -6,17 +6,12 @@ using UnityEngine;
 // gibi) set edilebilir, kendi kararlarını etkilemez).
 public class BetaWolfBehavior : IWolfBehavior
 {
-    private const float FollowFanAngle = 70f;      // alpha'nın arkasında temel yelpaze açısı
-    private const float PersonalAngleJitter = 15f; // her kurda bir kere atanan ekstra açı sapması
-    private const float LocalDriftRadius = 0.6f;   // slot etrafında dolaşılan alan
-    private const float LocalDriftSpeed = 0.08f;   // Perlin noise zaman ölçeği (yavaş = organik)
-    private const float PersonalSpaceBuffer = 0.5f; // attackDistance üzerine eklenen ekstra "kişisel alan"
-
     private readonly WolfBehaviorController controller;
     private readonly Transform transform;
     private readonly WolfIdentity identity;
     private readonly IWolfMover mover;
     private readonly IWolfAttacker attacker;
+    private readonly IWolfHowler howler;
 
     // Spawn'da bir kere atanan, bu kurda özgü sabit farklar - pack'in tamamen
     // simetrik/senkronize ("ordu gibi") görünmesini engeller.
@@ -30,15 +25,16 @@ public class BetaWolfBehavior : IWolfBehavior
     public Vector3 DebugTarget => debugTarget;
 
     public BetaWolfBehavior(WolfBehaviorController controller, Transform transform, WolfIdentity identity,
-        IWolfMover mover, IWolfAttacker attacker)
+        IWolfMover mover, IWolfAttacker attacker, IWolfHowler howler)
     {
         this.controller = controller;
         this.transform = transform;
         this.identity = identity;
         this.mover = mover;
         this.attacker = attacker;
+        this.howler = howler;
 
-        personalAngleOffset = Random.Range(-PersonalAngleJitter, PersonalAngleJitter);
+        personalAngleOffset = Random.Range(-controller.PersonalAngleJitter, controller.PersonalAngleJitter);
         personalDistanceMultiplier = Random.Range(0.85f, 1.25f);
         personalSpeedMultiplier = Random.Range(0.85f, 1.15f);
         noiseSeed = Random.Range(0f, 1000f);
@@ -53,20 +49,50 @@ public class BetaWolfBehavior : IWolfBehavior
         WolfBehaviorController alphaController = alpha.GetComponent<WolfBehaviorController>();
         if (alphaController == null) return;
 
-        float distToPlayer = Vector3.Distance(transform.position, player.position);
-
-        // Beta oyuncuyu görürse alpha'yı uyarır
-        if (distToPlayer <= controller.ChaseDistance && alphaController.CurrentState != WolfState.Chase)
-        {
-            alphaController.ChangeState(WolfState.Chase);
-        }
-
+        // Alpha nihayet pes edip eve dönüyorsa (Guard'da iyice uzaklaşma eşiğini aştı), beta da
+        // aynı şekilde eve döner. Bu kontrol "alpha'yı uyar" bloğundan ÖNCE yapılıyor - aksi
+        // halde menzildeki bir beta, alpha Retreat/Guard'a geçer geçmez onu tekrar Chase'e
+        // zorlayıp o kararı iptal ediyordu.
         if (alphaController.CurrentState == WolfState.Retreat)
         {
-            // Alpha başlangıç noktasına dönüyor, beta da kendi başlangıç noktasına döner
             mover.LookAt(identity.HomePosition);
             mover.MoveTo(identity.HomePosition, controller.Speed * 1.5f * personalSpeedMultiplier);
             return;
+        }
+
+        // Alpha sınırda bekleyip uluyorsa (oyuncu ya da sürü territory dışına çıktı) ya da bu
+        // beta kendi başına territory dışına taştıysa (formasyon offseti alpha içeride kalsa
+        // bile beta'yı dışarı taşırabilir), eve koşmak yerine aynı şekilde dur ve ulu - oyuncu
+        // tekrar sınıra girerse kaldığımız yerden devam ederiz.
+        bool selfOutsideTerritory = controller.Territory != null && controller.Territory.IsOutside(transform.position);
+        if (alphaController.CurrentState == WolfState.Guard || selfOutsideTerritory)
+        {
+            // Kovalamıyorken kullandığımız aynı formasyon slotuna (bkz. else dalı altta) girip
+            // orada dururuz - alpha zaten oyuncuya dönük olduğu için beta'lar doğal olarak
+            // onun etrafında/gerisinde toplanmış görünür. Slot sabit olduğu (alpha hareket
+            // etmediği) için formasyona girince kendiliğinden durulur, ek bir gezinme yok.
+            Vector3 targetPos = ComputeFollowSlot(alpha);
+
+            debugTarget = targetPos;
+
+            if (Vector3.Distance(transform.position, targetPos) > 0.3f)
+            {
+                mover.MoveTo(targetPos, controller.Speed * 0.4f * personalSpeedMultiplier);
+            }
+
+            mover.LookAt(player.position);
+            howler.TryHowl();
+            return;
+        }
+
+        float distToPlayer = Vector3.Distance(transform.position, player.position);
+
+        // Beta oyuncuyu görürse alpha'yı uyarır - ama oyuncu territory dışındaysa (dolayısıyla
+        // tehdit sayılmıyorsa) alpha'yı kovalamaya zorlamaz.
+        bool playerInsideTerritory = controller.Territory == null || !controller.Territory.IsOutside(player.position);
+        if (distToPlayer <= controller.ChaseDistance && playerInsideTerritory && alphaController.CurrentState != WolfState.Chase)
+        {
+            alphaController.ChangeState(WolfState.Chase);
         }
 
         if (alphaController.CurrentState == WolfState.Chase)
@@ -86,7 +112,7 @@ public class BetaWolfBehavior : IWolfBehavior
             // harmanlanarak yumuşakça yandan dolaştırılır (SteerAroundPlayer).
             if (distToTarget > 0.5f)
             {
-                Vector3 steeredTarget = SteerAroundPlayer(targetPos, player.position, attacker.AttackDistance + PersonalSpaceBuffer);
+                Vector3 steeredTarget = SteerAroundPlayer(targetPos, player.position, attacker.AttackDistance + controller.PersonalSpaceBuffer);
                 mover.MoveTo(steeredTarget, controller.Speed * 0.9f * personalSpeedMultiplier);
                 mover.LookAt(player.position);
             }
@@ -127,7 +153,7 @@ public class BetaWolfBehavior : IWolfBehavior
     {
         int index = alpha.IndexOfMember(identity);
         int count = Mathf.Max(alpha.PackMembers.Count, 1);
-        float baseAngle = Mathf.Lerp(-FollowFanAngle, FollowFanAngle, (index + 1) / (float)(count + 1));
+        float baseAngle = Mathf.Lerp(-controller.FollowFanAngle, controller.FollowFanAngle, (index + 1) / (float)(count + 1));
         float angle = baseAngle + personalAngleOffset;
         float distance = controller.FollowDistance * personalDistanceMultiplier;
 
@@ -162,9 +188,9 @@ public class BetaWolfBehavior : IWolfBehavior
 
     private Vector3 LocalDrift()
     {
-        float t = Time.time * LocalDriftSpeed;
-        float x = (Mathf.PerlinNoise(noiseSeed, t) - 0.5f) * 2f * LocalDriftRadius;
-        float z = (Mathf.PerlinNoise(noiseSeed + 100f, t) - 0.5f) * 2f * LocalDriftRadius;
+        float t = Time.time * controller.LocalDriftSpeed;
+        float x = (Mathf.PerlinNoise(noiseSeed, t) - 0.5f) * 2f * controller.LocalDriftRadius;
+        float z = (Mathf.PerlinNoise(noiseSeed + 100f, t) - 0.5f) * 2f * controller.LocalDriftRadius;
         return new Vector3(x, 0f, z);
     }
 }

@@ -151,6 +151,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: BetaWolf1
       objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: territory
+      value: 
+      objectReference: {fileID: 2200013359897351610}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: wanderRadius
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: chaseDistance
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 8389453857342748353, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
       propertyPath: alphaWolf
       value: 
@@ -244,6 +256,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: BetaWolf4
       objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: territory
+      value: 
+      objectReference: {fileID: 2200013359897351610}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: wanderRadius
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: chaseDistance
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 8389453857342748353, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
       propertyPath: alphaWolf
       value: 
@@ -301,6 +325,18 @@ PrefabInstance:
       propertyPath: 'packMembers.Array.data[4]'
       value: 
       objectReference: {fileID: 1960750328872030185}
+    - target: {fileID: 1679282340225895013, guid: 5506f4f9130f64940a6fc7b5eb240f6b, type: 3}
+      propertyPath: territory
+      value: 
+      objectReference: {fileID: 2200013359897351610}
+    - target: {fileID: 1679282340225895013, guid: 5506f4f9130f64940a6fc7b5eb240f6b, type: 3}
+      propertyPath: wanderRadius
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1679282340225895013, guid: 5506f4f9130f64940a6fc7b5eb240f6b, type: 3}
+      propertyPath: chaseDistance
+      value: 45
+      objectReference: {fileID: 0}
     - target: {fileID: 4092945465624377907, guid: 5506f4f9130f64940a6fc7b5eb240f6b, type: 3}
       propertyPath: m_Name
       value: AlphaWolf
@@ -445,6 +481,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: BetaWolf3
       objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: territory
+      value: 
+      objectReference: {fileID: 2200013359897351610}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: wanderRadius
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: chaseDistance
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 8389453857342748353, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
       propertyPath: alphaWolf
       value: 
@@ -538,6 +586,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: BetaWolf5
       objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: territory
+      value: 
+      objectReference: {fileID: 2200013359897351610}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: wanderRadius
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: chaseDistance
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 8389453857342748353, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
       propertyPath: alphaWolf
       value: 
@@ -630,6 +690,18 @@ PrefabInstance:
     - target: {fileID: 5389865518583868865, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
       propertyPath: m_Name
       value: BetaWolf2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: territory
+      value: 
+      objectReference: {fileID: 2200013359897351610}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: wanderRadius
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300251926787464599, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
+      propertyPath: chaseDistance
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 8389453857342748353, guid: 8bdfd06f0a7254e4cb3bd512fdcb3748, type: 3}
       propertyPath: alphaWolf

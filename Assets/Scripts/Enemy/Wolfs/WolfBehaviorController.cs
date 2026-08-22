@@ -16,10 +16,24 @@ public class WolfBehaviorController : MonoBehaviour
     [SerializeField] private float chaseDistance = 8f;
     [Tooltip("Kovalamada oyuncunun etrafında durma mesafesi")]
     [SerializeField] private float formationRadius = 3f;
+    [Tooltip("Idle/Search'te merkez etrafında dolaşılan yarıçap")]
+    [SerializeField] private float wanderRadius = 6f;
 
     [Header("Follow Alpha Settings")]
     [Tooltip("Kovalamıyorken beta'nın alpha'nın arkasında durmaya çalışacağı mesafe")]
     [SerializeField] private float followDistance = 4f;
+
+    [Header("Beta Formation")]
+    [Tooltip("Alpha'nın arkasında temel yelpaze açısı")]
+    [SerializeField] private float followFanAngle = 70f;
+    [Tooltip("Her kurda bir kere atanan ekstra açı sapması")]
+    [SerializeField] private float personalAngleJitter = 15f;
+    [Tooltip("Formasyon slotu etrafında dolaşılan alan")]
+    [SerializeField] private float localDriftRadius = 0.6f;
+    [Tooltip("Formasyon slotu etrafındaki dolaşmanın Perlin noise zaman ölçeği (yavaş = organik)")]
+    [SerializeField] private float localDriftSpeed = 0.08f;
+    [Tooltip("attackDistance üzerine eklenen ekstra kişisel alan (SteerAroundPlayer)")]
+    [SerializeField] private float personalSpaceBuffer = 0.5f;
 
     [Header("Retreat")]
     [SerializeField] private float retreatDuration = 3f;
@@ -40,7 +54,13 @@ public class WolfBehaviorController : MonoBehaviour
     public float Speed => speed;
     public float ChaseDistance => chaseDistance;
     public float FormationRadius => formationRadius;
+    public float WanderRadius => wanderRadius;
     public float FollowDistance => followDistance;
+    public float FollowFanAngle => followFanAngle;
+    public float PersonalAngleJitter => personalAngleJitter;
+    public float LocalDriftRadius => localDriftRadius;
+    public float LocalDriftSpeed => localDriftSpeed;
+    public float PersonalSpaceBuffer => personalSpaceBuffer;
     public float RetreatDuration => retreatDuration;
     public float IdleHowlChance => idleHowlChance;
     public WolfTerritory Territory => territory;
@@ -56,7 +76,7 @@ public class WolfBehaviorController : MonoBehaviour
 
         behavior = identity.IsAlpha
             ? new AlphaWolfBehavior(this, transform, identity, mover, attacker, howler, wanderer, territory)
-            : new BetaWolfBehavior(this, transform, identity, mover, attacker);
+            : new BetaWolfBehavior(this, transform, identity, mover, attacker, howler);
     }
 
     private void Update()
@@ -73,11 +93,11 @@ public class WolfBehaviorController : MonoBehaviour
         CurrentState = newState;
         behavior.OnStateEntered(newState);
 
-        if (identity.IsAlpha && newState == WolfState.Retreat)
+        if (identity.IsAlpha && (newState == WolfState.Retreat || newState == WolfState.Guard))
         {
             foreach (var member in identity.PackMembers)
             {
-                member.GetComponent<WolfBehaviorController>()?.ChangeState(WolfState.Retreat);
+                member.GetComponent<WolfBehaviorController>()?.ChangeState(newState);
             }
         }
     }

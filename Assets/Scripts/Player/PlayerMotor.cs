@@ -16,6 +16,12 @@ public class PlayerMotor : MonoBehaviour, IVelocityProvider
     [SerializeField] private float rotationSmoothTime = 0.1f;
     [SerializeField] private float moveSmoothTime = 0.1f;
 
+    [Header("Curve-Driven Movement (opsiyonel)")]
+    [SerializeField] private bool useCurveDrivenMovement = false;
+    [SerializeField] private MovementCurveProfile curveProfile;
+    private CurveMovementSolver curveSolver;
+    private bool curveProfileWarningLogged;
+
     private Rigidbody rb;
 
     // Opsiyonel: swim rise gibi dış kaynaklı bir yükseklik değişimi varsa onu da uygularız.
@@ -44,6 +50,9 @@ public class PlayerMotor : MonoBehaviour, IVelocityProvider
         var input = GetComponent<PlayerManager>().InputActions;
         moveAction = input.FindAction("PlayerController/Move");
         runAction = input.FindAction("PlayerController/Run");
+
+        if (curveProfile != null)
+            curveSolver = new CurveMovementSolver(curveProfile);
     }
 
     private void OnEnable()
@@ -84,8 +93,21 @@ public class PlayerMotor : MonoBehaviour, IVelocityProvider
             rb.MoveRotation(Quaternion.Euler(0f, angle, 0f));
         }
 
-        Vector3 targetVelocity = moveDir.normalized * targetSpeed;
-        CurrentVelocity = Vector3.SmoothDamp(CurrentVelocity, targetVelocity, ref velocitySmoothRef, moveSmoothTime);
+        bool hasInput = moveInput.sqrMagnitude >= 0.01f;
+        if (useCurveDrivenMovement && curveSolver != null)
+        {
+            CurrentVelocity = curveSolver.Evaluate(moveDir, targetSpeed, hasInput, Time.fixedTime);
+        }
+        else
+        {
+            if (useCurveDrivenMovement && !curveProfileWarningLogged)
+            {
+                Debug.LogWarning($"{name}: useCurveDrivenMovement açık ama curveProfile atanmamış, SmoothDamp yoluna düşülüyor.", this);
+                curveProfileWarningLogged = true;
+            }
+            Vector3 targetVelocity = moveDir.normalized * targetSpeed;
+            CurrentVelocity = Vector3.SmoothDamp(CurrentVelocity, targetVelocity, ref velocitySmoothRef, moveSmoothTime);
+        }
 
         Vector3 newPos = rb.position + CurrentVelocity * Time.fixedDeltaTime;
 

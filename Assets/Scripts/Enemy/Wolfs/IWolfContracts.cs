@@ -4,7 +4,9 @@ using UnityEngine;
 // Küçük, tek-amaçlı arayüzler (ISP): her biri tek bir soru cevaplar.
 // Bileşenler birbirine bu arayüzler üzerinden bağlanır, somut sınıflara değil (DIP).
 
-public enum WolfState { Idle, Chase, Search, Retreat }
+// Guard: territory sınırında oyuncuya bakıp uluyarak beklemek - kovalamayı ne sürdürür
+// ne de eve döner, oyuncu tekrar sınıra girerse anında Chase'e geri döner.
+public enum WolfState { Idle, Chase, Search, Guard, Retreat }
 
 public interface IWolfMover
 {
