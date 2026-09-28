@@ -1,0 +1,279 @@
+// Çim yerleşimi (üretim + LOD seçimi + frustum culling): görünür chunk listesinden, terrain verisiyle (heightmap,
+// splat, eğim) deterministik blade instance'ları üretir ve her birini kamera mesafesine göre bir LOD'un
+// GÖRÜNÜR buffer'ına yazar. Renk/rüzgar YOK (WP-4).
+//
+// Akış (C# GrassComputeDispatcher): CSReset -> CSGenerate -> CSFinalizeArgs.
+//
+// Deterministik yerleşim: dünya, terrain origin'inden başlayan _CellSize'lık bir hücre ızgarasına bölünür ve HER
+// hücre en fazla bir aday üretir. Adayın konumu/rank'ı/yaw'ı/boyu YALNIZCA (global hücre indeksi, _Seed)'den
+// türer (Hash.hlsl); kamera, chunk sırası ya da dispatch düzeni sonucu etkilemez.
+//
+// LOD = SEYRELTME (hiyerarşik hücre seviyesi DEĞİL): tüm LOD'larda aynı seviye-0 hücre adayları ve aynı rank
+// kullanılır; LOD i yalnızca `rank < yoğunluk * keepRatio[i]` olanları tutar. keepRatio LOD'lar boyunca azaldığı
+// için uzak LOD'un blade kümesi yakın LOD'unkinin ALT KÜMESİdir: blade LOD sınırını geçerken yer değiştirmez, sadece
+// belirir/kaybolur. Sınır pop'u geçiş bandında yumuşatılır (bkz. Grass_LodBlend). C# aynası: LodDistanceTable.Blend.
+//
+// AppendStructuredBuffer yerine InterlockedAdd sayacı seçildi:
+//  * Append'in sayacı gizli bir UAV sayacıdır; bütçe aşımında yazma sessizce atlanır ama sayaç değeri (CopyCount ile
+//    args'a giden) bütçeyi aşabilir ve taşmayı yazılımla ayırt etmenin yolu yoktur.
+//  * Burada idx'i kendimiz alırız: idx < LOD bütçesi ise yaz, değilse o LOD'un taşma bayrağını kaldır. Sayaç bütçeyi
+//    aşabilir ama hiçbir yazma sınır dışına çıkmaz; FinalizeArgs instanceCount'u min(sayaç, bütçe)'ye kırpar => çizim
+//    asla yazılmamış (çöp) instance okumaz.
+//
+// LOD başına AYRI instance buffer (HLSL'de UAV dizisine dinamik indeks yok => 3 sabit binding): çizimde
+// startInstance kullanılamadığı için (WP-3a bulgusu) her LOD kendi GraphicsBuffer'ı ile çizilir.
+
+#pragma kernel CSReset
+#pragma kernel CSGenerate
+#pragma kernel CSFinalizeArgs
+#pragma kernel CSPackParity
+
+#include "Assets/Shaders/Grass/GrassTerrainSampling.hlsl"
+#include "Assets/Shaders/Grass/GrassInstanceData.hlsl"
+#include "Assets/Shaders/Common/Hash.hlsl"
+
+#define GRASS_MAX_LODS 3
+
+// C# GrassGpuChunk ile aynı düzen (16 bayt). cellLevel OKUNMAZ: LOD seyreltmeyle yapıldığı için tüm chunk'lar seviye 0
+// (en sık) üretilir. chunkIndex ileride chunk başına veri için ayrıldı.
+struct GrassChunk
+{
+    int cx;
+    int cz;
+    int cellLevel;
+    int chunkIndex;
+};
+
+StructuredBuffer<GrassChunk> _Chunks;
+RWStructuredBuffer<GrassInstance> _Instances0;
+RWStructuredBuffer<GrassInstance> _Instances1;
+RWStructuredBuffer<GrassInstance> _Instances2;
+// _State[lod*2] = üretilen sayaç (bütçeyi aşabilir), _State[lod*2+1] = o LOD'un taşma bayrağı (0/1).
+RWStructuredBuffer<uint> _State;
+// LOD başına 5 uint'lik DrawIndexedIndirect args (lod*5 ofsetli); yalnızca [lod*5+1] (instanceCount) burada yazılır.
+RWStructuredBuffer<uint> _Args;
+
+Texture2D<float>  _Heightmap;
+Texture2D<float4> _Alphamap0;
+
+float4 _TerrainOrigin;   // xyz
+float4 _TerrainSize;     // xyz
+int2   _HeightmapRes;
+int2   _AlphamapRes;
+
+float _CellSize;         // hücre kenarı (m); 1/_CellSize^2 = maksimum yoğunluk (adet/m2)
+uint  _CellsPerAxis;     // chunk başına eksen başına hücre (C# chunkSize/_CellSize'ı tam sayıya böler)
+uint  _Seed;
+uint  _ChunkCount;
+
+float4 _LayerDensity;    // alphamap rgba kanal başına yoğunluk çarpanı
+float2 _SlopeAngles;     // x: bu açıya (rad) kadar tam yoğunluk, y: bu açıdan (rad) sonra 0; arası smoothstep
+float2 _HeightRange;     // metre (min, max)
+float2 _WidthRange;      // metre (min, max)
+
+// LOD tablosu (C# LodDistanceTable dizileri; xyz = LOD 0..2, w kullanılmaz).
+uint   _LodCount;        // 1..3
+float4 _LodMaxDistSq;    // m^2
+float4 _LodKeep;         // (0,1]
+float4 _LodWidthComp;    // min(1/keep, cap)
+float4 _LodBand;         // geçiş bandı (m)
+uint4  _LodBudget;       // LOD başına instance kapasitesi (C# buffer kapasitesine eşitler)
+
+// Kamera: LOD mesafesi gerçek 3B kamera-blade mesafesidir. Frustum düzlemleri iç yönlü (n.p + d >= 0 içeride).
+float3 _CameraPos;
+uint   _FrustumEnabled;  // 0 ise frustum testi yok
+float4 _FrustumPlanes[6];
+float  _CullPadding;     // blade küresine eklenen pay (m): rüzgar/ezme eğilmesi
+
+[numthreads(1, 1, 1)]
+void CSReset(uint3 id : SV_DispatchThreadID)
+{
+    [unroll]
+    for (uint i = 0; i < GRASS_MAX_LODS * 2; i++)
+        _State[i] = 0u;
+}
+
+// Yükseklik: köşegen-A (terrain mesh'iyle uyumlu; bilinear YASAK, bkz. GrassTerrainSampling.hlsl).
+float Grass_TerrainY(float2 texelCoord)
+{
+    return Grass_SampleTerrainHeightWS(_Heightmap, texelCoord, _HeightmapRes - 1,
+                                       _TerrainOrigin.y, _TerrainSize.y, GRASS_TERRAIN_DIAG_A);
+}
+
+// Eğim açısı (rad): heightmap'in bir texel'lik merkezi farkından. Neden merkezi fark ve 1 texel adım: tek üçgenin
+// yüzey normali 2 m'lik üçgenler arasında sıçrar (blok blok yoğunluk); 1 texel adımlı fark komşu üçgenleri
+// harmanlayıp Unity'nin vertex normalleri gibi yumuşak bir eğim verir. Harita kenarında koordinat sıkıştığı için
+// fark tek taraflıdır (eğim ~yarıya düşer): kenar şeridi küçük ve etkisi hafif.
+float Grass_SlopeAngle(float2 hCoord)
+{
+    float2 spacing = _TerrainSize.xz / (float2)(_HeightmapRes - 1);
+    float dhdx = (Grass_TerrainY(hCoord + float2(1, 0)) - Grass_TerrainY(hCoord - float2(1, 0))) / (2.0 * spacing.x);
+    float dhdz = (Grass_TerrainY(hCoord + float2(0, 1)) - Grass_TerrainY(hCoord - float2(0, 1))) / (2.0 * spacing.y);
+    return atan(length(float2(dhdx, dhdz)));
+}
+
+// 1 = tam yoğunluk, 0 = çim yok; iki açı arasında smoothstep ile yumuşak geçiş.
+float Grass_SlopeFactor(float angle)
+{
+    float t = saturate((angle - _SlopeAngles.x) / max(_SlopeAngles.y - _SlopeAngles.x, 1e-5));
+    return 1.0 - t * t * (3.0 - 2.0 * t);
+}
+
+// Mesafeye göre LOD indeksi; çizim mesafesinin ötesinde _LodCount (= "yok"). C# LodDistanceTable.FindLod aynası.
+uint Grass_FindLod(float distSq)
+{
+    [unroll]
+    for (uint i = 0; i < GRASS_MAX_LODS; i++)
+        if (i < _LodCount && distSq < _LodMaxDistSq[i])
+            return i;
+    return _LodCount;
+}
+
+// Blade'in bu LOD'da tutulup tutulmadığı ve geçiş bandındaki boy/genişlik ölçeği. C# aynası: LodDistanceTable.Blend
+// (ikisi birlikte değişir; testler CPU tarafını sabitler).
+//  * survivesNext: rank bir sonraki (daha seyrek) LOD'da da geçiyor => blade sınırı geçince VAR KALIR; yalnızca
+//    genişlik telafisi comp[i] -> comp[i+1] olarak band boyunca yumuşakça değişir (genişlikte pop yok).
+//  * geçmiyor => sınıra doğru boyu 0'a küçülür (blade sınırda kaybolurken pop yok). Son LOD'da bir sonraki yok
+//    (keep 0): tüm blade'ler çizim mesafesinde 0'a iner.
+// keepThreshold = yoğunluk * keep (rank ile doğrudan kıyaslanır; yoğunluğa bölmek yok).
+void Grass_LodBlend(uint lod, float dist, float density, float rank, out bool kept, out float heightScale, out float widthScale)
+{
+    float keep = _LodKeep[lod];
+    kept = rank < density * keep;
+
+    bool hasNext = (lod + 1u) < _LodCount;
+    float nextKeep = hasNext ? _LodKeep[lod + 1u] : 0.0;
+    float comp = _LodWidthComp[lod];
+    float nextComp = hasNext ? _LodWidthComp[lod + 1u] : comp;
+
+    float band = _LodBand[lod];
+    float fade = band > 0.0 ? saturate((sqrt(_LodMaxDistSq[lod]) - dist) / band) : 1.0;
+
+    bool survivesNext = rank < density * nextKeep;
+    heightScale = survivesNext ? 1.0 : fade;
+    widthScale = survivesNext ? lerp(nextComp, comp, fade) : comp;
+}
+
+// Blade'in kaba küresi frustum dışında mı. Küre kökte, yarıçap = boy + genişlik + pay: rüzgar/ezme eğmesi uzunluğu
+// koruyan bir dönme olduğundan uç, kökten en fazla boy kadar uzaklaşır => küre eğik blade'i de kapsar (WP-4 için
+// güvenli). Muhafazakâr: yanlış-elenme (görünen blade'in kaybolması) yerine yanlış-tutma tercih edilir.
+bool Grass_OutsideFrustum(float3 center, float radius)
+{
+    [unroll]
+    for (uint i = 0; i < 6; i++)
+        if (dot(_FrustumPlanes[i].xyz, center) + _FrustumPlanes[i].w < -radius)
+            return true;
+    return false;
+}
+
+// Thread = bir hücre. id.xy = chunk içi hücre, id.z = chunk listesindeki sıra.
+[numthreads(8, 8, 1)]
+void CSGenerate(uint3 id : SV_DispatchThreadID)
+{
+    if (id.z >= _ChunkCount || id.x >= _CellsPerAxis || id.y >= _CellsPerAxis)
+        return;
+
+    GrassChunk chunk = _Chunks[id.z];
+    int2 cell = int2(chunk.cx, chunk.cz) * (int)_CellsPerAxis + (int2)id.xy; // terrain origin'ine göre GLOBAL hücre
+
+    uint h = Hash_Cell(cell, _Seed);
+    float2 jitter = float2(Hash_Stream01(h, 1u), Hash_Stream01(h, 2u));
+    float2 xz = _TerrainOrigin.xz + ((float2)cell + jitter) * _CellSize;
+
+    // Kenardaki kısmi chunk: terrain dışına düşen aday yok sayılır (dışarıda Load kenara sıkışıp yanlış çim verirdi).
+    float2 local = xz - _TerrainOrigin.xz;
+    if (any(local < 0.0) || any(local > _TerrainSize.xz))
+        return;
+
+    // 1) Layer yoğunluğu: en ucuz elemeyi öne al (splat 4 Load); çoğu aday burada düşer.
+    float2 sCoord = Grass_WorldToTexelCoord(xz, _TerrainOrigin.xz, _TerrainSize.xz, (float2)_AlphamapRes);
+    float4 splat = Grass_SampleSplatBilinear(_Alphamap0, sCoord, _AlphamapRes - 1);
+    float layerDensity = saturate(dot(splat, _LayerDensity));
+    float rank = Hash_Stream01(h, 3u);
+    if (rank >= layerDensity)   // layerDensity == 0 iken her rank >= 0 => eleme
+        return;
+
+    // 2) LOD: gerçek kamera mesafesi için y gerekir (3 Load). Eğimden ÖNCE yapılır: uzak LOD'larda keepRatio
+    // adayların çoğunu eler ve pahalı eğim (17 Load) yalnızca hayatta kalanlara kalır.
+    float2 hCoord = Grass_WorldToTexelCoord(xz, _TerrainOrigin.xz, _TerrainSize.xz, (float2)_HeightmapRes);
+    float y = Grass_TerrainY(hCoord);
+    float3 pos = float3(xz.x, y, xz.y);
+    float3 toCam = pos - _CameraPos;
+    float distSq = dot(toCam, toCam);
+    uint lod = Grass_FindLod(distSq);
+    if (lod >= _LodCount)
+        return;
+    // slopeFactor <= 1 olduğundan `rank >= layerDensity*keep` sonuçta da elenecek olanı erken atar.
+    if (rank >= layerDensity * _LodKeep[lod])
+        return;
+
+    // 3) Boy (hash'ten; kamera/LOD'dan bağımsız) ve frustum: culling'e gerçek boyla girilir.
+    float height = lerp(_HeightRange.x, _HeightRange.y, Hash_Stream01(h, 5u));
+    float width = lerp(_WidthRange.x, _WidthRange.y, Hash_Stream01(h, 6u));
+    if (_FrustumEnabled != 0u && Grass_OutsideFrustum(pos, height + width + _CullPadding))
+        return;
+
+    // 4) Eğim (17 Load): yalnızca kalanlara.
+    float density = layerDensity * Grass_SlopeFactor(Grass_SlopeAngle(hCoord));
+    bool kept;
+    float heightScale, widthScale;
+    Grass_LodBlend(lod, sqrt(distSq), density, rank, kept, heightScale, widthScale);
+    if (!kept)
+        return;
+
+    float yaw = Hash_Stream01(h, 4u) * 6.28318530718;
+
+    uint index;
+    InterlockedAdd(_State[lod * 2u], 1u, index);
+    if (index >= _LodBudget[lod])
+    {
+        _State[lod * 2u + 1u] = 1u; // taşma: bütün yazanlar aynı değeri yazar, yarış zararsız
+        return;
+    }
+
+    // Renk WP-4'e kadar beyaz; normalOct rezerve. lodFade = geçiş bandındaki boy ölçeği (shader isterse kullanır).
+    GrassInstance inst = Grass_Pack(pos, yaw, height * heightScale, width * widthScale, heightScale,
+                                    float4(1, 1, 1, 1), 0u, h);
+    if (lod == 0u)      _Instances0[index] = inst;
+    else if (lod == 1u) _Instances1[index] = inst;
+    else                _Instances2[index] = inst;
+}
+
+// Thread = LOD. Kullanılmayan LOD'lar 0 instance çizer.
+[numthreads(GRASS_MAX_LODS, 1, 1)]
+void CSFinalizeArgs(uint3 id : SV_DispatchThreadID)
+{
+    uint lod = id.x;
+    if (lod >= GRASS_MAX_LODS)
+        return;
+    uint written = lod < _LodCount ? min(_State[lod * 2u], _LodBudget[lod]) : 0u; // asla yazılmamış instance çizilmesin
+    _Args[lod * 5u + 1u] = written;
+}
+
+// --- Test kernel'i (üretim akışında çağrılmaz): HLSL Grass_Pack'in C# GrassInstance.Pack ile bit düzeyi eşleşmesini
+// GrassGenerateParityTests ölçer. Girdi düzeni (52 bayt): float3 pos, yaw, height, width, lodFade, float4 color,
+// normalOct, hash.
+struct PackParityCase
+{
+    float3 position;
+    float yaw;
+    float height;
+    float width;
+    float lodFade;
+    float4 color;
+    uint normalOct;
+    uint hash;
+};
+
+StructuredBuffer<PackParityCase> _ParityIn;
+RWStructuredBuffer<GrassInstance> _ParityOut;
+uint _ParityCount;
+
+[numthreads(64, 1, 1)]
+void CSPackParity(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= _ParityCount)
+        return;
+    PackParityCase c = _ParityIn[id.x];
+    _ParityOut[id.x] = Grass_Pack(c.position, c.yaw, c.height, c.width, c.lodFade, c.color, c.normalOct, c.hash);
+}

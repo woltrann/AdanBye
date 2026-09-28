@@ -1,0 +1,47 @@
+// Faz 1a doğrulama kernel'i: heightmapTexture / alphamapTextures'tan GPU okumasının CPU referansıyla
+// (Terrain.SampleHeight, GetAlphamaps) örtüştüğünü ölçmek için. Üretim kodu değildir; ama örnekleme
+// mantığı GrassTerrainSampling.hlsl'de olduğu için WP-3 compute'u aynı include'u kullanacak.
+
+#pragma kernel CSSample
+
+#include "GrassTerrainSampling.hlsl"
+
+StructuredBuffer<float2> _Points;        // dünya XZ
+RWStructuredBuffer<float4> _Results;     // nokta başına 4 float4 (aşağıda)
+uint _PointCount;
+
+Texture2D<float>  _Heightmap;
+Texture2D<float4> _Alphamap0;
+
+float4 _TerrainOrigin;      // xyz = dünya origin
+float4 _TerrainSize;        // xyz = terrain boyutu
+int2   _HeightmapRes;       // texel sayısı (513)
+int2   _AlphamapRes;        // texel sayısı (512)
+
+// _Results[4*i + 0] = (heightBilinear, heightDiagA, heightDiagB, 0)
+// _Results[4*i + 1] = splat bilinear (Unity shader kuralı)
+// _Results[4*i + 2] = splat en yakın texel
+// _Results[4*i + 3] = (heightmap ham texel değeri en yakın texel, 0, 0, 0) — birim/ölçek teşhisi için
+[numthreads(64, 1, 1)]
+void CSSample(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= _PointCount)
+        return;
+
+    float2 p = _Points[id.x];
+
+    float2 hCoord = Grass_WorldToTexelCoord(p, _TerrainOrigin.xz, _TerrainSize.xz, (float2)_HeightmapRes);
+    int2 hMax = _HeightmapRes - 1;
+    float hb = Grass_SampleTerrainHeightWS(_Heightmap, hCoord, hMax, _TerrainOrigin.y, _TerrainSize.y, GRASS_TERRAIN_DIAG_BILINEAR);
+    float ha = Grass_SampleTerrainHeightWS(_Heightmap, hCoord, hMax, _TerrainOrigin.y, _TerrainSize.y, GRASS_TERRAIN_DIAG_A);
+    float hB = Grass_SampleTerrainHeightWS(_Heightmap, hCoord, hMax, _TerrainOrigin.y, _TerrainSize.y, GRASS_TERRAIN_DIAG_B);
+
+    float2 sCoord = Grass_WorldToTexelCoord(p, _TerrainOrigin.xz, _TerrainSize.xz, (float2)_AlphamapRes);
+    int2 sMax = _AlphamapRes - 1;
+
+    uint o = id.x * 4;
+    _Results[o + 0] = float4(hb, ha, hB, 0);
+    _Results[o + 1] = Grass_SampleSplatBilinear(_Alphamap0, sCoord, sMax);
+    _Results[o + 2] = Grass_SampleSplatNearest(_Alphamap0, sCoord, sMax);
+    _Results[o + 3] = float4(Grass_LoadHeight01(_Heightmap, (int2)floor(hCoord + 0.5), hMax), 0, 0, 0);
+}

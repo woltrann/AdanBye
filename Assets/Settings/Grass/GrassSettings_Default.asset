@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4754c7ad8363274d9b7655d03ebab60, type: 3}
+  m_Name: GrassSettings_Default
+  m_EditorClassIdentifier: 
+  drawDistance: 120
+  chunkSize: 16
+  maxDensityPerM2: 16
+  seed: 12345
+  slopeMinDeg: 30
+  slopeMaxDeg: 55
+  heightRange: {x: 0.4, y: 0.8}
+  widthRange: {x: 0.06, y: 0.1}
+  cullPadding: 0.3
+  lods:
+  - mesh: {fileID: 0}
+    maxDistance: 25
+    keepRatio: 1
+    maxWidthCompensation: 1
+    transitionBand: 5
+    instanceBudget: 400000
+  - mesh: {fileID: 0}
+    maxDistance: 60
+    keepRatio: 0.35
+    maxWidthCompensation: 1.7
+    transitionBand: 10
+    instanceBudget: 600000
+  - mesh: {fileID: 0}
+    maxDistance: 120
+    keepRatio: 0.1
+    maxWidthCompensation: 3
+    transitionBand: 15
+    instanceBudget: 800000
+  layerRules:
+  - layerIndex: 0
+    expectedLayerName: Grass_A_TerrainLayer
+    densityMultiplier: 1
+    rootTint: {r: 0.12, g: 0.25, b: 0.06, a: 1}
+    tipTint: {r: 0.45, g: 0.65, b: 0.18, a: 1}
+    heightMultiplier: 1
+  - layerIndex: 1
+    expectedLayerName: Grass_Dry_TerrainLayer
+    densityMultiplier: 0.6
+    rootTint: {r: 0.35, g: 0.3, b: 0.12, a: 1}
+    tipTint: {r: 0.75, g: 0.65, b: 0.3, a: 1}
+    heightMultiplier: 0.8
+  - layerIndex: 2
+    expectedLayerName: Snow_TerrainLayer
+    densityMultiplier: 0
+    rootTint: {r: 0.9, g: 0.92, b: 0.95, a: 1}
+    tipTint: {r: 0.9, g: 0.92, b: 0.95, a: 1}
+    heightMultiplier: 1
+  - layerIndex: 3
+    expectedLayerName: Muddy_TerrainLayer
+    densityMultiplier: 0.15
+    rootTint: {r: 0.2, g: 0.15, b: 0.08, a: 1}
+    tipTint: {r: 0.4, g: 0.35, b: 0.2, a: 1}
+    heightMultiplier: 0.5

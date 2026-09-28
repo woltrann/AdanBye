@@ -1,0 +1,18 @@
+{
+    "name": "AdanBye.Grass.Editor",
+    "rootNamespace": "AdanBye.Grass.Editor",
+    "references": [
+        "AdanBye.Grass"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
