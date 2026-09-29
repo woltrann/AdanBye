@@ -18,6 +18,13 @@ namespace AdanBye.Grass.Tests
         }
 
         [Test]
+        public void GrassGpuChunk_StrideMatchesManagedSize()
+        {
+            // Compute'taki GrassChunk ile bayt düzeni uyumsuzsa buffer kayar; Stride elle yazıldığı için burada kilitlenir.
+            Assert.AreEqual(System.Runtime.InteropServices.Marshal.SizeOf(typeof(GrassGpuChunk)), GrassGpuChunk.Stride);
+        }
+
+        [Test]
         public void TryCreate_MissingDependencies_ReportsEveryProblem()
         {
             bool ok = GrassDrawSystem.TryCreate(null, null, null, null, 0, out GrassDrawSystem system, out ValidationReport report);

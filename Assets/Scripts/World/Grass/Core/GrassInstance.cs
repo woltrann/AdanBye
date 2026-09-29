@@ -19,6 +19,7 @@ namespace AdanBye.Grass
         public float Width;
         /// <summary>0..1 (unorm16).</summary>
         public float LodFade;
+        /// <summary>RGB = uç rengi, A = kök koyulaştırma oranı (0..1 -> 0..255).</summary>
         public Color32 Color;
         /// <summary>Terrain normali (oktahedral); şimdilik rezerve, ham uint taşınır.</summary>
         public uint NormalOct;
@@ -47,7 +48,7 @@ namespace AdanBye.Grass
         public uint yawHeight;
         /// <summary>düşük 16 bit = genişlik (half, m), yüksek 16 bit = lodFade (unorm16).</summary>
         public uint widthFade;
-        /// <summary>R | G&lt;&lt;8 | B&lt;&lt;16 | A&lt;&lt;24.</summary>
+        /// <summary>R | G&lt;&lt;8 | B&lt;&lt;16 | A&lt;&lt;24. RGB = uç (tip) rengi, A = kök koyulaştırma oranı (lum(kök)/lum(uç)).</summary>
         public uint colorRGBA8;
         public uint normalOct;
         public uint hash;

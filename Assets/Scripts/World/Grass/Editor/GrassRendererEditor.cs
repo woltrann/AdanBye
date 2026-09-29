@@ -54,6 +54,9 @@ namespace AdanBye.Grass.Editor
             int cameras = renderer.ActiveCameraCount;
             long perCamera = renderer.EstimatedBytesPerCamera;
             EditorGUILayout.LabelField("Aktif kamera", cameras.ToString());
+            // Sayaç yalnızca Play'de canlıdır; Edit modunda Repaint tetikleyicisi yok, değer bayat kalırdı.
+            if (Application.isPlaying)
+                EditorGUILayout.LabelField("Chunk", $"Seçilen chunk: {renderer.LastSelectedChunks} / maks {renderer.MaxChunks}");
             EditorGUILayout.LabelField("Bellek (tahmin)",
                 $"~{perCamera / (1024f * 1024f):0} MB / kamera, toplam ~{perCamera * cameras / (1024f * 1024f):0} MB");
             EditorGUILayout.HelpBox("Bellek değeri tahmindir (instance + chunk buffer'ları; küçük buffer'lar ve sürücü payı hariç). " +

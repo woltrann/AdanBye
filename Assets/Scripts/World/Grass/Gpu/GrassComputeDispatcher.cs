@@ -12,11 +12,18 @@ namespace AdanBye.Grass
         // Chunk başına eksen hücre sayısı üst sınırı: 256x256 = 65k thread/chunk; bozuk yoğunluk ayarı GPU'yu boğmasın.
         public const int MaxCellsPerAxis = 256;
 
+        /// <summary>Parlaklık jitter'ı üst sınırı (GrassSettings.colorJitter doğrulamasıyla aynı).</summary>
+        public const float MaxColorJitter = 0.5f;
+
         public float ChunkSize { get; }
         public int CellsPerChunkAxis { get; }
         public float CellSize { get; }
         public uint Seed { get; }
         public Vector4 LayerDensity { get; }
+        /// <summary>4 eleman: rgb = layer uç rengi, a = kök koyulaştırma oranı (LayerDensityMapper.LayerTints). Kopyadır.</summary>
+        public Vector4[] LayerTints { get; }
+        /// <summary>Blade başına parlaklık jitter'ı: RGB çarpanı 1 +- ColorJitter.</summary>
+        public float ColorJitter { get; }
         /// <summary>Radyan: x = tam yoğunluk sınırı, y = sıfır yoğunluk sınırı.</summary>
         public Vector2 SlopeAnglesRad { get; }
         public Vector2 HeightRange { get; }
@@ -25,14 +32,16 @@ namespace AdanBye.Grass
         /// <summary>Hücre boyutu tam sayı hücreye yuvarlandığı için gerçek üst yoğunluk istenenden büyük/eşit olur (adet/m2).</summary>
         public float ActualMaxDensityPerM2 => 1f / (CellSize * CellSize);
 
-        GrassGenerateSettings(float chunkSize, int cells, uint seed, Vector4 layerDensity,
-                              Vector2 slopeRad, Vector2 heightRange, Vector2 widthRange)
+        GrassGenerateSettings(float chunkSize, int cells, uint seed, Vector4 layerDensity, Vector4[] layerTints,
+                              float colorJitter, Vector2 slopeRad, Vector2 heightRange, Vector2 widthRange)
         {
             ChunkSize = chunkSize;
             CellsPerChunkAxis = cells;
             CellSize = chunkSize / cells;
             Seed = seed;
             LayerDensity = layerDensity;
+            LayerTints = (Vector4[])layerTints.Clone(); // ayar snapshot'ı: çağıranın dizisi sonradan değişse de tutarlı kalsın
+            ColorJitter = colorJitter;
             SlopeAnglesRad = slopeRad;
             HeightRange = heightRange;
             WidthRange = widthRange;
@@ -44,7 +53,8 @@ namespace AdanBye.Grass
         /// dikiş/çift aday olmaz). Örn. 16 m chunk, 16/m2 -> 64 hücre, 0.25 m.
         /// </summary>
         public static bool TryCreate(float chunkSize, float maxDensityPerM2, uint seed,
-                                     Vector4 layerDensity, float slopeMinDeg, float slopeMaxDeg,
+                                     Vector4 layerDensity, Vector4[] layerTints, float colorJitter,
+                                     float slopeMinDeg, float slopeMaxDeg,
                                      Vector2 heightRange, Vector2 widthRange,
                                      out GrassGenerateSettings settings, out string error)
         {
@@ -65,6 +75,17 @@ namespace AdanBye.Grass
                 float d = layerDensity[i];
                 if (float.IsNaN(d) || float.IsInfinity(d) || d < 0f) { error = $"layerDensity[{i}] sonlu ve >= 0 olmalı."; return false; }
             }
+            if (layerTints == null || layerTints.Length != 4) { error = "layerTints 4 elemanlı olmalı."; return false; }
+            for (int i = 0; i < 4; i++)
+            {
+                Vector4 t = layerTints[i];
+                if (!IsFinite(t.x) || !IsFinite(t.y) || !IsFinite(t.z) || !IsFinite(t.w)) { error = $"layerTints[{i}] sonlu olmalı."; return false; }
+            }
+            if (!IsFinite(colorJitter) || colorJitter < 0f || colorJitter > MaxColorJitter)
+            {
+                error = $"colorJitter sonlu ve 0..{MaxColorJitter} aralığında olmalı (değer {colorJitter}).";
+                return false;
+            }
             if (!IsFinite(slopeMinDeg) || !IsFinite(slopeMaxDeg) || slopeMinDeg < 0f || slopeMaxDeg > 90f || slopeMaxDeg <= slopeMinDeg)
             {
                 error = "Eğim açıları 0 <= min < max <= 90 (derece) olmalı.";
@@ -73,7 +94,7 @@ namespace AdanBye.Grass
             if (!IsValidRange(heightRange)) { error = "heightRange: 0 < min <= max ve sonlu olmalı."; return false; }
             if (!IsValidRange(widthRange)) { error = "widthRange: 0 < min <= max ve sonlu olmalı."; return false; }
 
-            settings = new GrassGenerateSettings(chunkSize, (int)cellsD, seed, layerDensity,
+            settings = new GrassGenerateSettings(chunkSize, (int)cellsD, seed, layerDensity, layerTints, colorJitter,
                                                  new Vector2(slopeMinDeg * Mathf.Deg2Rad, slopeMaxDeg * Mathf.Deg2Rad),
                                                  heightRange, widthRange);
             error = null;
@@ -152,6 +173,8 @@ namespace AdanBye.Grass
         static readonly int SeedId = Shader.PropertyToID("_Seed");
         static readonly int ChunkCountId = Shader.PropertyToID("_ChunkCount");
         static readonly int LayerDensityId = Shader.PropertyToID("_LayerDensity");
+        static readonly int LayerTintId = Shader.PropertyToID("_LayerTint");
+        static readonly int ColorJitterId = Shader.PropertyToID("_ColorJitter");
         static readonly int SlopeAnglesId = Shader.PropertyToID("_SlopeAngles");
         static readonly int HeightRangeId = Shader.PropertyToID("_HeightRange");
         static readonly int WidthRangeId = Shader.PropertyToID("_WidthRange");
@@ -231,6 +254,8 @@ namespace AdanBye.Grass
             _shader.SetInt(SeedId, unchecked((int)settings.Seed));
             _shader.SetInt(ChunkCountId, chunkCount);
             _shader.SetVector(LayerDensityId, settings.LayerDensity);
+            _shader.SetVectorArray(LayerTintId, settings.LayerTints);
+            _shader.SetFloat(ColorJitterId, settings.ColorJitter);
             _shader.SetVector(SlopeAnglesId, settings.SlopeAnglesRad);
             _shader.SetVector(HeightRangeId, settings.HeightRange);
             _shader.SetVector(WidthRangeId, settings.WidthRange);

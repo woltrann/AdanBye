@@ -5,17 +5,15 @@ using UnityEngine;
 namespace AdanBye.Grass
 {
     /// <summary>
-    /// Compute'a giden chunk satırı. Düzen GrassGenerate.compute içindeki GrassChunk ile BİREBİR aynı (16 bayt).
+    /// Compute'a giden chunk satırı. Düzen GrassGenerate.compute içindeki GrassChunk ile BİREBİR aynı (12 bayt: cx, cz, chunkIndex).
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct GrassGpuChunk
     {
-        public const int Stride = 16;
+        public const int Stride = 12;
 
         public int cx;
         public int cz;
-        /// <summary>Compute okumaz (LOD seyreltmeyle yapılır, hücre seviyesiyle değil); düzen uyumu için taşınır.</summary>
-        public int cellLevel;
         public int chunkIndex;
     }
 
@@ -162,7 +160,7 @@ namespace AdanBye.Grass
             for (int i = 0; i < count; i++)
             {
                 VisibleChunk c = selector[i];
-                _staging[i] = new GrassGpuChunk { cx = c.Cx, cz = c.Cz, cellLevel = c.CellLevel, chunkIndex = c.Index };
+                _staging[i] = new GrassGpuChunk { cx = c.Cx, cz = c.Cz, chunkIndex = c.Index };
             }
             if (count > 0) _chunks.SetData(_staging, 0, 0, count);
             return count;

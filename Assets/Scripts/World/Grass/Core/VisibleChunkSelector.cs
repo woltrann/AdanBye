@@ -4,28 +4,25 @@ using UnityEngine;
 
 namespace AdanBye.Grass
 {
-    /// <summary>Seçicinin çıktı satırı: chunk koordinatı, hücre seviyesi (0/1/2) ve kameraya XZ uzaklığı².</summary>
+    /// <summary>Seçicinin çıktı satırı: chunk koordinatı, düz indeksi ve kameraya XZ uzaklığı².</summary>
     public readonly struct VisibleChunk
     {
         public readonly int Cx;
         public readonly int Cz;
         public readonly int Index;
-        public readonly int CellLevel;
         public readonly float DistanceSq;
 
-        public VisibleChunk(int cx, int cz, int index, int cellLevel, float distanceSq)
+        public VisibleChunk(int cx, int cz, int index, float distanceSq)
         {
             Cx = cx;
             Cz = cz;
             Index = index;
-            CellLevel = cellLevel;
             DistanceSq = distanceSq;
         }
     }
 
     /// <summary>
-    /// Kamera konumu + çizim mesafesi halkası + frustum ile bu frame çim üretilecek chunk listesini çıkarır ve her
-    /// chunk'a mesafeye göre hücre seviyesi (0 = en sık, 2 = en seyrek) atar.
+    /// Kamera konumu + çizim mesafesi halkası + frustum ile bu frame çim üretilecek chunk listesini çıkarır.
     /// Frame başına GC allocation YOK: çıktı dizisi ctor'da bir kez ayrılır, Select yalnızca doldurur.
     /// Halka yatay (XZ) mesafedir; yükseklik farkı çim yoğunluğunu değil yalnızca frustum testini ilgilendirir.
     /// Chunk mesafesi chunk dikdörtgenine EN YAKIN nokta üzerinden ölçülür: chunk'ın yakın ucu halkadaysa çim
@@ -37,9 +34,7 @@ namespace AdanBye.Grass
         readonly ChunkGrid _grid;
         readonly VisibleChunk[] _chunks;
         readonly float[] _distSq; // _chunks ile paralel; taşmada en uzağı bulmak için
-        readonly float _level1StartSq;
-        readonly float _level2StartSq;
-        readonly float _verticalPadding;
+        readonly Vector3 _padding; // yarım-genişlik (kenar başına) dolgu; Select'te Bounds.Expand için 2 ile çarpılır
         int _worstIndex;
 
         /// <summary>Son Select çağrısındaki chunk sayısı.</summary>
@@ -58,35 +53,34 @@ namespace AdanBye.Grass
         /// <summary>Geçerli girişler; alan ayırmaz (dizi dilimi).</summary>
         public ReadOnlySpan<VisibleChunk> Chunks => new ReadOnlySpan<VisibleChunk>(_chunks, 0, Count);
 
-        VisibleChunkSelector(ChunkBoundsTable table, int maxChunks, float level1Start, float level2Start, float verticalPadding)
+        VisibleChunkSelector(ChunkBoundsTable table, int maxChunks, Vector3 padding)
         {
             _table = table;
             _grid = table.Grid;
             _chunks = new VisibleChunk[maxChunks];
             _distSq = new float[maxChunks];
-            _level1StartSq = level1Start * level1Start;
-            _level2StartSq = level2Start * level2Start;
-            _verticalPadding = verticalPadding;
+            _padding = padding;
         }
 
         /// <param name="maxChunks">Çıktı kapasitesi (&gt; 0).</param>
-        /// <param name="level1Start">Hücre seviyesi 1'in başladığı mesafe (m); &gt; 0.</param>
-        /// <param name="level2Start">Hücre seviyesi 2'nin başladığı mesafe (m); level1Start'tan büyük.</param>
-        /// <param name="verticalPadding">
-        /// Chunk AABB'sini yukarı/aşağı genişletir (m). Neden: bounds yalnızca zemin yüksekliğini kapsar, çim
-        /// bıçakları bunun üstüne uzanır; dolgu olmazsa ekran kenarında çim aniden kesilir.
+        /// <param name="padding">
+        /// Chunk AABB'sini her eksende her iki yönde genişletir (m). Neden: bounds yalnızca zemin yüksekliğini kapsar,
+        /// çim bıçakları yukarı uzanır (dikey) ve rüzgar/genişlik yüzünden chunk sınırının dışına taşar (yatay);
+        /// dolgu olmazsa ekran kenarında çim aniden kesilir.
         /// </param>
-        public static bool TryCreate(ChunkBoundsTable table, int maxChunks, float level1Start, float level2Start,
-                                     float verticalPadding, out VisibleChunkSelector selector, out string error)
+        public static bool TryCreate(ChunkBoundsTable table, int maxChunks,
+                                     Vector3 padding, out VisibleChunkSelector selector, out string error)
         {
             selector = null;
             if (table == null) { error = "ChunkBoundsTable null."; return false; }
             if (maxChunks <= 0) { error = "maxChunks > 0 olmalı."; return false; }
-            if (!(level1Start > 0f) || float.IsInfinity(level1Start)) { error = "level1Start sonlu ve > 0 olmalı."; return false; }
-            if (!(level2Start > level1Start) || float.IsInfinity(level2Start)) { error = "level2Start, level1Start'tan büyük ve sonlu olmalı."; return false; }
-            if (!(verticalPadding >= 0f) || float.IsInfinity(verticalPadding)) { error = "verticalPadding sonlu ve >= 0 olmalı."; return false; }
+            if (!IsValidPadding(padding.x) || !IsValidPadding(padding.y) || !IsValidPadding(padding.z))
+            {
+                error = "padding bileşenleri sonlu ve >= 0 olmalı.";
+                return false;
+            }
 
-            selector = new VisibleChunkSelector(table, maxChunks, level1Start, level2Start, verticalPadding);
+            selector = new VisibleChunkSelector(table, maxChunks, padding);
             error = null;
             return true;
         }
@@ -113,7 +107,7 @@ namespace AdanBye.Grass
             }
 
             float drawSq = drawDistance * drawDistance;
-            var padding = new Vector3(0f, _verticalPadding * 2f, 0f); // Bounds.Expand toplam boyuta eklenir
+            Vector3 padding = _padding * 2f; // Bounds.Expand toplam boyuta eklenir
 
             for (int cz = lo.y; cz <= hi.y; cz++)
             {
@@ -132,8 +126,7 @@ namespace AdanBye.Grass
                         if (!frustum.Intersects(bounds)) continue;
                     }
 
-                    int level = distSq >= _level2StartSq ? 2 : (distSq >= _level1StartSq ? 1 : 0);
-                    Add(new VisibleChunk(cx, cz, _grid.ToIndex(cx, cz), level, distSq));
+                    Add(new VisibleChunk(cx, cz, _grid.ToIndex(cx, cz), distSq));
                 }
             }
             return Count;
@@ -165,6 +158,8 @@ namespace AdanBye.Grass
                 if (_distSq[i] > _distSq[worst]) worst = i;
             return worst;
         }
+
+        static bool IsValidPadding(float v) => v >= 0f && !float.IsInfinity(v); // NaN >= 0 false
 
         static bool IsFinite(float v) => !float.IsNaN(v) && !float.IsInfinity(v);
     }

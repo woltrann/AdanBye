@@ -20,6 +20,7 @@ namespace AdanBye.Grass
         const float DefaultSlopeMinDeg = 30f;
         const float DefaultSlopeMaxDeg = 55f;
         const float DefaultCullPadding = 0.3f;
+        const float DefaultColorJitter = 0.08f;
         static readonly Vector2 DefaultHeightRange = new Vector2(0.4f, 0.8f);
         static readonly Vector2 DefaultWidthRange = new Vector2(0.06f, 0.10f);
 
@@ -46,6 +47,10 @@ namespace AdanBye.Grass
         [SerializeField] Vector2 heightRange = DefaultHeightRange;
         [SerializeField] Vector2 widthRange = DefaultWidthRange;
 
+        [Header("Renk")]
+        [Tooltip("Blade başına parlaklık jitter'ı: uç rengi 1 +- bu oranda çarpılır (0..0.5). 0 = layer rengi birebir.")]
+        [SerializeField] float colorJitter = DefaultColorJitter;
+
         [Header("Culling")]
         [Tooltip("Blade frustum culling küresine eklenen pay (m); rüzgar/ezme eğilmesini kesmemek için.")]
         [SerializeField] float cullPadding = DefaultCullPadding;
@@ -68,6 +73,7 @@ namespace AdanBye.Grass
             heightRange = DefaultHeightRange;
             widthRange = DefaultWidthRange;
             cullPadding = DefaultCullPadding;
+            colorJitter = DefaultColorJitter;
             lods = new List<GrassLodEntry>(GrassLodEntry.CreateDefaults());
             layerRules = GrassLayerRuleEntry.CreateDefaults();
         }
@@ -131,8 +137,9 @@ namespace AdanBye.Grass
             // 3) Üretim parametreleri. Layer başarısızsa sıfır yoğunlukla yine denenir: diğer alanların (chunk, eğim,
             // boy...) hataları layer hatasının arkasında gizli kalmasın.
             Vector4 layerDensity = mapper != null ? mapper.DensityMultipliers : Vector4.zero;
+            Vector4[] layerTints = mapper != null ? mapper.LayerTints : NeutralLayerTints();
             bool generateOk = GrassGenerateSettings.TryCreate(chunkSize, maxDensityPerM2, unchecked((uint)seed), layerDensity,
-                                                              slopeMinDeg, slopeMaxDeg, heightRange, widthRange,
+                                                              layerTints, colorJitter, slopeMinDeg, slopeMaxDeg, heightRange, widthRange,
                                                               out GrassGenerateSettings generate, out string generateError);
             if (!generateOk) report.AddError(generateError);
 
@@ -194,6 +201,14 @@ namespace AdanBye.Grass
                 rules.Add(layerRules[i].ToRule(checkExpectedNames));
             }
             return complete;
+        }
+
+        // Layer başarısızken (yoğunluk zaten 0) üretim doğrulamasının tint dizisinden takılmaması için nötr yer tutucu.
+        static Vector4[] NeutralLayerTints()
+        {
+            var tints = new Vector4[LayerDensityMapper.MaxLayers];
+            for (int i = 0; i < tints.Length; i++) tints[i] = Vector4.one;
+            return tints;
         }
 
         // Terrain bilinmiyorken Core'un layer eşlemesi için 4 kanallık yer tutucu adlar; expected name zaten

@@ -152,5 +152,72 @@ namespace AdanBye.Grass.Tests
             rules[0] = new LayerDensityRule(0, "Grass_A", 1f, new Color(float.NaN, 0f, 0f), Color.green, 1f);
             Assert.IsFalse(Create(Names, rules, out _, out _));
         }
+
+        static List<LayerDensityRule> RulesWithColors(Color root, Color tip, float density = 1f)
+        {
+            var rules = DefaultRules();
+            rules[0] = new LayerDensityRule(0, "Grass_A", density, root, tip, 1f);
+            return rules;
+        }
+
+        [Test]
+        public void LayerTints_RgbIsTip_ShadeIsLuminanceRatio()
+        {
+            Assert.IsTrue(Create(Names, DefaultRules(), out LayerDensityMapper m, out _));
+            Assert.AreEqual(4, m.LayerTints.Length);
+
+            // Rec.709: root (0.1,0.2,0.1) / tip (0.6,0.8,0.3).
+            float rootLum = 0.2126f * 0.1f + 0.7152f * 0.2f + 0.0722f * 0.1f;
+            float tipLum = 0.2126f * 0.6f + 0.7152f * 0.8f + 0.0722f * 0.3f;
+            Vector4 t = m.LayerTints[0];
+            Assert.AreEqual(0.6f, t.x, 1e-5f);
+            Assert.AreEqual(0.8f, t.y, 1e-5f);
+            Assert.AreEqual(0.3f, t.z, 1e-5f);
+            Assert.AreEqual(rootLum / tipLum, t.w, 1e-5f);
+        }
+
+        [Test]
+        public void LayerTints_SameRootAndTip_ShadeIsOne()
+        {
+            var snow = new Color(0.9f, 0.92f, 0.95f);
+            Assert.IsTrue(Create(Names, RulesWithColors(snow, snow), out LayerDensityMapper m, out ValidationReport report));
+            Assert.AreEqual(1f, m.LayerTints[0].w, 1e-5f);
+            Assert.AreEqual(0, report.Warnings.Count, report.ToString());
+        }
+
+        [Test]
+        public void LayerTints_RootBrighterThanTip_ClampsShadeAndWarns()
+        {
+            Assert.IsTrue(Create(Names, RulesWithColors(Color.white, new Color(0.3f, 0.3f, 0.3f)),
+                                 out LayerDensityMapper m, out ValidationReport report));
+            Assert.AreEqual(1f, m.LayerTints[0].w, 1e-6f);
+            Assert.IsTrue(report.Warnings.Count >= 1 && report.ToString().Contains("parlak"), report.ToString());
+        }
+
+        [Test]
+        public void LayerTints_RootBrighterOnZeroDensityLayer_NoWarning()
+        {
+            Assert.IsTrue(Create(Names, RulesWithColors(Color.white, new Color(0.3f, 0.3f, 0.3f), density: 0f),
+                                 out _, out ValidationReport report));
+            Assert.AreEqual(0, report.Warnings.Count, report.ToString());
+        }
+
+        [Test]
+        public void LayerTints_DifferentHueRoot_WarnsButStaysValid()
+        {
+            // Aynı parlaklık oranı ama kök mavi, uç yeşil: ton yalnızca yaklaşık temsil edilir.
+            Assert.IsTrue(Create(Names, RulesWithColors(new Color(0f, 0f, 0.5f), new Color(0.1f, 0.8f, 0.1f)),
+                                 out LayerDensityMapper m, out ValidationReport report));
+            Assert.Greater(m.LayerTints[0].w, 0f);
+            Assert.Less(m.LayerTints[0].w, 1f);
+            Assert.AreEqual(1, report.Warnings.Count, report.ToString());
+        }
+
+        [Test]
+        public void LayerTints_BlackTip_DoesNotDivideByZero()
+        {
+            Assert.IsTrue(Create(Names, RulesWithColors(Color.black, Color.black), out LayerDensityMapper m, out _));
+            Assert.AreEqual(1f, m.LayerTints[0].w, 1e-6f);
+        }
     }
 }

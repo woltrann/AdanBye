@@ -60,4 +60,35 @@ void GrassInstance_float(float InstanceID,
 #endif
 }
 
+// Terrain layer'ından gelen çim rengi (WP-4). Ayrı fonksiyon: GrassInstance_float imzası değişmesin, mevcut SG bağlantıları kırılmasın.
+//
+// Bağlama (ikinci Custom Function node, aynı ayarlar: Type File, Source bu dosya, Use Pragmas AÇIK):
+//   Name   : GrassInstanceTint      (-> GrassInstanceTint_float)
+//   Inputs : InstanceID (Float)     <- 'Instance ID' node'unun Out'u
+//   Outputs: Tip (Vector3), Root (Vector3)   -- ikisi de LINEAR uzayda, doğrudan BaseColor'a verilebilir
+//
+// Neden burada sRGB->linear: layer tint'leri Inspector'da gamma olarak yazılır ve compute'a ham gider; proje Linear
+// renk uzayındadır. Kök rengi (uç * koyulaştırma oranı) gamma'da hesaplanır, ÇÜNKÜ oran (lum(kök)/lum(uç)) gamma
+// değerlerinden türetildi; linear'da çarparsak kök gereğinden parlak çıkar.
+float3 Grass_SrgbToLinear(float3 c)
+{
+    // step + lerp: vektör koşullu ?: yerine her derleyicide aynı davranan bileşen bazlı seçim.
+    float3 low = c * (1.0 / 12.92);
+    float3 high = pow((c + 0.055) * (1.0 / 1.055), 2.4);
+    return lerp(high, low, step(c, 0.04045));
+}
+
+void GrassInstanceTint_float(float InstanceID, out float3 Tip, out float3 Root)
+{
+#ifdef SHADERGRAPH_PREVIEW
+    Tip = float3(1.0, 1.0, 1.0);
+    Root = float3(0.5, 0.5, 0.5);
+#else
+    GrassInstanceData d = Grass_Unpack(_GrassVisibleInstances[(uint)(InstanceID + 0.5)]);
+    float3 tipGamma = d.color.rgb;
+    Tip = Grass_SrgbToLinear(tipGamma);
+    Root = Grass_SrgbToLinear(tipGamma * d.color.a);
+#endif
+}
+
 #endif // ADANBYE_GRASS_SG_INSTANCE_INCLUDED

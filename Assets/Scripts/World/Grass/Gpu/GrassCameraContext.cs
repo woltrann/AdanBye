@@ -31,7 +31,7 @@ namespace AdanBye.Grass
         public MaterialPropertyBlock Props(int lod) => _props[lod];
 
         public static bool TryCreate(int[] lodBudgets, int maxChunks, ChunkBoundsTable table, float drawDistance,
-                                     GrassLodMeshSet meshes, out GrassCameraContext context, out string error)
+                                     Vector3 chunkPadding, GrassLodMeshSet meshes, out GrassCameraContext context, out string error)
         {
             context = null;
             if (meshes.Count != lodBudgets.Length)
@@ -42,8 +42,7 @@ namespace AdanBye.Grass
 
             if (!GrassGpuResources.TryCreate(lodBudgets, maxChunks, out GrassGpuResources gpu, out error)) return false;
 
-            // Hücre seviyesi kullanılmıyor (seyreltmeyi LOD yapıyor): eşikler çizim mesafesinin ötesinde, seçici 1/2 atamasın.
-            if (!VisibleChunkSelector.TryCreate(table, maxChunks, drawDistance * 2f, drawDistance * 3f, 2f,
+            if (!VisibleChunkSelector.TryCreate(table, maxChunks, chunkPadding,
                                                 out VisibleChunkSelector selector, out error))
             {
                 gpu.Dispose();

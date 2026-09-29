@@ -36,6 +36,9 @@ namespace AdanBye.Grass
         public string Status => _status;
         public bool IsRunning => _system != null && !_system.IsDisposed;
         public int ActiveCameraCount => _system != null ? _system.CameraCount : 0;
+        /// <summary>Son karede seçilen chunk sayısı ve seçici kapasitesi; sistem yoksa 0.</summary>
+        public int LastSelectedChunks => IsRunning ? _system.LastSelectedChunks : 0;
+        public int MaxChunks => IsRunning ? _system.MaxChunks : 0;
         /// <summary>Kamera başına yaklaşık GPU belleği (bayt, tahmin); sistem yoksa 0.</summary>
         public long EstimatedBytesPerCamera => IsRunning ? _system.EstimatedBytesPerCamera : 0;
 

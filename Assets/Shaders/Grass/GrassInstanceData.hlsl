@@ -13,7 +13,8 @@
 //   position    : dünya konumu (kök noktası)
 //   yawHeight   : düşük 16 bit = yaw (unorm16, 0..2pi), yüksek 16 bit = yükseklik (half, metre)
 //   widthFade   : düşük 16 bit = genişlik (half, metre), yüksek 16 bit = lodFade (unorm16)
-//   colorRGBA8  : tint (R | G<<8 | B<<16 | A<<24)
+//   colorRGBA8  : (R | G<<8 | B<<16 | A<<24); RGB = uç (tip) rengi, A = kök koyulaştırma oranı
+//                 = lum(kök)/lum(uç) (0..1; 1 = kök uçla aynı parlaklıkta). Düzen bu anlamla değişmez.
 //   normalOct   : terrain normali (oktahedral) - spike'ta yazılmıyor, rezerve
 //   hash        : instance başına rastgelelik (rüzgar fazı, renk jitter'ı)
 struct GrassInstance
@@ -55,7 +56,7 @@ GrassInstanceData Grass_Unpack(GrassInstance i)
 
 // Grass_Unpack'in tersi. C# karşılığı: AdanBye.Grass.GrassInstance.Pack — işlem sırası bilerek aynı tutuldu
 // (yaw sarma, unorm16 yuvarlama, half sınırı, NaN -> 0); GrassGenerateParityTests iki tarafı bit düzeyinde karşılaştırır.
-// 'color' 0..1 aralığındadır, 8 bite yuvarlanır. Bozuk (NaN/Inf/negatif) skalerler GPU'ya rastgele bit örüntüsü
+// 'color' 0..1 aralığındadır, 8 bite yuvarlanır (rgb = uç rengi, w = kök koyulaştırma oranı). Bozuk (NaN/Inf/negatif) skalerler GPU'ya rastgele bit örüntüsü
 // olarak gitmesin diye C# ile aynı şekilde temizlenir.
 GrassInstance Grass_Pack(float3 position, float yaw, float height, float width, float lodFade,
                          float4 color, uint normalOct, uint hash)

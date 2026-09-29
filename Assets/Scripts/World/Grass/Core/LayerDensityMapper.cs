@@ -56,13 +56,36 @@ namespace AdanBye.Grass
         public Vector4[] RootTints { get; }
         public Vector4[] TipTints { get; }
 
-        LayerDensityMapper(Vector4 density, Vector4 height, Vector4[] roots, Vector4[] tips)
+        /// <summary>
+        /// Compute'a giden türetilmiş renk: rgb = uç rengi, a = kök koyulaştırma oranı = lum(kök)/lum(uç), [0,1]'e
+        /// kırpılır. Neden oran: instance renginde kök rengi için yer yok (RGB=uç, A=1 kanal); kök, uç renginin
+        /// parlaklık oranıyla koyulaştırılarak YAKLAŞIK temsil edilir. 4 eleman; DEĞİŞTİRME (paylaşılan).
+        /// </summary>
+        public Vector4[] LayerTints { get; }
+
+        LayerDensityMapper(Vector4 density, Vector4 height, Vector4[] roots, Vector4[] tips, Vector4[] layerTints)
         {
             DensityMultipliers = density;
             HeightMultipliers = height;
             RootTints = roots;
             TipTints = tips;
+            LayerTints = layerTints;
         }
+
+        // Rec.709 luma: kök/uç parlaklık oranı için.
+        static float Luminance(Vector4 c) => 0.2126f * c.x + 0.7152f * c.y + 0.0722f * c.z;
+
+        /// <summary>Kök/uç parlaklık oranı ([0,1]'e kırpılmış) ve kırpma gerekip gerekmediği. Uç ~siyahsa oran 1 (bölme yok).</summary>
+        static float ComputeShade(Vector4 root, Vector4 tip, out bool rootBrighterThanTip)
+        {
+            float tipLum = Luminance(tip);
+            float ratio = tipLum > 1e-4f ? Luminance(root) / tipLum : 1f;
+            rootBrighterThanTip = ratio > 1f + 1e-4f;
+            return Mathf.Clamp01(ratio);
+        }
+
+        // Kökün rengi, uç renginin shade ile koyulaştırılmışından bu kadar (kanal başına mutlak) saparsa bilgi uyarısı.
+        const float HueMismatchTolerance = 0.1f;
 
         /// <summary>Splat ağırlığından (alphamap rgba) çim yoğunluk çarpanı — compute'un CPU aynası.</summary>
         public float EvaluateDensity(Vector4 splat) => Vector4.Dot(splat, DensityMultipliers);
@@ -165,12 +188,38 @@ namespace AdanBye.Grass
 
             if (!report.IsValid) return false;
 
+            var layerTints = new Vector4[MaxLayers];
+            for (int i = 0; i < MaxLayers; i++)
+            {
+                float shade = ComputeShade(roots[i], tips[i], out bool rootBrighter);
+                layerTints[i] = new Vector4(tips[i].x, tips[i].y, tips[i].z, shade);
+
+                // Yoğunluğu 0 olan layer'da çim çıkmaz; renk uyarıları gürültü olur.
+                if (!hasRule[i] || density[i] <= 0f) continue;
+
+                if (rootBrighter)
+                {
+                    report.AddWarning($"Layer {i}: kök rengi uç renginden parlak; kök koyulaştırma oranı 1'e kırpıldı " +
+                                      "(kök uçtan parlak gösterilemez).");
+                }
+                else if (HueDiffers(roots[i], tips[i], shade))
+                {
+                    report.AddWarning($"Layer {i}: kök rengi uç renginin koyulaştırılmışından farklı tonda; kök rengi " +
+                                      "yalnızca parlaklık oranıyla YAKLAŞIK temsil edilir (ton uçtan alınır).");
+                }
+            }
+
             mapper = new LayerDensityMapper(
                 new Vector4(density[0], density[1], density[2], density[3]),
                 new Vector4(height[0], height[1], height[2], height[3]),
-                roots, tips);
+                roots, tips, layerTints);
             return true;
         }
+
+        static bool HueDiffers(Vector4 root, Vector4 tip, float shade)
+            => Mathf.Abs(root.x - tip.x * shade) > HueMismatchTolerance ||
+               Mathf.Abs(root.y - tip.y * shade) > HueMismatchTolerance ||
+               Mathf.Abs(root.z - tip.z * shade) > HueMismatchTolerance;
 
         static bool IsFinite(float v) => !float.IsNaN(v) && !float.IsInfinity(v);
         static bool IsFinite(Color c) => IsFinite(c.r) && IsFinite(c.g) && IsFinite(c.b) && IsFinite(c.a);

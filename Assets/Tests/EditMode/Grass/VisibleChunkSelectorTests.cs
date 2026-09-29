@@ -8,8 +8,6 @@ namespace AdanBye.Grass.Tests
 {
     public class VisibleChunkSelectorTests
     {
-        const float Level1Start = 25f;
-        const float Level2Start = 60f;
         const float DrawDistance = 120f;
 
         sealed class AcceptAll : IFrustum { public bool Intersects(Bounds bounds) => true; }
@@ -30,9 +28,9 @@ namespace AdanBye.Grass.Tests
             return table;
         }
 
-        static VisibleChunkSelector BuildSelector(ChunkBoundsTable table, int maxChunks = 4000)
+        static VisibleChunkSelector BuildSelector(ChunkBoundsTable table, int maxChunks = 4000, Vector3? padding = null)
         {
-            Assert.IsTrue(VisibleChunkSelector.TryCreate(table, maxChunks, Level1Start, Level2Start, 2f,
+            Assert.IsTrue(VisibleChunkSelector.TryCreate(table, maxChunks, padding ?? new Vector3(0f, 2f, 0f),
                 out VisibleChunkSelector selector, out string error), error);
             return selector;
         }
@@ -46,7 +44,7 @@ namespace AdanBye.Grass.Tests
         }
 
         [Test]
-        public void Ring_MatchesBruteForce_AndAssignsLevelsByDistance()
+        public void Ring_MatchesBruteForce()
         {
             ChunkBoundsTable table = BuildTable();
             VisibleChunkSelector selector = BuildSelector(table);
@@ -62,31 +60,24 @@ namespace AdanBye.Grass.Tests
             Assert.AreEqual(expected, count);
             Assert.IsFalse(selector.Overflowed);
 
-            bool sawLevel0 = false, sawLevel1 = false, sawLevel2 = false;
             for (int i = 0; i < count; i++)
             {
                 VisibleChunk c = selector[i];
                 Assert.AreEqual(table.Grid.ToIndex(c.Cx, c.Cz), c.Index);
                 Assert.AreEqual(RectDistSq(table.Grid, c.Cx, c.Cz, cam.x, cam.z), c.DistanceSq, 1e-3f);
-                int level = c.DistanceSq >= Level2Start * Level2Start ? 2 : (c.DistanceSq >= Level1Start * Level1Start ? 1 : 0);
-                Assert.AreEqual(level, c.CellLevel);
-                sawLevel0 |= level == 0;
-                sawLevel1 |= level == 1;
-                sawLevel2 |= level == 2;
             }
-            Assert.IsTrue(sawLevel0 && sawLevel1 && sawLevel2, "0/1/2 seviyelerinin üçü de görülmeli");
             Assert.AreEqual(count, selector.Chunks.Length);
         }
 
         [Test]
-        public void CameraChunk_IsIncludedAtLevelZero()
+        public void CameraChunk_IsIncluded()
         {
             VisibleChunkSelector selector = BuildSelector(BuildTable());
             selector.Select(new Vector3(3f, 10f, 7f), DrawDistance, null);
 
             bool found = false;
             for (int i = 0; i < selector.Count; i++)
-                if (selector[i].DistanceSq == 0f) { found = true; Assert.AreEqual(0, selector[i].CellLevel); }
+                if (selector[i].DistanceSq == 0f) found = true;
             Assert.IsTrue(found);
         }
 
@@ -172,12 +163,34 @@ namespace AdanBye.Grass.Tests
         {
             ChunkBoundsTable table = BuildTable();
             string error;
-            Assert.IsFalse(VisibleChunkSelector.TryCreate(null, 10, 25f, 60f, 0f, out _, out error)); Assert.IsNotEmpty(error);
-            Assert.IsFalse(VisibleChunkSelector.TryCreate(table, 0, 25f, 60f, 0f, out _, out error)); Assert.IsNotEmpty(error);
-            Assert.IsFalse(VisibleChunkSelector.TryCreate(table, 10, 0f, 60f, 0f, out _, out error)); Assert.IsNotEmpty(error);
-            Assert.IsFalse(VisibleChunkSelector.TryCreate(table, 10, 60f, 25f, 0f, out _, out error)); Assert.IsNotEmpty(error);
-            Assert.IsFalse(VisibleChunkSelector.TryCreate(table, 10, 25f, 60f, -1f, out _, out error)); Assert.IsNotEmpty(error);
-            Assert.IsFalse(VisibleChunkSelector.TryCreate(table, 10, float.NaN, 60f, 0f, out _, out error)); Assert.IsNotEmpty(error);
+            Assert.IsFalse(VisibleChunkSelector.TryCreate(null, 10, Vector3.zero, out _, out error)); Assert.IsNotEmpty(error);
+            Assert.IsFalse(VisibleChunkSelector.TryCreate(table, 0, Vector3.zero, out _, out error)); Assert.IsNotEmpty(error);
+            Assert.IsFalse(VisibleChunkSelector.TryCreate(table, 10, new Vector3(0f, -1f, 0f), out _, out error)); Assert.IsNotEmpty(error);
+            Assert.IsFalse(VisibleChunkSelector.TryCreate(table, 10, new Vector3(float.NaN, 0f, 0f), out _, out error)); Assert.IsNotEmpty(error);
+        }
+
+        [Test]
+        public void HorizontalPadding_KeepsEdgeChunkThatUnpaddedFrustumRejects()
+        {
+            ChunkBoundsTable table = BuildTable();
+            var cam = new Vector3(0f, 10f, 0f);
+            // Origin -500 ve 16 m chunk ile chunk kenarları ..., -20, -4, 12 ... olur (0 bir kenar DEĞİL).
+            // Frustum maxX >= 0 ister: sağ kenarı -4 olan chunk dolgusuz elenir, 4 m yatay dolguyla (maxX 0'a çıkar) tutulur.
+            const float edgeMaxX = -4f;
+            var frustum = new MaxXAtLeast(0f);
+
+            int without = BuildSelector(table, 4000, new Vector3(0f, 2f, 0f)).Select(cam, DrawDistance, frustum);
+            VisibleChunkSelector padded = BuildSelector(table, 4000, new Vector3(4f, 2f, 4f));
+            int with = padded.Select(cam, DrawDistance, frustum);
+
+            Assert.Greater(with, without);
+            bool foundEdge = false;
+            for (int i = 0; i < with; i++)
+            {
+                table.Grid.GetChunkRect(padded[i].Cx, padded[i].Cz, out _, out _, out float maxX, out _);
+                if (Mathf.Approximately(maxX, edgeMaxX)) foundEdge = true;
+            }
+            Assert.IsTrue(foundEdge, "Yatay dolgu kenardaki chunk'ı tutmalı");
         }
 
         [Test]

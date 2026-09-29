@@ -24,6 +24,8 @@ namespace AdanBye.Grass
         readonly int _layer;
         readonly int _maxChunks;
         readonly float _boundsMargin;
+        readonly Vector3 _chunkPadding;
+        int _lastSelectedChunks;
         readonly GrassCameraRegistry<GrassCameraContext> _cameras = new GrassCameraRegistry<GrassCameraContext>();
         readonly Func<Camera, GrassCameraContext> _createContext; // delegate bir kez: per-frame allocation olmasın
         readonly TerrainCallbacks.HeightmapChangedCallback _heightmapChanged;
@@ -36,6 +38,8 @@ namespace AdanBye.Grass
         public int CameraCount => _cameras.Count;
         public GrassRuntimeConfig Config => _config;
         public int MaxChunks => _maxChunks;
+        /// <summary>Son çizilen karede (son kamera) seçicinin seçtiği chunk sayısı; Inspector sayacı içindir.</summary>
+        public int LastSelectedChunks => _lastSelectedChunks;
         public bool IsDisposed => _disposed;
 
         /// <summary>
@@ -68,6 +72,10 @@ namespace AdanBye.Grass
             float maxWidthComp = 1f;
             foreach (float w in config.Lods.WidthCompensation) maxWidthComp = Mathf.Max(maxWidthComp, w);
             _boundsMargin = config.CullPadding + config.Generate.WidthRange.y * maxWidthComp;
+
+            // Chunk frustum dolgusu aynı marjı kullanır: aksi halde chunk dışına taşan bıçaklar, chunk elendiği için
+            // ekran kenarında aniden kaybolurdu. Dikey: zemin AABB'sinin üstüne uzanan boy + iki kat marj.
+            _chunkPadding = new Vector3(_boundsMargin, 2f * _boundsMargin + config.Generate.HeightRange.y, _boundsMargin);
 
             _createContext = CreateContext;
             _heightmapChanged = OnHeightmapChanged;
@@ -163,7 +171,7 @@ namespace AdanBye.Grass
         GrassCameraContext CreateContext(Camera camera)
         {
             if (!GrassCameraContext.TryCreate(_config.CopyLodInstanceBudgets(), _maxChunks, _boundsTable, _config.DrawDistance,
-                                              _meshes, out GrassCameraContext context, out string error))
+                                              _chunkPadding, _meshes, out GrassCameraContext context, out string error))
             {
                 LogOnce($"'{camera.name}' kamerası için çim kaynakları oluşturulamadı: {error}");
                 return null;
@@ -191,7 +199,7 @@ namespace AdanBye.Grass
 
             Vector3 camPos = camera.transform.position;
             GrassViewParams view = ctx.View.Update(camera, _config.CullPadding);
-            ctx.Selector.Select(camPos, _config.DrawDistance, ctx.View.Frustum);
+            _lastSelectedChunks = ctx.Selector.Select(camPos, _config.DrawDistance, ctx.View.Frustum);
             if (ctx.Selector.Overflowed) LogOnce($"Chunk seçici kapasiteyi aştı ({_maxChunks}); uzak chunk'lar çizilmiyor olabilir.");
             int chunkCount = ctx.Gpu.UploadChunks(ctx.Selector);
 

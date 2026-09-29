@@ -114,7 +114,7 @@ namespace AdanBye.Grass.Spike
 
             // Hücre seviyesi kullanılmıyor (LOD seyreltmeyle): eşikler çizim mesafesinin ötesinde, seçici 1/2 atamasın.
             float draw = _lods.DrawDistance;
-            if (!VisibleChunkSelector.TryCreate(table, maxChunks, draw * 2f, draw * 3f, 2f, out _selector, out error)) return Fail(error);
+            if (!VisibleChunkSelector.TryCreate(table, maxChunks, new Vector3(1f, 2f, 1f), out _selector, out error)) return Fail(error);
 
             if (!BuildLayerMapper(data, out error)) return Fail(error);
             if (!GrassComputeDispatcher.TryCreate(computeShader, out _dispatcher, out error)) return Fail(error);
@@ -206,7 +206,7 @@ namespace AdanBye.Grass.Spike
         {
             if (!IsReady) return false;
             if (!GrassGenerateSettings.TryCreate(chunkSize, maxDensityPerM2, seed, _mapper.DensityMultipliers,
-                                                 slopeMinDeg, slopeMaxDeg, heightRange, widthRange,
+                                                 _mapper.LayerTints, 0.08f, slopeMinDeg, slopeMaxDeg, heightRange, widthRange,
                                                  out _settings, out string error)) return Fail(error);
 
             TerrainData data = _terrain.terrainData;

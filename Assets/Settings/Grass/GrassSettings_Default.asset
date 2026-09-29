@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4754c7ad8363274d9b7655d03ebab60, type: 3}
   m_Name: GrassSettings_Default
   m_EditorClassIdentifier: 
-  drawDistance: 120
-  chunkSize: 16
-  maxDensityPerM2: 16
+  drawDistance: 90
+  chunkSize: 10
+  maxDensityPerM2: 655
   seed: 12345
   slopeMinDeg: 30
   slopeMaxDeg: 55
-  heightRange: {x: 0.4, y: 0.8}
-  widthRange: {x: 0.06, y: 0.1}
+  heightRange: {x: 0.01, y: 0.25}
+  widthRange: {x: 0.03, y: 0.09}
   cullPadding: 0.3
   lods:
   - mesh: {fileID: 0}
@@ -27,19 +27,19 @@ MonoBehaviour:
     keepRatio: 1
     maxWidthCompensation: 1
     transitionBand: 5
-    instanceBudget: 400000
+    instanceBudget: 450000
   - mesh: {fileID: 0}
-    maxDistance: 60
+    maxDistance: 45
     keepRatio: 0.35
     maxWidthCompensation: 1.7
     transitionBand: 10
-    instanceBudget: 600000
+    instanceBudget: 350000
   - mesh: {fileID: 0}
-    maxDistance: 120
+    maxDistance: 90
     keepRatio: 0.1
     maxWidthCompensation: 3
     transitionBand: 15
-    instanceBudget: 800000
+    instanceBudget: 250000
   layerRules:
   - layerIndex: 0
     expectedLayerName: Grass_A_TerrainLayer
