@@ -1,6 +1,6 @@
 // Çim yerleşimi (üretim + LOD seçimi + frustum culling): görünür chunk listesinden, terrain verisiyle (heightmap,
 // splat, eğim) deterministik blade instance'ları üretir ve her birini kamera mesafesine göre bir LOD'un
-// GÖRÜNÜR buffer'ına yazar. Renk = terrain layer'ından (Grass_SelectTint); rüzgar YOK.
+// GÖRÜNÜR buffer'ına yazar. Renk ve boy çarpanı = terrain layer'ından (Grass_SelectLayer); rüzgar YOK.
 //
 // Akış (C# GrassComputeDispatcher): CSReset -> CSGenerate -> CSFinalizeArgs.
 //
@@ -67,6 +67,7 @@ uint  _ChunkCount;
 
 float4 _LayerDensity;    // alphamap rgba kanal başına yoğunluk çarpanı
 float4 _LayerTint[4];    // layer başına: rgb = uç (tip) rengi, a = kök koyulaştırma oranı (lum(kök)/lum(uç))
+float4 _LayerHeight;     // alphamap rgba kanal başına boy çarpanı (>= 0; 1'i aşabilir, C# MaxBladeHeight bounds'a yansıtır)
 float  _ColorJitter;     // parlaklık jitter'ı: RGB çarpanı 1 +- _ColorJitter
 float2 _SlopeAngles;     // x: bu açıya (rad) kadar tam yoğunluk, y: bu açıdan (rad) sonra 0; arası smoothstep
 float2 _HeightRange;     // metre (min, max)
@@ -130,12 +131,12 @@ uint Grass_FindLod(float distSq)
     return _LodCount;
 }
 
-// Blade'in rengi: layer'ı splat*yoğunluk ağırlıklarıyla OLASILIKSAL seçer (layer sınırında bıçaklar karışır), sonra o
-// layer'ın uç rengine parlaklık jitter'ı uygular. Neden rank değil ayrı akış (7u): rank LOD seyreltmesinde kullanılıyor;
-// uzak LOD'da yalnızca düşük rank'lar kaldığı için rank'tan layer seçmek uzakta hep aynı layer'ı öne çıkarırdı (bias).
-// Ağırlıkta yoğunluk da var: yoğunluğu 0 olan layer'ın ağırlığı 0 => asla seçilmez. w=0 ise layer 0 (güvenli varsayılan).
-// A = kök koyulaştırma oranı (jitter'a girmez). C# aynası: GrassTintSelector (ikisi birlikte değişir).
-float4 Grass_SelectTint(uint h, float4 splat)
+// Blade'in layer'ı: splat*yoğunluk ağırlıklarıyla OLASILIKSAL seçilir (layer sınırında bıçaklar karışır). Renk VE boy
+// çarpanı aynı seçimi kullanır (ikinci rastgele seçim yok; yoksa renk ile boy uyumsuz olurdu). Neden rank değil ayrı
+// akış (7u): rank LOD seyreltmesinde kullanılıyor; uzak LOD'da yalnızca düşük rank'lar kaldığı için rank'tan layer
+// seçmek uzakta hep aynı layer'ı öne çıkarırdı (bias). Ağırlıkta yoğunluk da var: yoğunluğu 0 olan layer'ın ağırlığı 0
+// => asla seçilmez. w=0 ise layer 0 (güvenli varsayılan). C# aynası: GrassTintSelector.SelectLayer (ikisi birlikte değişir).
+uint Grass_SelectLayer(uint h, float4 splat)
 {
     float4 w = splat * _LayerDensity;
     float c0 = w.x;
@@ -153,7 +154,13 @@ float4 Grass_SelectTint(uint h, float4 splat)
         if (pick < c1) layer = 1u;
         if (pick < c0) layer = 0u;
     }
+    return layer;
+}
 
+// Seçilen layer'ın uç rengine parlaklık jitter'ı uygular. A = kök koyulaştırma oranı (jitter'a girmez).
+// C# aynası: GrassTintSelector.ComputeColor.
+float4 Grass_TintForLayer(uint h, uint layer)
+{
     float4 tint = _LayerTint[layer];
     float jitter = 1.0 + (Hash_Stream01(h, 8u) * 2.0 - 1.0) * _ColorJitter;
     return float4(saturate(tint.rgb * jitter), saturate(tint.a));
@@ -237,8 +244,11 @@ void CSGenerate(uint3 id : SV_DispatchThreadID)
     if (rank >= layerDensity * _LodKeep[lod])
         return;
 
-    // 3) Boy (hash'ten; kamera/LOD'dan bağımsız) ve frustum: culling'e gerçek boyla girilir.
-    float height = lerp(_HeightRange.x, _HeightRange.y, Hash_Stream01(h, 5u));
+    // 3) Boy (hash'ten; kamera/LOD'dan bağımsız) ve frustum: culling'e gerçek boyla girilir. Layer, boy çarpanı için
+    // culling'den ÖNCE seçilir (çarpan >1 ise küre yarıçapı da büyümeli); aynı seçim renge de gider. Width/eğim/LOD
+    // kararları çarpandan etkilenmez.
+    uint layer = Grass_SelectLayer(h, splat);
+    float height = lerp(_HeightRange.x, _HeightRange.y, Hash_Stream01(h, 5u)) * _LayerHeight[layer];
     float width = lerp(_WidthRange.x, _WidthRange.y, Hash_Stream01(h, 6u));
     if (_FrustumEnabled != 0u && Grass_OutsideFrustum(pos, height + width + _CullPadding))
         return;
@@ -263,7 +273,7 @@ void CSGenerate(uint3 id : SV_DispatchThreadID)
 
     // Renk: layer'dan (rgb = uç, a = kök oranı); normalOct rezerve. lodFade = geçiş bandındaki boy ölçeği.
     GrassInstance inst = Grass_Pack(pos, yaw, height * heightScale, width * widthScale, heightScale,
-                                    Grass_SelectTint(h, splat), 0u, h);
+                                    Grass_TintForLayer(h, layer), 0u, h);
     if (lod == 0u)      _Instances0[index] = inst;
     else if (lod == 1u) _Instances1[index] = inst;
     else                _Instances2[index] = inst;

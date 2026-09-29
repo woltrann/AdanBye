@@ -206,7 +206,7 @@ namespace AdanBye.Grass.Spike
         {
             if (!IsReady) return false;
             if (!GrassGenerateSettings.TryCreate(chunkSize, maxDensityPerM2, seed, _mapper.DensityMultipliers,
-                                                 _mapper.LayerTints, 0.08f, slopeMinDeg, slopeMaxDeg, heightRange, widthRange,
+                                                 _mapper.LayerTints, _mapper.HeightMultipliers, 0.08f, slopeMinDeg, slopeMaxDeg, heightRange, widthRange,
                                                  out _settings, out string error)) return Fail(error);
 
             TerrainData data = _terrain.terrainData;

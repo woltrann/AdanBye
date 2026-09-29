@@ -74,8 +74,8 @@ namespace AdanBye.Grass
             _boundsMargin = config.CullPadding + config.Generate.WidthRange.y * maxWidthComp;
 
             // Chunk frustum dolgusu aynı marjı kullanır: aksi halde chunk dışına taşan bıçaklar, chunk elendiği için
-            // ekran kenarında aniden kaybolurdu. Dikey: zemin AABB'sinin üstüne uzanan boy + iki kat marj.
-            _chunkPadding = new Vector3(_boundsMargin, 2f * _boundsMargin + config.Generate.HeightRange.y, _boundsMargin);
+            // ekran kenarında aniden kaybolurdu. Dikey: zemin AABB'sinin üstüne uzanan boy (layer boy çarpanı >1 olabilir => MaxBladeHeight) + iki kat marj.
+            _chunkPadding = new Vector3(_boundsMargin, 2f * _boundsMargin + config.Generate.MaxBladeHeight, _boundsMargin);
 
             _createContext = CreateContext;
             _heightmapChanged = OnHeightmapChanged;
@@ -213,7 +213,7 @@ namespace AdanBye.Grass
 
             Bounds bounds = GrassDrawBounds.Compute(camPos, _config.DrawDistance, _terrainInfo.Origin.y,
                                                     _terrainInfo.Origin.y + _terrainInfo.Size.y,
-                                                    _config.Generate.HeightRange.y, _boundsMargin);
+                                                    _config.Generate.MaxBladeHeight, _boundsMargin);
             for (int lod = 0; lod < _config.Lods.Count; lod++)
             {
                 var rp = new RenderParams(_material)

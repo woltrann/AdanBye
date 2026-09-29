@@ -143,5 +143,47 @@ namespace AdanBye.Grass.Tests
                 Assert.Less(v, 1f);
             }
         }
+
+        [Test]
+        public void HeightMultiplier_UsesSelectedLayerOnly()
+        {
+            var heights = new Vector4(1f, 0.8f, 1.5f, 0.5f);
+            for (int layer = 0; layer < 4; layer++)
+            {
+                var splat = Vector4.zero;
+                splat[layer] = 1f;
+                for (int i = 0; i < 200; i++)
+                {
+                    uint h = HashAt(i);
+                    int chosen = GrassTintSelector.SelectLayer(h, splat, Vector4.one);
+                    Assert.AreEqual(layer, chosen);
+                    Assert.AreEqual(0.6f * heights[layer], GrassTintSelector.ApplyHeightMultiplier(0.6f, heights, chosen), 1e-6f);
+                }
+            }
+        }
+
+        [Test]
+        public void HeightMultiplier_HalfHalvesAndOneKeeps()
+        {
+            var heights = new Vector4(1f, 0.5f, 1f, 1f);
+            Assert.AreEqual(0.4f, GrassTintSelector.ApplyHeightMultiplier(0.8f, heights, 1), 1e-6f);
+            Assert.AreEqual(0.8f, GrassTintSelector.ApplyHeightMultiplier(0.8f, heights, 0), 1e-6f);
+        }
+
+        [Test]
+        public void MixedSplat_HeightAndColorShareTheSameLayer()
+        {
+            // Renk ve boy aynı SelectLayer sonucundan türer: tint ile çarpanın layer'ı hiçbir örnekte ayrışmamalı.
+            var splat = new Vector4(0.5f, 0.5f, 0f, 0f);
+            var heights = new Vector4(1f, 0.5f, 1f, 1f);
+            for (int i = 0; i < 500; i++)
+            {
+                uint h = HashAt(i);
+                int layer = GrassTintSelector.SelectLayer(h, splat, Vector4.one);
+                Vector4 c = GrassTintSelector.ComputeColor(h, splat, Vector4.one, Tints, 0f);
+                Assert.AreEqual(Tints[layer], c);
+                Assert.AreEqual(heights[layer], GrassTintSelector.ApplyHeightMultiplier(1f, heights, layer));
+            }
+        }
     }
 }

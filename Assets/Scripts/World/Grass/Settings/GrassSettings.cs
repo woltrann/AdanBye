@@ -138,8 +138,9 @@ namespace AdanBye.Grass
             // boy...) hataları layer hatasının arkasında gizli kalmasın.
             Vector4 layerDensity = mapper != null ? mapper.DensityMultipliers : Vector4.zero;
             Vector4[] layerTints = mapper != null ? mapper.LayerTints : NeutralLayerTints();
+            Vector4 layerHeights = mapper != null ? mapper.HeightMultipliers : Vector4.one;
             bool generateOk = GrassGenerateSettings.TryCreate(chunkSize, maxDensityPerM2, unchecked((uint)seed), layerDensity,
-                                                              layerTints, colorJitter, slopeMinDeg, slopeMaxDeg, heightRange, widthRange,
+                                                              layerTints, layerHeights, colorJitter, slopeMinDeg, slopeMaxDeg, heightRange, widthRange,
                                                               out GrassGenerateSettings generate, out string generateError);
             if (!generateOk) report.AddError(generateError);
 

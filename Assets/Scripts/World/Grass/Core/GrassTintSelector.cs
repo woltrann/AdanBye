@@ -3,7 +3,7 @@ using UnityEngine;
 namespace AdanBye.Grass
 {
     /// <summary>
-    /// Blade rengi seçiminin saf C# aynası (GrassGenerate.compute Grass_SelectTint ile AYNI algoritma; biri değişirse
+    /// Blade rengi seçiminin saf C# aynası (GrassGenerate.compute Grass_SelectLayer/Grass_TintForLayer ile AYNI algoritma; biri değişirse
     /// ikisi birlikte değişir). Layer, splat * yoğunluk ağırlıklarıyla olasılıksal seçilir; böylece layer sınırında
     /// bıçaklar karışır ve yoğunluğu 0 olan layer asla seçilmez. Seçim compute'taki `rank`ten DEĞİL kendi hash akışından
     /// (7) gelir: rank LOD seyreltmesinde kullanılır, uzak LOD'da yalnızca düşük rank'lar kalır => rank'tan seçim bias'lı olurdu.
@@ -49,6 +49,13 @@ namespace AdanBye.Grass
             float jitter = 1f + (Stream01(hash, StreamJitter) * 2f - 1f) * colorJitter;
             return new Vector4(Saturate(tint.x * jitter), Saturate(tint.y * jitter), Saturate(tint.z * jitter), Saturate(tint.w));
         }
+
+        /// <summary>
+        /// Blade boyu = taban boy * seçilen layer'ın çarpanı (compute'ta `height`in Grass_Pack'ten önceki hâli).
+        /// <paramref name="layerHeights"/> LayerDensityMapper.HeightMultipliers ile aynı düzen (x,y,z,w = layer 0..3).
+        /// </summary>
+        public static float ApplyHeightMultiplier(float baseHeight, Vector4 layerHeights, int layer)
+            => baseHeight * layerHeights[layer];
 
         static float Saturate(float v) => v < 0f ? 0f : (v > 1f ? 1f : v);
 
