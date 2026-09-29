@@ -169,7 +169,7 @@ namespace AdanBye.Grass
     /// ComputeShader DIŞARIDAN verilir (DIP): asset yükleme sorumluluğu çağıranda, bu sınıf test/tekrar kullanımda
     /// başka bir shader örneğiyle çalışabilir. Chunk seçimi ve çizim bu sınıfın işi değildir.
     /// </summary>
-    public sealed class GrassComputeDispatcher
+    public sealed class GrassComputeDispatcher : System.IDisposable
     {
         const int GroupSize = 8; // compute'taki numthreads(8,8,1) ile aynı olmalı
 
@@ -182,6 +182,9 @@ namespace AdanBye.Grass
         static readonly int ArgsId = Shader.PropertyToID("_Args");
         static readonly int HeightmapId = Shader.PropertyToID("_Heightmap");
         static readonly int Alphamap0Id = Shader.PropertyToID("_Alphamap0");
+        static readonly int ExclusionMaskId = Shader.PropertyToID("_ExclusionMask");
+        static readonly int ExclusionRectId = Shader.PropertyToID("_ExclusionRect");
+        static readonly int ExclusionResId = Shader.PropertyToID("_ExclusionRes");
         static readonly int CellSizeId = Shader.PropertyToID("_CellSize");
         static readonly int CellsPerAxisId = Shader.PropertyToID("_CellsPerAxis");
         static readonly int SeedId = Shader.PropertyToID("_Seed");
@@ -210,6 +213,10 @@ namespace AdanBye.Grass
         readonly int _kernelFinalize;
         readonly int[] _budgetScratch = new int[4]; // per-frame allocation olmasın diye tek sefer
 
+        GrassExclusionBinding _exclusion;
+        Texture2D _fallbackExclusion; // 1x1 siyah (mask 0 = engel yok); yalnızca gerektiğinde üretilir, Dispose'ta bırakılır
+        bool _disposed;
+
         GrassComputeDispatcher(ComputeShader shader, int reset, int generate, int finalize)
         {
             _shader = shader;
@@ -237,6 +244,41 @@ namespace AdanBye.Grass
         }
 
         /// <summary>
+        /// Exclusion mask'ı bağlar (sonraki Dispatch'lerden itibaren). Aktif olmayan binding (texture null) mask'ı kaldırır:
+        /// 1x1 siyah fallback bağlanır ve compute örneklemeyi atlar => maskesiz hâlle birebir aynı sonuç.
+        /// </summary>
+        public void SetExclusion(in GrassExclusionBinding binding) => _exclusion = binding;
+
+        Texture ExclusionTextureOrFallback()
+        {
+            if (_exclusion.IsActive) return _exclusion.Texture;
+            if (_fallbackExclusion == null)
+            {
+                _fallbackExclusion = new Texture2D(1, 1, TextureFormat.R8, false, true)
+                {
+                    name = "GrassExclusionFallback", filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp,
+                    hideFlags = HideFlags.HideAndDontSave,
+                };
+                _fallbackExclusion.SetPixel(0, 0, Color.black);
+                _fallbackExclusion.Apply(false, true);
+            }
+            return _fallbackExclusion;
+        }
+
+        /// <summary>Idempotent: yalnızca dispatcher'ın ürettiği fallback dokusunu bırakır (mask asset'ine dokunmaz).</summary>
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+            if (_fallbackExclusion != null)
+            {
+                if (Application.isPlaying) Object.Destroy(_fallbackExclusion);
+                else Object.DestroyImmediate(_fallbackExclusion);
+            }
+            _fallbackExclusion = null;
+        }
+
+        /// <summary>
         /// Chunk buffer'ındaki ilk <paramref name="chunkCount"/> chunk için çim üretir, LOD'lara böler, culling yapar.
         /// Girdi geçersizse HİÇBİR dispatch yapılmaz ve false döner (kaynak bağlanmamış compute çalıştırmak GPU
         /// hatası/çöp üretirdi). Bu durumda önceki karenin state/args'ı olduğu gibi kalır; çağıran hata sonucunda
@@ -247,6 +289,7 @@ namespace AdanBye.Grass
                              Texture alphamap, in GrassGenerateSettings settings, LodDistanceTable lods,
                              in GrassViewParams view, int chunkCount, out string error)
         {
+            if (_disposed) { error = "GrassComputeDispatcher dispose edilmiş."; return false; }
             if (resources == null || resources.IsDisposed) { error = "GrassGpuResources yok/dispose edilmiş."; return false; }
             if (heightmap == null) { error = "Heightmap dokusu null."; return false; }
             if (alphamap == null) { error = "Alphamap dokusu null."; return false; }
@@ -291,6 +334,7 @@ namespace AdanBye.Grass
                     _shader.SetBuffer(_kernelGenerate, InstancesIds[i], resources.Instances(i));
                 _shader.SetTexture(_kernelGenerate, HeightmapId, heightmap);
                 _shader.SetTexture(_kernelGenerate, Alphamap0Id, alphamap);
+                BindExclusion(_kernelGenerate);
 
                 int groups = (settings.CellsPerChunkAxis + GroupSize - 1) / GroupSize;
                 _shader.Dispatch(_kernelGenerate, groups, groups, chunkCount);
@@ -302,6 +346,14 @@ namespace AdanBye.Grass
 
             error = null;
             return true;
+        }
+
+        // Aktif değilse _ExclusionRes = 1: compute örneklemeyi atlar (fallback yine de bağlanır; kernel'de bağlanmamış texture olmasın).
+        void BindExclusion(int kernel)
+        {
+            _shader.SetTexture(kernel, ExclusionMaskId, ExclusionTextureOrFallback());
+            _shader.SetVector(ExclusionRectId, _exclusion.IsActive ? _exclusion.Rect : new Vector4(0f, 0f, 1f, 1f));
+            _shader.SetInt(ExclusionResId, _exclusion.IsActive ? _exclusion.Resolution : 1);
         }
 
         void BindLods(GrassGpuResources resources, LodDistanceTable lods)

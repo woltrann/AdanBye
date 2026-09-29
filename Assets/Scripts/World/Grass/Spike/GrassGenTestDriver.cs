@@ -312,6 +312,7 @@ namespace AdanBye.Grass.Spike
         {
             _gpu?.Dispose();
             _gpu = null;
+            _dispatcher?.Dispose();
             _dispatcher = null;
             _selector = null;
             _props = null;

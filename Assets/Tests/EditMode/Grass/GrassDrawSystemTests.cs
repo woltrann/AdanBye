@@ -27,7 +27,7 @@ namespace AdanBye.Grass.Tests
         [Test]
         public void TryCreate_MissingDependencies_ReportsEveryProblem()
         {
-            bool ok = GrassDrawSystem.TryCreate(null, null, null, null, 0, out GrassDrawSystem system, out ValidationReport report);
+            bool ok = GrassDrawSystem.TryCreate(null, null, null, null, 0, null, out GrassDrawSystem system, out ValidationReport report);
 
             Assert.IsFalse(ok);
             Assert.IsNull(system);

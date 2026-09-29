@@ -26,6 +26,9 @@ namespace AdanBye.Grass
         [Tooltip("GrassGenerate.compute. Editor'de boşsa otomatik atanır; build için sahnede serileştirilmiş olmalı.")]
         [SerializeField] ComputeShader generateCompute;
 
+        [Tooltip("Opsiyonel. Bake edilmiş exclusion mask (ağaç/mesh altında çim yok). Boşsa exclusion uygulanmaz.")]
+        [SerializeField] GrassExclusionMask exclusionMask;
+
         GrassDrawSystem _system;
         IGrassCameraFilter _filter;
         GrassSettings _subscribedSettings;
@@ -81,6 +84,7 @@ namespace AdanBye.Grass
             Terrain target = terrain != null ? terrain : Terrain.activeTerrain;
 
             bool ok = GrassDrawSystem.TryCreate(settings, material, target, generateCompute, gameObject.layer,
+                                                exclusionMask,
                                                 out GrassDrawSystem system, out ValidationReport report);
             _system = system;
             _status = BuildStatus(ok, report);

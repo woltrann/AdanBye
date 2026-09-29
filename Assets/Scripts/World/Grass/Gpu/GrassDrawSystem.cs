@@ -100,7 +100,7 @@ namespace AdanBye.Grass
 
         /// <param name="layer">Çizimde kullanılan GameObject layer'ı (RenderParams.layer; kamera cullingMask'i ile eşleşir).</param>
         public static bool TryCreate(GrassSettings settings, Material material, Terrain terrain, ComputeShader compute, int layer,
-                                     out GrassDrawSystem system, out ValidationReport report)
+                                     GrassExclusionMask exclusionMask, out GrassDrawSystem system, out ValidationReport report)
         {
             system = null;
             report = new ValidationReport();
@@ -146,6 +146,9 @@ namespace AdanBye.Grass
                 return false;
             }
             report.Merge(meshReport);
+
+            // Opsiyonel: mask yoksa ya da geçersizse dispatcher fallback'te kalır (maskesiz davranış); uyarılar rapora düşer.
+            dispatcher.SetExclusion(GrassExclusionBinding.FromMask(exclusionMask, info.Origin, info.Size, report));
 
             int maxChunks = ComputeMaxChunks(config.DrawDistance, config.Generate.ChunkSize, grid.Count);
             system = new GrassDrawSystem(config, material, terrain, info, table, meshes, dispatcher, layer, maxChunks);
@@ -257,6 +260,7 @@ namespace AdanBye.Grass
             TerrainCallbacks.heightmapChanged -= _heightmapChanged;
             _cameras.DisposeAll();
             _meshes.Dispose();
+            _dispatcher.Dispose();
             _logged.Clear();
         }
     }

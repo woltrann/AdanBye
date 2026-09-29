@@ -27,6 +27,7 @@
 #pragma kernel CSGenerate
 #pragma kernel CSFinalizeArgs
 #pragma kernel CSPackParity
+#pragma kernel CSExclusionParity
 
 #include "Assets/Shaders/Grass/GrassTerrainSampling.hlsl"
 #include "Assets/Shaders/Grass/GrassInstanceData.hlsl"
@@ -54,6 +55,12 @@ RWStructuredBuffer<uint> _Args;
 
 Texture2D<float>  _Heightmap;
 Texture2D<float4> _Alphamap0;
+
+// Exclusion mask (R8, 255 = çim yok). _ExclusionRes <= 1 => mask yok (1x1 siyah fallback): örnekleme atlanır, sonuç maskesiz
+// hâlle birebir aynıdır. xy = mask origin (dünya XZ), zw = mask boyutu (m).
+Texture2D<float> _ExclusionMask;
+float4 _ExclusionRect;
+int    _ExclusionRes;
 
 float4 _TerrainOrigin;   // xyz
 float4 _TerrainSize;     // xyz
@@ -226,6 +233,10 @@ void CSGenerate(uint3 id : SV_DispatchThreadID)
     float2 sCoord = Grass_WorldToTexelCoord(xz, _TerrainOrigin.xz, _TerrainSize.xz, (float2)_AlphamapRes);
     float4 splat = Grass_SampleSplatBilinear(_Alphamap0, sCoord, _AlphamapRes - 1);
     float layerDensity = saturate(dot(splat, _LayerDensity));
+    // Exclusion: rank testinden ÖNCE yoğunluğu keser (mask 1 => yoğunluk 0 => hiçbir rank geçmez). Sonraki tüm
+    // kararlar (LOD seyreltme, eğim, geçiş bandı) kesilmiş yoğunluğu kullanır. Yoğunluk zaten 0 ise Load harcanmaz.
+    if (layerDensity > 0.0 && _ExclusionRes > 1)
+        layerDensity *= 1.0 - saturate(Grass_SampleExclusion(_ExclusionMask, xz, _ExclusionRect.xy, _ExclusionRect.zw, _ExclusionRes));
     float rank = Hash_Stream01(h, 3u);
     if (rank >= layerDensity)   // layerDensity == 0 iken her rank >= 0 => eleme
         return;
@@ -316,4 +327,17 @@ void CSPackParity(uint3 id : SV_DispatchThreadID)
         return;
     PackParityCase c = _ParityIn[id.x];
     _ParityOut[id.x] = Grass_Pack(c.position, c.yaw, c.height, c.width, c.lodFade, c.color, c.normalOct, c.hash);
+}
+
+// --- Test kernel'i: Grass_SampleExclusion'ın C# ExclusionMaskCanvas eşlemesiyle (yarım texel kayması yok) uyumunu ölçer.
+StructuredBuffer<float2> _ExclusionIn;   // dünya XZ
+RWStructuredBuffer<float> _ExclusionOut;
+uint _ExclusionCount;
+
+[numthreads(64, 1, 1)]
+void CSExclusionParity(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= _ExclusionCount)
+        return;
+    _ExclusionOut[id.x] = Grass_SampleExclusion(_ExclusionMask, _ExclusionIn[id.x], _ExclusionRect.xy, _ExclusionRect.zw, _ExclusionRes);
 }

@@ -104,4 +104,20 @@ float4 Grass_SampleSplatBilinear(Texture2D<float4> alphamap, float2 texelCoord, 
     return lerp(lerp(s00, s10, f.x), lerp(s01, s11, f.x), f.y);
 }
 
+// Exclusion mask (R8; 255 = çim YOK) bilinear okuması, 4 Load. Eşleme C# ExclusionMaskCanvas ile aynı:
+// texel = (xz - origin) / size * (res - 1), satır düzeni data[z*res + x]. Load (sampler değil) => yarım texel kayması yok.
+// res == 1 (fallback dokusu) için de güvenli: her şey texel 0'a sıkışır.
+float Grass_SampleExclusion(Texture2D<float> mask, float2 worldXZ, float2 originXZ, float2 sizeXZ, int res)
+{
+    int2 maxTexel = int2(res - 1, res - 1);
+    float2 c = clamp((worldXZ - originXZ) / sizeXZ * (float)(res - 1), float2(0.0, 0.0), (float2)maxTexel);
+    int2 i0 = (int2)floor(c);
+    float2 f = c - i0;
+    float m00 = mask.Load(int3(i0, 0));
+    float m10 = mask.Load(int3(min(i0 + int2(1, 0), maxTexel), 0));
+    float m01 = mask.Load(int3(min(i0 + int2(0, 1), maxTexel), 0));
+    float m11 = mask.Load(int3(min(i0 + int2(1, 1), maxTexel), 0));
+    return lerp(lerp(m00, m10, f.x), lerp(m01, m11, f.x), f.y);
+}
+
 #endif // ADANBYE_GRASS_TERRAIN_SAMPLING_INCLUDED
