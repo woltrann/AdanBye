@@ -481,62 +481,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 13234700}
   m_CullTransparentMesh: 1
---- !u!1 &15615916
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 15615918}
-  - component: {fileID: 15615917}
-  m_Layer: 0
-  m_Name: GrassTest (4)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &15615917
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 15615916}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dcd098bc87e24f4682c8e28ea565652, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 1151734677}
-  material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
-  instancingMode: 1
-  instanceCount: 1000000
-  areaSize: 50
-  heightRange: {x: 0.05, y: 0.25}
-  widthRange: {x: 0.02, y: 0.06}
-  seed: 123459
-  customMesh: {fileID: 0}
-  meshSourcePrefab: {fileID: 0}
-  debugTintHalves: 0
-  debugStartInstance: 0
---- !u!4 &15615918
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 15615916}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -278.53, y: 0, z: -147.73}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &21670880
 GameObject:
   m_ObjectHideFlags: 0
@@ -6401,6 +6345,7 @@ GameObject:
   - component: {fileID: 542863123}
   - component: {fileID: 542863125}
   - component: {fileID: 542863126}
+  - component: {fileID: 542863127}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6582,6 +6527,19 @@ MonoBehaviour:
   windDirection: {x: 1, y: 0.3}
   windStrength: 1
   windSpeed: 1
+--- !u!114 &542863127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542863122}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132b00674f120ae4dbbdda89996bc839, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grass: {fileID: 1499393601}
 --- !u!1 &557883840
 GameObject:
   m_ObjectHideFlags: 0
@@ -7954,62 +7912,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 678450808}
   m_CullTransparentMesh: 1
---- !u!1 &690660674
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 690660676}
-  - component: {fileID: 690660675}
-  m_Layer: 0
-  m_Name: GrassTest (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &690660675
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 690660674}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dcd098bc87e24f4682c8e28ea565652, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 1151734677}
-  material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
-  instancingMode: 1
-  instanceCount: 1000000
-  areaSize: 50
-  heightRange: {x: 0.05, y: 0.25}
-  widthRange: {x: 0.02, y: 0.06}
-  seed: 123457
-  customMesh: {fileID: 0}
-  meshSourcePrefab: {fileID: 0}
-  debugTintHalves: 0
-  debugStartInstance: 0
---- !u!4 &690660676
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 690660674}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -278.53, y: 0, z: -197.73}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &698431510
 GameObject:
   m_ObjectHideFlags: 0
@@ -8636,7 +8538,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.0037310282, y: 0.6567629}
   m_AnchorMax: {x: 0.28504863, y: 0.9999975}
-  m_AnchoredPosition: {x: -99.99988, y: 74.99994}
+  m_AnchoredPosition: {x: -99.99939, y: 74.99994}
   m_SizeDelta: {x: -200, y: -150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &777118252
@@ -12535,7 +12437,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25.15
+  m_fontSize: 25.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -14444,62 +14346,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1432607546}
   m_CullTransparentMesh: 1
---- !u!1 &1440156065
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1440156067}
-  - component: {fileID: 1440156066}
-  m_Layer: 0
-  m_Name: GrassTest (5)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1440156066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1440156065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dcd098bc87e24f4682c8e28ea565652, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 1151734677}
-  material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
-  instancingMode: 1
-  instanceCount: 1000000
-  areaSize: 50
-  heightRange: {x: 0.05, y: 0.25}
-  widthRange: {x: 0.02, y: 0.06}
-  seed: 123450
-  customMesh: {fileID: 0}
-  meshSourcePrefab: {fileID: 0}
-  debugTintHalves: 0
-  debugStartInstance: 0
---- !u!4 &1440156067
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1440156065}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -178.53, y: 0, z: -147.73}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1442791186
 GameObject:
   m_ObjectHideFlags: 0
@@ -15039,38 +14885,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1499393600}
-  - component: {fileID: 1499393599}
+  - component: {fileID: 1499393601}
   m_Layer: 25
-  m_Name: GrassTest
+  m_Name: Grass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1499393599
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1499393598}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dcd098bc87e24f4682c8e28ea565652, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 1151734677}
-  material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
-  instancingMode: 1
-  instanceCount: 1000000
-  areaSize: 50
-  heightRange: {x: 0.05, y: 0.25}
-  widthRange: {x: 0.02, y: 0.06}
-  seed: 12345
-  customMesh: {fileID: 0}
-  meshSourcePrefab: {fileID: 0}
-  debugTintHalves: 0
-  debugStartInstance: 0
 --- !u!4 &1499393600
 Transform:
   m_ObjectHideFlags: 0
@@ -15080,12 +14902,29 @@ Transform:
   m_GameObject: {fileID: 1499393598}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -228.53, y: 0, z: -197.73}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1499393601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1499393598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef511cb9736657942b4a432a40e2bb16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings: {fileID: 11400000, guid: 2eb081bc5b10f4145bc35e52f995cff3, type: 2}
+  material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
+  terrain: {fileID: 1151734677}
+  generateCompute: {fileID: 7200000, guid: 03c392b2de1860a4a807e4e24a696fee, type: 3}
+  exclusionMask: {fileID: 11400000, guid: fbb676da346de6b42805f81258b16ea4, type: 2}
 --- !u!1 &1508782696
 GameObject:
   m_ObjectHideFlags: 0
@@ -17162,62 +17001,6 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!1 &1809532830
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1809532832}
-  - component: {fileID: 1809532831}
-  m_Layer: 0
-  m_Name: GrassTest (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1809532831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809532830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dcd098bc87e24f4682c8e28ea565652, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 1151734677}
-  material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
-  instancingMode: 1
-  instanceCount: 1000000
-  areaSize: 50
-  heightRange: {x: 0.05, y: 0.25}
-  widthRange: {x: 0.02, y: 0.06}
-  seed: 123456
-  customMesh: {fileID: 0}
-  meshSourcePrefab: {fileID: 0}
-  debugTintHalves: 0
-  debugStartInstance: 0
---- !u!4 &1809532832
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809532830}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -178.53, y: 0, z: -197.73}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1812699154
 GameObject:
   m_ObjectHideFlags: 0
@@ -18938,62 +18721,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -1125721840758650867, guid: 94adb1cd67e99cb4587f8bae1ae868bf, type: 3}
---- !u!1 &2034328195
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2034328197}
-  - component: {fileID: 2034328196}
-  m_Layer: 0
-  m_Name: GrassTest (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2034328196
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2034328195}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dcd098bc87e24f4682c8e28ea565652, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 1151734677}
-  material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
-  instancingMode: 1
-  instanceCount: 1000000
-  areaSize: 50
-  heightRange: {x: 0.05, y: 0.25}
-  widthRange: {x: 0.02, y: 0.06}
-  seed: 123458
-  customMesh: {fileID: 0}
-  meshSourcePrefab: {fileID: 0}
-  debugTintHalves: 0
-  debugStartInstance: 0
---- !u!4 &2034328197
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2034328195}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -228.53, y: 0, z: -147.73}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2043022798
 GameObject:
   m_ObjectHideFlags: 0
@@ -20348,15 +20075,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 52464678582811311, guid: be1483dc98c391d428c6010822c17e6d, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.001607517
+      value: 0.0016075425
       objectReference: {fileID: 0}
     - target: {fileID: 52464678582811311, guid: be1483dc98c391d428c6010822c17e6d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00014633057
+      value: 0.00013124892
       objectReference: {fileID: 0}
     - target: {fileID: 52464678582811311, guid: be1483dc98c391d428c6010822c17e6d, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.00004334014
+      value: 0.00003887115
       objectReference: {fileID: 0}
     - target: {fileID: 1131271950073973413, guid: be1483dc98c391d428c6010822c17e6d, type: 3}
       propertyPath: Target.TrackingTarget
@@ -20392,15 +20119,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4914008593350013720, guid: be1483dc98c391d428c6010822c17e6d, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0016075316
+      value: 0.001607527
       objectReference: {fileID: 0}
     - target: {fileID: 4914008593350013720, guid: be1483dc98c391d428c6010822c17e6d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00014635865
+      value: 0.00013124853
       objectReference: {fileID: 0}
     - target: {fileID: 4914008593350013720, guid: be1483dc98c391d428c6010822c17e6d, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.00004335067
+      value: 0.00003887391
       objectReference: {fileID: 0}
     - target: {fileID: 6514786803739101023, guid: be1483dc98c391d428c6010822c17e6d, type: 3}
       propertyPath: VerticalAxis.Wrap
@@ -20526,6 +20253,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1151734678}
   - {fileID: 307919664}
+  - {fileID: 1499393600}
   - {fileID: 1928030878001553577}
   - {fileID: 920835223}
   - {fileID: 698431512}
@@ -20548,9 +20276,3 @@ SceneRoots:
   - {fileID: 1337691481}
   - {fileID: 192274720}
   - {fileID: 1255212432}
-  - {fileID: 1499393600}
-  - {fileID: 2034328197}
-  - {fileID: 690660676}
-  - {fileID: 15615918}
-  - {fileID: 1809532832}
-  - {fileID: 1440156067}
