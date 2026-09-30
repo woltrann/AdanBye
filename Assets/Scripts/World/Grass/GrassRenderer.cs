@@ -14,6 +14,9 @@ namespace AdanBye.Grass
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
+    // Feed, etkileşimcilerin konumunu shader'a taşır; renderer tek başına eklendiğinde
+    // unutulup "çim tepki vermiyor" durumuna düşülmesin diye birlikte gelir.
+    [RequireComponent(typeof(GrassInteractionFeed))]
     public sealed class GrassRenderer : MonoBehaviour
     {
         [SerializeField] GrassSettings settings;

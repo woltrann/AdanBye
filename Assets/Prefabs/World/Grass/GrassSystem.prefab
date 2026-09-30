@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9205120897415879817}
   - component: {fileID: 6634913778929734602}
+  - component: {fileID: 381580415432516108}
   m_Layer: 0
   m_Name: GrassSystem
   m_TagString: Untagged
@@ -48,3 +49,17 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
   terrain: {fileID: 0}
   generateCompute: {fileID: 7200000, guid: 03c392b2de1860a4a807e4e24a696fee, type: 3}
+  exclusionMask: {fileID: 0}
+--- !u!114 &381580415432516108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884295059140153935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8527c82aa57ec8144bea6e164e04daa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  focus: {fileID: 0}
