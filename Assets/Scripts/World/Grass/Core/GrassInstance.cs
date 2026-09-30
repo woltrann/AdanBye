@@ -30,7 +30,7 @@ namespace AdanBye.Grass
     /// GPU'ya giden kalıcı çim instance verisi: 32 bayt, Sequential.
     /// BİT DÜZENİ Assets/Shaders/Grass/GrassInstanceData.hlsl içindeki GrassInstance/Grass_Unpack ile BİREBİR
     /// aynı olmak zorunda: alan sırası, boyutu veya paketleme değişirse iki dosya (ve GrassInstanceTests'teki
-    /// sabit vektörler) BİRLİKTE değişir. Bilerek Spike sınıfından bağımsız yazıldı; spike silinince bu kalır.
+    /// sabit vektörler) BİRLİKTE değişir.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct GrassInstance

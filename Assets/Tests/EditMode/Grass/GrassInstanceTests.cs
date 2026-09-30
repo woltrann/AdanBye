@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 using NUnit.Framework;
 using Unity.Mathematics;
 using UnityEngine;
-using AdanBye.Grass.Spike;
 
 namespace AdanBye.Grass.Tests
 {
@@ -23,21 +22,6 @@ namespace AdanBye.Grass.Tests
             Assert.AreEqual(20, (int)Marshal.OffsetOf(typeof(GrassInstance), nameof(GrassInstance.colorRGBA8)));
             Assert.AreEqual(24, (int)Marshal.OffsetOf(typeof(GrassInstance), nameof(GrassInstance.normalOct)));
             Assert.AreEqual(28, (int)Marshal.OffsetOf(typeof(GrassInstance), nameof(GrassInstance.hash)));
-        }
-
-        // Spike'taki kanıtlanmış düzenle kayma olmasın diye koruma. Spike WP-8'de silinirse bu test de silinir
-        // (yukarıdaki sabit ofsetler kalıcı sözleşmedir).
-        [Test]
-        public void Layout_MatchesWorkingSpikeStruct()
-        {
-            Assert.AreEqual(Marshal.SizeOf(typeof(GrassSpikeInstance)), Marshal.SizeOf(typeof(GrassInstance)));
-            foreach (string field in new[] { "position", "yawHeight", "widthFade", "colorRGBA8", "normalOct", "hash" })
-            {
-                Assert.AreEqual(
-                    (int)Marshal.OffsetOf(typeof(GrassSpikeInstance), field),
-                    (int)Marshal.OffsetOf(typeof(GrassInstance), field),
-                    field);
-            }
         }
 
         // SABİT TEST VEKTÖRLERİ (GPU'da çalıştırılmaz; bit düzeninin HLSL Grass_Unpack ile eşleştiğini elle doğrulanmış

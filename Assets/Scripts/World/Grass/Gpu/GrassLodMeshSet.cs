@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AdanBye.Grass
 {
     /// <summary>
-    /// Kodla üretilen varsayılan blade mesh'i (kalıcı; Spike'tan bağımsız): pivot kökte, +Y yukarı, ~1 birim yükseklik ve
+    /// Kodla üretilen varsayılan blade mesh'i: pivot kökte, +Y yukarı, ~1 birim yükseklik ve
     /// 1 birim taban genişliği (instance yüksekliği/genişliği instance verisinden ölçeklenir), uca doğru daralan,
     /// hafif öne kavisli. Mesh çağıranın sahipliğindedir (Destroy edilmeli).
     /// </summary>
