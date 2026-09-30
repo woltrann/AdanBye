@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 2804789592539231712}
   - component: {fileID: 120099881382263847}
   - component: {fileID: 7899175376839857665}
+  - component: {fileID: 1749335369609868167}
   m_Layer: 0
   m_Name: Droid
   m_TagString: Untagged
@@ -257,3 +258,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &1749335369609868167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5075306454159978192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad861ba04d648c40ac9e36d38f063d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 0.25
+  strength: 1
+  verticalRange: 0.05
+  yOffset: 0

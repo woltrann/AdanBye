@@ -49,7 +49,7 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 61287405ebb75d94385682ae3e2219cd, type: 2}
   terrain: {fileID: 0}
   generateCompute: {fileID: 7200000, guid: 03c392b2de1860a4a807e4e24a696fee, type: 3}
-  exclusionMask: {fileID: 0}
+  exclusionMask: {fileID: 11400000, guid: fbb676da346de6b42805f81258b16ea4, type: 2}
 --- !u!114 &381580415432516108
 MonoBehaviour:
   m_ObjectHideFlags: 0

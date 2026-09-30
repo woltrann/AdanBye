@@ -1,13 +1,20 @@
 using AdanBye.Grass;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using System.Linq;
+using System.Reflection;
 
 // Sahnede herhangi bir objeye ekle. Play'de tuslarla A/B testi yapar; sonuc ekranda ve [L] ile Console'da.
 // G = GrassRenderer ac-kapa (cimin toplam maliyeti = kapali FPS - acik FPS)
 // S = golge mesafesi ac-kapa
 // R = Render Scale 1 <-> 0.5 (FPS cok artarsa maliyet piksel/raster tarafinda)
+// O = SSAO Renderer Feature ac-kapa (acikken DepthNormals on gecisi cimi ikinci kez cizer)
+// T = Depth Texture + Opaque Texture ac-kapa
+// H = HDR ac-kapa
 // L = anlik durumu Console'a yaz (etiketle birlikte, kopyalayip paylasmak icin)
 // Not: Input.GetKeyDown icin Player Settings > Active Input Handling "Both" veya "Input Manager" olmali.
+// Not: O icin Inspector'da 'Renderer Data' alanina PC_Renderer atanmali (runtime'da asset'ten okunamiyor; build'e de
+// dahil olur cunku pipeline zaten onu kullaniyor).
 // Not: UniversalRenderPipeline.asset bir proje asset'idir; Editor'de yaptigimiz degisiklik kalici olur,
 // bu yuzden OnDisable'da orijinal degerler geri yazilir.
 public class GrassPerfTest : MonoBehaviour
@@ -16,14 +23,20 @@ public class GrassPerfTest : MonoBehaviour
     const float WindowSeconds = 1f;
 
     [SerializeField] GrassRenderer grass;
+    [Tooltip("SSAO'yu bulmak icin aktif URP Renderer Data (PC_Renderer). Bos ise O tusu calismaz.")]
+    [SerializeField] ScriptableRendererData rendererData;
 
     float _origShadowDistance;
     float _origRenderScale;
     int _origVSync;
     int _origTargetFps;
     bool _restoreValid;
+    bool _origDepthTexture, _origOpaqueTexture, _origHdr;
+    ScriptableRendererFeature _ssao;
+    bool _origSsaoActive;
 
     bool _grassOn = true, _shadowOn = true, _scaleHalf;
+    bool _ssaoOn = true, _texturesOn = true, _hdrOn = true;
 
     float _windowTime, _windowMaxDt;
     int _windowFrames;
@@ -46,7 +59,28 @@ public class GrassPerfTest : MonoBehaviour
         if (asset == null) return;
         _origShadowDistance = asset.shadowDistance;
         _origRenderScale = asset.renderScale;
+        _origDepthTexture = asset.supportsCameraDepthTexture;
+        _origOpaqueTexture = asset.supportsCameraOpaqueTexture;
+        _origHdr = asset.supportsHDR;
         _restoreValid = true;
+
+        if (rendererData == null) rendererData = FindActiveRendererData(asset);
+        if (rendererData == null) Debug.LogWarning("[GrassPerfTest] Renderer Data otomatik bulunamadi; O tusu calismaz. Inspector'dan ata.");
+
+        // Neden isimle: SSAO feature'i public bir tip degil (Universal assembly icinde internal).
+        _ssao = rendererData != null
+            ? rendererData.rendererFeatures.FirstOrDefault(f => f != null && f.GetType().Name == "ScreenSpaceAmbientOcclusion")
+            : null;
+        if (_ssao != null) { _origSsaoActive = _ssao.isActive; _ssaoOn = _origSsaoActive; }
+    }
+
+    // Neden reflection: URP asset'i renderer listesini public vermiyor. Alan [SerializeField] oldugu icin build'de
+    // strip edilmez. Yalnizca bu olcum araci kullanir; bulunamazsa Inspector alani yedektir.
+    static ScriptableRendererData FindActiveRendererData(UniversalRenderPipelineAsset asset)
+    {
+        FieldInfo listField = typeof(UniversalRenderPipelineAsset).GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
+        var list = listField?.GetValue(asset) as ScriptableRendererData[];
+        return list?.FirstOrDefault(d => d != null);
     }
 
     void OnDisable()
@@ -59,7 +93,11 @@ public class GrassPerfTest : MonoBehaviour
         {
             asset.shadowDistance = _origShadowDistance;
             asset.renderScale = _origRenderScale;
+            asset.supportsCameraDepthTexture = _origDepthTexture;
+            asset.supportsCameraOpaqueTexture = _origOpaqueTexture;
+            asset.supportsHDR = _origHdr;
         }
+        if (_ssao != null) _ssao.SetActive(_origSsaoActive);
         if (grass != null) grass.enabled = true;
     }
 
@@ -89,6 +127,24 @@ public class GrassPerfTest : MonoBehaviour
         {
             _scaleHalf = !_scaleHalf;
             asset.renderScale = _scaleHalf ? 0.5f : _origRenderScale;
+            ResetWindow();
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            if (_ssao == null) Debug.LogWarning("[GrassPerfTest] SSAO bulunamadi: 'Renderer Data' alanina PC_Renderer ata.");
+            else { _ssaoOn = !_ssaoOn; _ssao.SetActive(_ssaoOn); ResetWindow(); }
+        }
+        if (Input.GetKeyDown(KeyCode.T) && asset != null)
+        {
+            _texturesOn = !_texturesOn;
+            asset.supportsCameraDepthTexture = _texturesOn && _origDepthTexture;
+            asset.supportsCameraOpaqueTexture = _texturesOn && _origOpaqueTexture;
+            ResetWindow();
+        }
+        if (Input.GetKeyDown(KeyCode.H) && asset != null)
+        {
+            _hdrOn = !_hdrOn;
+            asset.supportsHDR = _hdrOn && _origHdr;
             ResetWindow();
         }
         if (Input.GetKeyDown(KeyCode.L))
@@ -135,7 +191,9 @@ public class GrassPerfTest : MonoBehaviour
         string fps = _avgMs > 0f ? (1000f / _avgMs).ToString("F0") : "-";
         string gpu = _gpuMs > 0.0 ? _gpuMs.ToString("F1") + " ms" : "n/a";
         string chunks = grass != null && grass.IsRunning ? $"{grass.LastSelectedChunks}/{grass.MaxChunks}" : "-";
-        return $"grass={(_grassOn ? "ON" : "OFF")} shadow={(_shadowOn ? "ON" : "OFF")} " +
+        string ssao = _ssao == null ? "n/a" : (_ssaoOn ? "ON" : "OFF");
+        return $"grass={(_grassOn ? "ON" : "OFF")} shadow={(_shadowOn ? "ON" : "OFF")} ssao={ssao} " +
+               $"depthOpaqueTex={(_texturesOn ? "ON" : "OFF")} hdr={(_hdrOn ? "ON" : "OFF")} " +
                $"renderScale={(_scaleHalf ? "0.5" : _origRenderScale.ToString("F1"))} | " +
                $"avg={_avgMs:F1} ms ({fps} FPS) max={_maxMs:F1} ms gpu={gpu} chunks={chunks} | " +
                $"vsync={QualitySettings.vSyncCount} targetFps={Application.targetFrameRate} refresh={Screen.currentResolution.refreshRateRatio.value:F0}Hz";
@@ -144,8 +202,8 @@ public class GrassPerfTest : MonoBehaviour
     void OnGUI()
     {
         var style = new GUIStyle(GUI.skin.label) { fontSize = 20 };
-        GUI.Label(new Rect(10, 10, 1100, 32), BuildReport(), style);
-        GUI.Label(new Rect(10, 40, 1100, 32),
-            "[G] Cim  [S] Golge  [R] Render Scale 0.5  [L] Console'a yaz   (deger ~1 sn ortalama)", style);
+        GUI.Label(new Rect(10, 10, 2000, 32), BuildReport(), style);
+        GUI.Label(new Rect(10, 40, 2000, 32),
+            "[G] Cim  [S] Golge  [R] Render Scale 0.5  [O] SSAO  [T] Depth/Opaque Tex  [H] HDR  [L] Console'a yaz   (deger ~1 sn ortalama)", style);
     }
 }

@@ -22,6 +22,8 @@ namespace AdanBye.Grass
         [SerializeField] GrassSettings settings;
         [Tooltip("Shader Graph çim materyali (RenderMeshIndirect ile çizilir; _GrassVisibleInstances okumalı). GPU Instancing'in kapalı olması önerilir (zorunlu değil).")]
         [SerializeField] Material material;
+        [Tooltip("Açıkken çim URP'nin DepthNormals ön geçişine çizilmez: SSAO çimeni 'görmez' (çimene AO uygulanmaz) ve çim bir kez daha çizilmekten kurtulur. Yan etki: çim depth texture'da da yer almaz.")]
+        [SerializeField] bool skipDepthNormalsPass = true;
         [Tooltip("Boşsa Terrain.activeTerrain kullanılır.")]
         [SerializeField] Terrain terrain;
         // Build'de AssetDatabase yok: compute shader referansı sahneye SERİLEŞTİRİLMİŞ olmalı (Editor'de otomatik atanır;
@@ -74,6 +76,13 @@ namespace AdanBye.Grass
 #endif
             UnsubscribeSettings();
             ReleaseSystem();
+            // Materyal bir asset: pass durumu bileşen kapanınca eski haline döner (başka kullanımı etkilemesin).
+            SetDepthNormalsPassEnabled(true);
+        }
+
+        void SetDepthNormalsPassEnabled(bool enabled)
+        {
+            if (material != null) material.SetShaderPassEnabled("DepthNormals", enabled);
         }
 
         /// <summary>Sistemi baştan kurar. Ayar/referans değişince çağrılır; idempotent ve hata durumunda çizimi kapatır.</summary>
@@ -83,6 +92,7 @@ namespace AdanBye.Grass
             if (!isActiveAndEnabled) return;
 
             // Filtre hot path'te değil burada üretilir (beginCameraRendering'de lazy ??= yok).
+            SetDepthNormalsPassEnabled(!skipDepthNormalsPass);
             _filter = new DefaultGrassCameraFilter(gameObject.layer);
             Terrain target = terrain != null ? terrain : Terrain.activeTerrain;
 
