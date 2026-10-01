@@ -1,0 +1,14 @@
+{
+    "name": "AdanBye.Survival.Core",
+    "rootNamespace": "AdanBye.Survival",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

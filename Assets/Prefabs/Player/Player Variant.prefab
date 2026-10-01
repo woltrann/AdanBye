@@ -757,6 +757,10 @@ PrefabInstance:
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2102024762260040766, guid: 090696b1b7726a542bc01d37f09fa075, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3987701288512449053, guid: 090696b1b7726a542bc01d37f09fa075, type: 3}
       propertyPath: m_Height
       value: 1.7268524
@@ -838,7 +842,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6502273671209756416, guid: 090696b1b7726a542bc01d37f09fa075, type: 3}
+    - {fileID: 8527552487298949474, guid: 090696b1b7726a542bc01d37f09fa075, type: 3}
+    - {fileID: 756090895999409635, guid: 090696b1b7726a542bc01d37f09fa075, type: 3}
+    - {fileID: 3168407636915820959, guid: 090696b1b7726a542bc01d37f09fa075, type: 3}
+    - {fileID: 8369578089462385257, guid: 090696b1b7726a542bc01d37f09fa075, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5143623185524994386, guid: 090696b1b7726a542bc01d37f09fa075, type: 3}
       insertIndex: -1

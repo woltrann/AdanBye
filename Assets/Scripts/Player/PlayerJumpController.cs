@@ -11,6 +11,9 @@ public class PlayerJumpController : MonoBehaviour
 {
     [SerializeField] private float jumpForce = 5f;
 
+    // Zıplamanın oyunda tutulup tutulmayacağı belli değil; kod silinmedi, sadece kapalı.
+    [SerializeField] private bool jumpEnabled = false;
+
     private PlayerMotor motor;
     private IGroundedProvider groundedProvider;
     private InputAction jumpAction;
@@ -43,7 +46,8 @@ public class PlayerJumpController : MonoBehaviour
 
     private void HandleJumpInput(InputAction.CallbackContext ctx)
     {
-        if (groundedProvider == null || !groundedProvider.IsGrounded) return;
+        if (!jumpEnabled) return;
+        if (groundedProvider == null ||!groundedProvider.IsGrounded) return;
 
         motor.ApplyImpulse(Vector3.up * jumpForce);
         OnJumped?.Invoke();
