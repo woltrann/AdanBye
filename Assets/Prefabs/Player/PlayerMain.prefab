@@ -500,7 +500,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
       propertyPath: m_Name
-      value: Player Variant
+      value: PlayerMain
       objectReference: {fileID: 0}
     - target: {fileID: 6683530943193103413, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
       propertyPath: animator
@@ -599,6 +599,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5426230340361652025}
+    - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5474954260085501720}
   m_SourcePrefab: {fileID: 100100000, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
 --- !u!82 &3148563809194994747 stripped
 AudioSource:
@@ -836,8 +839,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCharacter: {fileID: 0}
   config:
-    FilterDrainPerSecondAtFullDensity: 0.14285715
-    PoisonPerSecondAtFullDensity: 0.5
+    FilterDrainPerGameHourAtFullDensity: 100
+    PoisonPerGameHourAtFullDensity: 80
+--- !u!114 &5474954260085501720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873985369011075064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a59a3d756b99054093a24a37e27f4ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minHours: 1
+  maxHours: 2
 --- !u!1001 &6081134428506215639
 PrefabInstance:
   m_ObjectHideFlags: 0

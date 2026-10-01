@@ -1,38 +1,42 @@
-# Stamina HUD: Saat (WatchPanel) Entegrasyonu
+# Saat (WatchPanel) Göstergeleri: StatBarView
 
-Not: Saat yüzü sprite'ının nerede bittiğini göremiyorum; aşağıdaki anchor değerleri sahne YAML'ından çıkarıldı, yerleşimi Scene görünümünde gözle ayarla.
+Açlık, susuzluk ve stamina göstergeleri TEK bileşenle sürülür: `StatBarView` (Assets/Scripts/UI-UX). Eski `FilledChanger` (açlık/susuzluk) ve `StaminaHudView` (stamina) yerini bu bileşene bıraktı; `StaminaHudView` silindi, `FilledChanger` sahne/prefab'lar taşındıktan sonra silinecek.
 
-## 0. Önce karar: 5 sahnede ayrı kopya
-`Canvas/GamePanel/WatchPanel` prefab değil; BacisMechanics, CampSite, TerrainTest, TerrainTest12, Tutorial sahnelerinde ayrı kopyalar var.
-- **Öneri:** GamePanel (veya WatchPanel) bir prefab'a çevrilsin (Project'e sürükle), diğer sahnelerde eski kopya silinip prefab konsun. Stamina bir kez kurulur.
-- **Alternatif:** Aşağıdaki adımları her sahnede tekrarla.
-Kararı sen ver; ikisinde de adımlar aynı.
+## 0. WatchPanel artık prefab
+`Assets/Prefabs/Hud/WatchPanel.prefab`. Şu an yalnızca `TerrainTest12` prefab instance'ı kullanıyor; `BacisMechanics`, `CampSite`, `TerrainTest`, `Tutorial` sahnelerinde hâlâ ayrı (prefab olmayan) kopyalar var (her birinde 2 FilledChanger).
+- Prefab instance'ı olan sahnelerde değişiklik **prefab'tan** yapılır; sahnedeki instance üzerinde bileşen eklemek/silmek override olur ve prefab güncellemesiyle çakışır. Araç prefab instance'larını bilerek atlar.
+- Raw kopyası olan sahneler için en temizi: eski kopyayı silip prefab'ı sürüklemek; ya da aşağıdaki aracı o sahnede çalıştırmak.
 
-## 1. Alan değişikliği (önemli)
-`ceilingMarker` (RectTransform) kaldırıldı, yerine `ceilingFill` (Image) geldi. Eski referansı atamıştıysan Inspector'da "Missing/eski alan" görünür ya da boşalır; `ceilingFill`'i yeniden ata. Eski marker objesini sil.
+## 1. Açlık/Susuzluk dönüşümü (araçla)
+Menü: `Tools/AdanBye/HUD/`
+1. Dönüştürülecek sahneyi aç (ve/veya `WatchPanel.prefab`'ı çift tıklayıp Prefab Mode'da aç).
+2. **`FilledChanger -> StatBarView Önizleme (değiştirmez)`**: Console'a hangi nesnelerin değişeceğini, hangilerinin atlanacağını yazar; hiçbir şeyi değiştirmez.
+3. **`FilledChanger -> StatBarView (açık sahne + açık prefab)`**: `isHunger` -> `Kind`, `fillImage` -> `fill`, low/mid/high renkleri kopyalanır, `FilledChanger` silinir. Sadece FilledChanger'a dokunur. Tekrar çalıştırmak güvenlidir (zaten dönüşmüş nesne yeniden dönüşmez; yarım kalmış FilledChanger varsa temizler). Undo (Ctrl+Z) çalışır.
+4. Araç **kaydetmez**: sahneyi/prefab'ı sen Ctrl+S ile kaydet. Beğenmezsen kaydetmeden kapat ya da Ctrl+Z.
+5. Console'daki "ATLANDI (prefab instance)" satırları için kaynak prefab'ı Prefab Mode'da açıp aracı orada çalıştır.
+
+Karakter asset'i artık barlara sürüklenmez: `PlayerManager.Instance.mainCharacter` kullanılır. Farklı asset gerekirse `Character Override` alanına ata.
 
 ## 2. Alan -> Image eşlemesi
-| StaminaHudView alanı | Image |
+| StatBarView alanı | Anlamı |
 |---|---|
-| `staminaFill` | Öndeki, renk değiştiren dolu Image |
-| `ceilingFill` | Arkadaki soluk Image (yorgunluk sınırı) |
-| `collapseFeedback` | (ops.) Göstergeyi saran CanvasGroup |
-| Low/Mid/High | Varsayılan kırmızı/sarı/yeşil; HungerBar'daki FilledChanger değerleriyle aynı yap |
-| `collapsedColor` | Çökünce kırmızıya yakın renk |
+| `Kind` | Hunger / Thirst / Stamina |
+| `Fill` | Öndeki, renk değiştiren dolu Image (Filled) |
+| `Limit Fill` | (ops., yalnız Stamina) Arkadaki soluk Image: yorgunluk sınırı |
+| `Low/Mid/High Color` | Renk geçişi (varsayılan kırmızı/sarı/yeşil) |
+| `Alert Color` | Stamina çökünce renk |
+| `Alert Feedback` | (ops.) Çökmede alfa titreşimi uygulanacak CanvasGroup |
 
-İki Image da: Image Type = Filled, **aynı** Fill Method/Origin/Clockwise, **aynı rect**, Raycast Target KAPALI. Hiyerarşide `ceilingFill` `staminaFill`'in ÜSTÜNDE (önce çizilir = arkada). Ceiling rengi: aynı hue, düşük alfa (ör. 0.3-0.4).
+Image'lar: Image Type = Filled, aynı Fill Method/Origin/Clockwise, aynı rect, **Raycast Target KAPALI**. `Limit Fill` hiyerarşide `Fill`'in ÜSTÜNDE (önce çizilir = arkada); rengi aynı hue, düşük alfa (0.3-0.4).
 
-## Seçenek A: Üçüncü yarım daire
-1. `HungerBar`'ı Duplicate et, adı `StaminaBar`.
-2. Üstündeki `FilledChanger` bileşenini kaldır, `StaminaHudView` ekle.
-3. Çocuklar: `fill` -> `staminaFill`; `background` -> `ceilingFill` rolü için kullan (Image Type Filled, Radial180, fill origin fill ile aynı, rengi soluk) veya ayrı bir `ceiling` Image ekle ve `fill`'in üstüne sırala. `background` fillAmount'ı kodla değişeceği için dekoratif zemin gerekiyorsa ona ayrı bir Image tut.
-4. Hunger/Thirst x~0.47-0.55, y~0.54-0.76'da iç içe; Stamina için bir iç/dış halka seç, RectTransform'u küçültüp/büyütüp gözle hizala. Icon'u stamina simgesiyle değiştir.
+## 3. Stamina barı ekleme
+**Yarım daire (önerilen):** `WatchPanel.prefab`'ı Prefab Mode'da aç, `HungerBar`'ı Duplicate et, adı `StaminaBar`. `StatBarView.Kind = Stamina`. Çocuk `fill` -> `Fill`; arkada soluk bir Image ekleyip -> `Limit Fill` (`background` dekoratif zemin ise ona dokunma, fillAmount'ı kodla sürülmeyen Image olarak kalsın). RectTransform'u küçültüp iç/dış halka olarak gözle hizala, icon'u değiştir.
 
-## Seçenek B: SliderPosion altında yatay ince bar
-1. `SliderPosion` (y~0.22-0.28) altına boş yer bırak; WatchPanel altına `StaminaBar` (boş GameObject) ekle, anchor x 0.196-0.447, y ~0.14-0.19 (gözle ayarla).
-2. Altına iki Image: `Ceiling` (üstte sıralamada ilk), `Fill` (sonra). Slider KULLANMA.
-3. Her ikisi: Image Type Filled, Fill Method Horizontal, Origin Left. Sprite yoksa Source Image boş (düz renk) olur, Filled çalışması için bir sprite (ör. UISprite/beyaz kare) ata.
-4. `StaminaBar`'a `StaminaHudView` ekle; Fill -> `staminaFill`, Ceiling -> `ceilingFill`.
+**Yatay bar:** `SliderPosion` altında boş yere `StaminaBar` (boş GameObject), altına `Limit`(üstte) ve `Fill` Image'ları; ikisi de Filled / Horizontal / Origin Left (Source Image olarak beyaz kare gibi bir sprite şart). `StatBarView` ekle, `Kind = Stamina`, alanları ata.
 
-## Test
-Play: bar koşunca azalmalı, renk yeşil->sarı->kırmızı; soluk sınır kamp dinlenmesi/gaz yorgunluğunda küçülmeli; çökünce kırmızı + titreşim.
+Prefab'ı kaydet; instance kullanan sahneler otomatik güncellenir.
+
+## 4. Test
+Play: açlık/susuzluk değeri düşünce bar ve renk düşmeli; stamina koşunca azalmalı, soluk sınır kamp dinlenmesi/gaz yorgunluğunda küçülmeli, çökünce kırmızı + titreşim. Player geç doğarsa bar 120 kareye kadar bağlanmayı dener; başarısızsa Console'da tek bir uyarı çıkar (`[StatBarView:<Kind>]`).
+
+Yeni stat eklemek: `StatKind`'a değer + `StatBarSourceFactory`'ye bir satır + bir `IStatBarSource` sınıfı; `StatBarView` değişmez.

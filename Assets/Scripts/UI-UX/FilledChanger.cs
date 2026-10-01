@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+// StatBarView ile değiştirildi; sahne/prefab'larda taşındıktan sonra silinecek (Tools/AdanBye/HUD menüsü). Yeni işte kullanma.
 public class FilledChanger : MonoBehaviour
 {
     [Header("Character Data")]
