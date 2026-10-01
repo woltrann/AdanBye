@@ -1,6 +1,7 @@
+using AdanBye.Survival;
 using UnityEngine;
 
-public class DayCycle : MonoBehaviour
+public class DayCycle : MonoBehaviour, IGameClock
 {
     public static DayCycle Instance;
     [Header("Sun Settings")]
@@ -23,6 +24,9 @@ public class DayCycle : MonoBehaviour
 
     public float CurrentHour => (timeOfDay % 1f) * 24f;
     public bool IsNight => GetSunIntensity() < 0.2f;
+
+    // 1 gerçek saniyede geçen oyun saati. dayDuration <= 0 ise 0 (saat donuk sayýlýr; tüketiciler güvenle atlar).
+    public float GameHoursPerRealSecond => dayDuration > 0f ? 24f / dayDuration : 0f;
 
     private void Awake()
     {
@@ -76,6 +80,20 @@ public class DayCycle : MonoBehaviour
         return $"{hour:00}:{minute:00}";
     }
     
+    // Zaman atlamasý (çökme/uyku): saat ve ýþýk birlikte ilerler, gün sonunda baþa sarar.
+    public void AdvanceHours(float hours)
+    {
+        if (!(hours > 0f) || float.IsInfinity(hours)) return;
+        SetTimeOfDay01(timeOfDay + hours / 24f);
+    }
+
+    // Kayýttan yükleme için (SaveManager eskiden private alaný reflection ile yazýyordu). 0..1 dýþý deðer sarýlýr.
+    public void SetTimeOfDay01(float value)
+    {
+        timeOfDay = Mathf.Repeat(value, 1f);
+        UpdateLighting();
+    }
+
     public void setIsLoaded(bool value)
     {
         isLoaded = value;

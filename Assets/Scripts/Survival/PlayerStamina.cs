@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using AdanBye.Survival;
 using UnityEngine;
 
@@ -65,7 +66,17 @@ public class PlayerStamina : MonoBehaviour, IRunGate, IMovementLock, IStaminaRea
         Model.Tick(Time.deltaTime, activity, FatigueMultiplier);
     }
 
-    public void RestAtCamp() => Model.RestAtCamp();
+    public void RestAtCamp()
+    {
+        float currentBefore = Model.Current;
+        float ceilingBefore = Model.Ceiling;
+        Model.RestAtCamp();
+
+        // Console'dan doğrulama için (davranışı etkilemez). InvariantCulture: "12.5" biçimi, Türkçe locale'de virgül çıkmasın.
+        var c = CultureInfo.InvariantCulture;
+        Debug.Log($"[PlayerStamina] Kamp dinlenmesi: stamina {currentBefore.ToString("F1", c)}->{Model.Current.ToString("F1", c)}, " +
+                  $"tavan {ceilingBefore.ToString("F1", c)}->{Model.Ceiling.ToString("F1", c)}", this);
+    }
 
     public void CaptureState(SaveData data)
     {

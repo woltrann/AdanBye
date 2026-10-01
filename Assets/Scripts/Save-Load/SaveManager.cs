@@ -194,17 +194,8 @@ public class SaveManager : MonoBehaviour
             // Load day cycle
             if (dayCycle != null)
             {
-                var timeField = typeof(DayCycle).GetField("timeOfDay",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (timeField != null)
-                {
-                    timeField.SetValue(dayCycle, data.timeOfDay);
-                    dayCycle.setIsLoaded(true); // Set loaded state to true
-                }
-                else
-                {
-                    Debug.LogWarning("timeOfDay field not found in DayCycle!");
-                }
+                dayCycle.SetTimeOfDay01(data.timeOfDay);
+                dayCycle.setIsLoaded(true); // Set loaded state to true
             }
 
             Vector3 PlayerSpawnPoint = new Vector3(data.SpawnPointX, data.SpawnPointY, data.SpawnPointZ);

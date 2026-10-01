@@ -4,7 +4,7 @@ using UnityEngine;
 // Tek iş: açlık/susuzluğu zamanla düşürmek. Eskiden UXobjects içindeki HungerDecrase/
 // ThirstDecrase coroutine'leriydi - bir UI sınıfının oyun durumunu değiştirmesi yanlıştı.
 // Saat mantığı IntervalTicker'da (saf, testli); burası sadece Unity'ye bağlayan ince kabuk.
-public class PlayerVitalsTicker : MonoBehaviour
+public class PlayerVitalsTicker : MonoBehaviour, ITimeSkipReceiver
 {
     [SerializeField] private MainCharacter mainCharacter;
 
@@ -40,10 +40,18 @@ public class PlayerVitalsTicker : MonoBehaviour
         thirstTicker = new IntervalTicker(Mathf.Max(0.01f, thirstIntervalSeconds));
     }
 
-    private void Update()
-    {
-        float dt = Time.deltaTime;
+    private void Update() => Advance(Time.deltaTime);
 
+    // Zaman atlaması gerçek-saniye eşdeğeriyle gelir; IntervalTicker büyük dt'de çoklu tick verir,
+    // açlık/susuzluk MainCharacter'da 0'a sınırlanır (0'ın altına inmez).
+    public void OnTimeSkipped(float gameHours, float realSecondsEquivalent)
+    {
+        if (hungerTicker == null) return; // Awake'te kapatılmış
+        Advance(realSecondsEquivalent);
+    }
+
+    private void Advance(float dt)
+    {
         int hungerTicks = hungerTicker.Advance(dt);
         if (hungerTicks > 0) mainCharacter.DecreaseHunger(hungerPerTick * hungerTicks);
 

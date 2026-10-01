@@ -35,13 +35,14 @@ namespace AdanBye.Survival.Tests
         public void FilterFull_NoPoison_FilterDrainsWithDensity()
         {
             var f = new GasFilter();
-            float poison = Create().Tick(1f, 1f, f);
+            // Birim: dt OYUN SAATİ. 1 saat, yoğunluk 1 -> 100 birim/saat.
+            float poison = Create().Tick(0.1f, 1f, f);
             Assert.AreEqual(0f, poison);
-            Assert.AreEqual(100f - 1f / 7f, f.Value, Tol);
+            Assert.AreEqual(100f - 10f, f.Value, Tol);
 
             var f2 = new GasFilter();
-            Create().Tick(1f, 0.5f, f2);
-            Assert.AreEqual(100f - 0.5f / 7f, f2.Value, Tol);
+            Create().Tick(0.1f, 0.5f, f2);
+            Assert.AreEqual(100f - 5f, f2.Value, Tol);
         }
 
         [Test]
@@ -50,8 +51,9 @@ namespace AdanBye.Survival.Tests
             var f = new GasFilter();
             f.Drain(100f);
             var m = Create();
-            Assert.AreEqual(0.5f, m.Tick(1f, 1f, f), Tol);
-            Assert.AreEqual(0.5f, m.Tick(2f, 0.5f, f), Tol);
+            // Zehir 80/oyun saati @ yoğunluk 1.
+            Assert.AreEqual(80f, m.Tick(1f, 1f, f), Tol);
+            Assert.AreEqual(80f, m.Tick(2f, 0.5f, f), Tol);
             Assert.AreEqual(0f, f.Value);
         }
 
@@ -72,11 +74,11 @@ namespace AdanBye.Survival.Tests
         public void FilterEmptiesMidTick_PoisonOnlyForRemainder()
         {
             var f = new GasFilter();
-            f.Drain(99f); // 1 kaldı; density 1'de 1/7 hızla 7 sn'de biter
-            float poison = Create().Tick(14f, 1f, f);
+            f.Drain(99f); // 1 kaldı; density 1'de 100/saat hızla 0.01 saatte biter
+            float poison = Create().Tick(0.02f, 1f, f);
 
             Assert.IsTrue(f.IsEmpty);
-            Assert.AreEqual(7f * 0.5f, poison, Tol);
+            Assert.AreEqual(0.01f * 80f, poison, Tol);
         }
 
         [Test]

@@ -5,7 +5,7 @@ using UnityEngine;
 // Tek iş: telefon/saat/fener/gaz filtresi/droid şarjını zaman içinde yönetmek.
 // Eskiden UXobjects coroutine'leri + public alanlarıydı; artık UI sadece Changed event'ini
 // dinleyip değerleri okur. Hesap ChargeableDevice/GasFilter/IntervalTicker'da (saf, testli).
-public class DeviceChargeController : MonoBehaviour, ISaveable
+public class DeviceChargeController : MonoBehaviour, ISaveable, ITimeSkipReceiver
 {
     [SerializeField] private MainCharacter mainCharacter;
 
@@ -75,8 +75,16 @@ public class DeviceChargeController : MonoBehaviour, ISaveable
 
     private void Update()
     {
+        TickAll(Time.deltaTime);
+    }
+
+    // Zaman atlaması: atlama anındaki durum (güneş şarjı, fener, droid şarjı) süre boyunca sabit varsayılır.
+    // Gaz filtresi burada değil PlayerToxinExposure'da (yoğunluğu o bilir; ExposeToGas'a oyun saati verir).
+    public void OnTimeSkipped(float gameHours, float realSecondsEquivalent) => TickAll(realSecondsEquivalent);
+
+    private void TickAll(float dt)
+    {
         if (phone == null) EnsureDevices();
-        float dt = Time.deltaTime;
 
         // Eski davranış: güneş şarjı açıksa telefon/saat artar, değilse azalır.
         phone.Tick(dt, true, solarCharging);
@@ -140,11 +148,12 @@ public class DeviceChargeController : MonoBehaviour, ISaveable
     }
 
     // Gaza maruziyet kapısı (PlayerToxinExposure): model filtreyi boşaltır, dönüş bu tick'teki zehir artışıdır.
+    // dtGameHours OYUN SAATİDİR (gerçek saniye değil).
     // Filtre burada sahipli kaldığı için HUD'un Changed bildirimi de burada tetiklenir.
-    public float ExposeToGas(ToxinExposureModel model, float dt, float density)
+    public float ExposeToGas(ToxinExposureModel model, float dtGameHours, float density)
     {
         if (gasFilter == null) EnsureDevices();
-        float poison = model.Tick(dt, density, gasFilter);
+        float poison = model.Tick(dtGameHours, density, gasFilter);
         NotifyIfChanged();
         return poison;
     }
