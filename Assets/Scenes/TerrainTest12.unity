@@ -8911,12 +8911,12 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 5976578346945515847, guid: 965bf7eb702713946a83e08182194e3c, type: 3}
-      propertyPath: config.CollapseCeilingPenalty
-      value: 5
+      propertyPath: config.CeilingDrainRunPerSecond
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 5976578346945515847, guid: 965bf7eb702713946a83e08182194e3c, type: 3}
-      propertyPath: config.PostCollapseStaminaFraction
-      value: 0.5
+      propertyPath: config.CeilingDrainIdlePerSecond
+      value: 0.012
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

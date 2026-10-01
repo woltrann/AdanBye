@@ -802,12 +802,10 @@ MonoBehaviour:
     RunResumeThreshold: 20
     CeilingDrainIdlePerSecond: 0.05
     CeilingDrainRunPerSecond: 0.3
-    CeilingFloor: 25
-    CollapseDurationSeconds: 4
-    CollapseCeilingPenalty: 10
-    PostCollapseStaminaFraction: 0.15
     ExhaustionGraceSeconds: 3
     ExhaustedSpeedMultiplier: 0.7
+    WakeMainStaminaFraction: 0.25
+    CollapseDurationSeconds: 4
     FatigueSlowdownThreshold: 0.3
     FatigueSlowdownMultiplier: 0.85
   gasAffectsFatigue: 0
