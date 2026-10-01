@@ -21,7 +21,7 @@ public class PlayerVitalsTicker : MonoBehaviour
 
     private void Awake()
     {
-        // PlayerPoisonStatus ile aynı yol: mainCharacter'ın tek doğruluk kaynağı PlayerManager.
+        // PlayerToxinExposure ile aynı yol: mainCharacter'ın tek doğruluk kaynağı PlayerManager.
         if (mainCharacter == null)
         {
             var manager = GetComponent<PlayerManager>();

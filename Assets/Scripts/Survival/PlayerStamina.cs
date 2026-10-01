@@ -8,11 +8,15 @@ public class PlayerStamina : MonoBehaviour, IRunGate, IMovementLock, IStaminaRea
 {
     [SerializeField] private StaminaConfig config = new StaminaConfig();
 
+    // WP-9: varsayılan KAPALI. Açıksa zehir oranı eşiği aşınca tavan kaybı çarpanla hızlanır.
+    [Header("Gaz -> yorgunluk (opsiyonel)")]
+    [SerializeField] private bool gasAffectsFatigue = false;
+    [SerializeField, Range(0f, 1f)] private float poisonRatioThreshold = 0.5f;
+    [SerializeField] private float poisonedFatigueMultiplier = 1.5f;
+
     private StaminaModel model;
     private PlayerMotor motor;
-
-    // WP-9 (yorgunluk kaynağı) bağlanana kadar sabit; Tick'e yine de parametre olarak iletilir.
-    private const float FatigueMultiplier = 1f;
+    private MainCharacter mainCharacter;
 
     // Restore/RestAtCamp Awake'ten önce çağrılabileceği için model tembel kurulur.
     private StaminaModel Model => model ??= new StaminaModel(config);
@@ -37,7 +41,16 @@ public class PlayerStamina : MonoBehaviour, IRunGate, IMovementLock, IStaminaRea
         motor = GetComponent<PlayerMotor>();
         if (motor == null)
             Debug.LogWarning("[PlayerStamina] PlayerMotor bulunamadı; aktivite hep Idle sayılacak (stamina koşuyla tükenmez).", this);
+
+        var manager = GetComponent<PlayerManager>();
+        if (manager != null) mainCharacter = manager.mainCharacter;
+        if (gasAffectsFatigue && mainCharacter == null)
+            Debug.LogWarning("[PlayerStamina] gasAffectsFatigue açık ama MainCharacter yok; gaz yorgunluğa etki etmeyecek.", this);
     }
+
+    private float FatigueMultiplier => gasAffectsFatigue && mainCharacter != null
+        ? GasFatigueRule.Multiplier(mainCharacter.currentPoison, mainCharacter.maxPoison, poisonRatioThreshold, poisonedFatigueMultiplier)
+        : 1f;
 
     private void Update()
     {

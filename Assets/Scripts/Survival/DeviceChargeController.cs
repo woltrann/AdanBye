@@ -139,12 +139,14 @@ public class DeviceChargeController : MonoBehaviour, ISaveable
         NotifyIfChanged();
     }
 
-    // Dışarıda kalma süresini ölçen sistem (WP-8 AtmosphereSensor) bu kapıdan filtreyi boşaltır.
-    // Şimdilik kimse çağırmıyor -> filtre boşalmıyor (eskiden de hiçbir kod boşaltmıyordu).
-    public void DrainGasFilter(float amount)
+    // Gaza maruziyet kapısı (PlayerToxinExposure): model filtreyi boşaltır, dönüş bu tick'teki zehir artışıdır.
+    // Filtre burada sahipli kaldığı için HUD'un Changed bildirimi de burada tetiklenir.
+    public float ExposeToGas(ToxinExposureModel model, float dt, float density)
     {
-        gasFilter.Drain(amount);
+        if (gasFilter == null) EnsureDevices();
+        float poison = model.Tick(dt, density, gasFilter);
         NotifyIfChanged();
+        return poison;
     }
 
     private void NotifyIfChanged()

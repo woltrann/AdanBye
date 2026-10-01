@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.7283019, g: 0.7283019, b: 0.7283019, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.005
+  m_FogDensity: 0.018
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.07694551, g: 0.10145802, b: 0.381132, a: 1}
@@ -15274,17 +15274,10 @@ MonoBehaviour:
   duration: 0.75
   NotificationPanel: {fileID: 119712365}
   phoneChargePercent: {fileID: 2128541128}
-  phoneCharge: 100
   watchChargePercent: {fileID: 811724395}
-  watchCharge: 100
   flashChargePercent: {fileID: 825923554}
-  flashCharge: 100
   gassFilterPercent: {fileID: 837284124}
-  gassFilter: 100
-  isRecharge: 0
-  droidRecharge: 0
-  isFlash: 1
-  isOutsideforGassFilter: 1
+  deviceCharge: {fileID: 0}
 --- !u!114 &1514578999
 MonoBehaviour:
   m_ObjectHideFlags: 0
