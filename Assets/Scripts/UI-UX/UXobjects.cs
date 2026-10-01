@@ -1,61 +1,67 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Collections;
 
+// Sadece görünüm: saat metni, kalp atışı animasyonu, bildirim paneli ve şarj yüzdeleri.
+// Oyun durumu (şarj/açlık/susuzluk tick'leri) DeviceChargeController ve PlayerVitalsTicker'da;
+// burası değerleri yalnızca okuyup gösterir.
 public class UXobjects : MonoBehaviour
 {
     public static UXobjects Instance;
+
+    // Player'daki DeviceChargeController'a kadar beklenecek en fazla kare (Player geç doğabilir).
+    private const int BindMaxFrames = 120;
+
     [Header("Character Data")]
     public MainCharacter characterData;
 
     [Header("Time")]
-    public TextMeshProUGUI timeText;          // Inspector'dan ata
-    public DayCycle dayCycle;      // Inspector'dan DayCycle objesini ata
+    public TextMeshProUGUI timeText;
+    public DayCycle dayCycle;
 
     [Header("HeartBeats")]
     public Image image1;
     public Image image11;
     public Image image2;
-    public float duration = 1f; // 0-1 aras� ge�i� s�resi
+    public float duration = 1f;
 
     [Header("Other UX")]
     public GameObject NotificationPanel;
 
-    [Header ("Charge")]
+    [Header("Charge (yüzde metinleri)")]
     public TextMeshProUGUI phoneChargePercent;
-    public float phoneCharge = 100f;
     public TextMeshProUGUI watchChargePercent;
-    public float watchCharge = 100f;
     public TextMeshProUGUI flashChargePercent;
-    public float flashCharge = 100f;
     public TextMeshProUGUI gassFilterPercent;
-    public float gassFilter = 100f;
-    public bool isRecharge=false;
-    public bool droidRecharge=false;
-    public bool isFlash=false;
-    public bool isOutsideforGassFilter=false;
 
+    // Opsiyonel: boş bırakılırsa PlayerManager.Instance.DeviceCharge üzerinden bulunur.
+    [SerializeField] private DeviceChargeController deviceCharge;
 
     void Awake()
     {
         Instance = this;
     }
+
     void Start()
     {
-        StartCoroutine(FillLoop());
-        phoneChargePercent.text = phoneCharge.ToString() + "%";
-        watchChargePercent.text = watchCharge.ToString() + "%";
-        flashChargePercent.text = flashCharge.ToString() + "%";
-        gassFilterPercent.text = gassFilter.ToString() + "%";
-        StartCoroutine(PhoneDecharge());
-        StartCoroutine(WatchDecharge());
-        StartCoroutine(DroidDecharge());
-        StartCoroutine(FlashDecharge());
-        StartCoroutine(GassFilterDecrase());
-        StartCoroutine(HungerDecrase());
-        StartCoroutine(ThirstDecrase());
+        if (characterData == null && PlayerManager.Instance != null)
+            characterData = PlayerManager.Instance.mainCharacter;
+
+        if (characterData != null && image1 != null && image11 != null && image2 != null)
+            StartCoroutine(FillLoop());
+        else
+            Debug.LogWarning("[UXobjects] Kalp atışı için characterData/image1/image11/image2 eksik; animasyon çalışmayacak.", this);
+
+        StartCoroutine(BindDeviceCharge());
     }
+
+    void OnDestroy()
+    {
+        if (deviceCharge != null) deviceCharge.Changed -= RefreshCharge;
+        if (Instance == this) Instance = null;
+    }
+
     void Update()
     {
         if (dayCycle != null && timeText != null)
@@ -64,21 +70,55 @@ public class UXobjects : MonoBehaviour
         }
     }
 
+    // Player UXobjects'ten sonra doğabilir; bu yüzden bulunana kadar kare kare dener.
+    private IEnumerator BindDeviceCharge()
+    {
+        for (int i = 0; deviceCharge == null && i < BindMaxFrames; i++)
+        {
+            if (PlayerManager.Instance != null) deviceCharge = PlayerManager.Instance.DeviceCharge;
+            if (deviceCharge == null) yield return null;
+        }
+
+        if (deviceCharge == null)
+        {
+            Debug.LogWarning("[UXobjects] DeviceChargeController bulunamadı; şarj yüzdeleri güncellenmeyecek.", this);
+            yield break;
+        }
+
+        deviceCharge.Changed += RefreshCharge;
+        RefreshCharge();
+    }
+
+    private void RefreshCharge()
+    {
+        SetPercent(phoneChargePercent, deviceCharge.PhoneCharge);
+        SetPercent(watchChargePercent, deviceCharge.WatchCharge);
+        SetPercent(flashChargePercent, deviceCharge.FlashCharge);
+        SetPercent(gassFilterPercent, deviceCharge.GasFilterValue);
+    }
+
+    private static void SetPercent(TextMeshProUGUI text, float value)
+    {
+        if (text != null) text.text = Mathf.RoundToInt(value) + "%";
+    }
+
     public void NotificationPanelOpen()
     {
         NotificationPanel.SetActive(true);
         StartCoroutine(NotificationPanelClose());
     }
+
     IEnumerator NotificationPanelClose()
     {
         yield return new WaitForSeconds(1.5f);
-        NotificationPanel.SetActive(false);    
+        NotificationPanel.SetActive(false);
     }
+
     IEnumerator FillLoop()
     {
         while (true)
         {
-            // Sa�l�k durumuna g�re ayarlar� belirle
+
             if (characterData.currentHealth == 0f)
             {
                 duration = 0.8f;
@@ -98,7 +138,7 @@ public class UXobjects : MonoBehaviour
                 image11.gameObject.SetActive(false);
             }
 
-            // Animasyon 1
+
             Image activeImage = (characterData.currentHealth == 0f) ? image11 : image1;
             activeImage.fillAmount = 0;
             image2.fillAmount = 1;
@@ -110,7 +150,7 @@ public class UXobjects : MonoBehaviour
                 yield return null;
             }
 
-            // Animasyon 2
+
             activeImage.fillAmount = 1;
             t = 0;
             while (t < 1)
@@ -119,108 +159,6 @@ public class UXobjects : MonoBehaviour
                 image2.fillAmount = Mathf.Lerp(1, 0, t);
                 yield return null;
             }
-        }
-    }
-    IEnumerator PhoneDecharge()
-    {
-        while (true)
-        {
-            if (!isRecharge)
-            {
-                phoneCharge = Mathf.Clamp(phoneCharge - 1, 0, 100);
-            }
-            else
-            {
-                phoneCharge = Mathf.Clamp(phoneCharge + 1, 0, 100);
-            }
-
-            phoneChargePercent.text = phoneCharge.ToString() + "%";
-            yield return new WaitForSeconds(10);
-        }
-    }
-    IEnumerator WatchDecharge()
-    {
-        while (true)
-        {
-            if (!isRecharge)
-            {
-                watchCharge = Mathf.Clamp(watchCharge - 1, 0, 100);
-            }
-            else
-            {
-                watchCharge = Mathf.Clamp(watchCharge + 1, 0, 100);
-            }
-
-            watchChargePercent.text = watchCharge.ToString() + "%";
-            yield return new WaitForSeconds(15);
-        }
-
-    }
-    IEnumerator DroidDecharge()
-    {
-        while (true)
-        {
-            if (!droidRecharge)
-            {
-                characterData.DecreaseDroidCharge(1f);
-            }
-            else
-            {
-                characterData.IncreaseDroidCharge(1f);
-            }
-            yield return new WaitForSeconds(15);
-        }
-    }
-    IEnumerator FlashDecharge()
-    {
-        while (true)
-        {
-            if (isFlash)
-            {
-                // �arj azal�yor
-                flashCharge = Mathf.Clamp(flashCharge - 1, 0, 100);
-            }
-            else
-            {
-                // �arj art�yor (doldurma)
-                flashCharge = Mathf.Clamp(flashCharge + 0, 0, 100);
-            }
-
-            flashChargePercent.text = flashCharge.ToString() + "%";
-            yield return new WaitForSeconds(7);
-        }
-    }
-    IEnumerator GassFilterDecrase()
-    {
-        while (true)
-        {
-            if (isOutsideforGassFilter)
-            {
-                gassFilter = Mathf.Clamp(gassFilter - 1, 0, 100);
-            }
-            else
-            {
-                gassFilter = Mathf.Clamp(gassFilter + 0, 0, 100);
-            }
-
-            gassFilterPercent.text = gassFilter.ToString() + "%";
-            yield return new WaitForSeconds(7);
-        }
-    }
-    IEnumerator HungerDecrase()
-    {
-        while (true)
-        {
-            characterData.DecreaseHunger(1f);
-            yield return new WaitForSeconds(7);
-        }
-    }
-    IEnumerator ThirstDecrase()
-    {
-        while (true)
-        {
-            characterData.DecreaseThirst(1f);
-            yield return new WaitForSeconds(5);
         }
     }
 }

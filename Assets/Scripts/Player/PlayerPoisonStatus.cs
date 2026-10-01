@@ -40,7 +40,9 @@ public class PlayerPoisonStatus : MonoBehaviour
     {
         while (true)
         {
-            if (UXobjects.Instance.gassFilter <= 0)
+            // Şarj kontrolcüsü yoksa filtre yok sayılır (zehirlenme uygulanmaz) - patlamasın.
+            var charge = PlayerManager.Instance != null ? PlayerManager.Instance.DeviceCharge : null;
+            if (charge != null && charge.IsGasFilterEmpty)
             {
                 mainCharacter.IncreasePoison(poisonAmountPerTick);
             }

@@ -25,18 +25,15 @@ public class InteractionManager : MonoBehaviour
         else Destroy(gameObject);
         inventoryData = GetComponent<PlayerManager>().mainCharacter.InventoryData;
     }
+    // PlayerManager.Instance uzerinden; kontrolcu yoksa null doner ve cagrilar sessizce atlanir.
+    private static DeviceChargeController Charge =>
+        PlayerManager.Instance != null ? PlayerManager.Instance.DeviceCharge : null;
+
     private void Update()
     {
         if (isHaveGES)
         {
-            if (!DayCycle.Instance.IsNight)
-            {
-                UXobjects.Instance.isRecharge = true;
-            }
-            else
-            {
-                UXobjects.Instance.isRecharge = false;
-            }
+            Charge?.SetSolarCharging(!DayCycle.Instance.IsNight);
         }
     }
     public void Interact(ItemData itemData)
@@ -69,7 +66,7 @@ public class InteractionManager : MonoBehaviour
                 case 0:
                     chips[0].gameObject.SetActive(true);
                     UXobjects.Instance.NotificationPanelOpen();
-                    UXobjects.Instance.droidRecharge = true;
+                    Charge?.SetDroidCharging(true);
                     break;
                 case 1:
                     chips[1].gameObject.SetActive(true);
@@ -142,12 +139,7 @@ public class InteractionManager : MonoBehaviour
         }
         if (itemData.itemID == 54) //sarj istasyonu
         {
-            UXobjects.Instance.phoneCharge = 100;
-            UXobjects.Instance.phoneChargePercent.text = UXobjects.Instance.phoneCharge.ToString();
-            UXobjects.Instance.watchCharge = 100;
-            UXobjects.Instance.watchChargePercent.text = UXobjects.Instance.watchCharge.ToString();
-            UXobjects.Instance.flashCharge = 100;
-            UXobjects.Instance.flashChargePercent.text = UXobjects.Instance.flashCharge.ToString();
+            Charge?.RechargeDevices();
             characterData.IncreaseDroidCharge(100f);
         }
     }
@@ -207,8 +199,7 @@ public class InteractionManager : MonoBehaviour
                 PlayerManager.Instance.GetComponent<PlayerMotor>().MultiplySpeed(1.5f);
                 break;
             case ConsumableType.ToksinMask:
-                UXobjects.Instance.gassFilter = 100;
-                UXobjects.Instance.gassFilterPercent.text = UXobjects.Instance.gassFilter.ToString() + "%";
+                Charge?.RefillGasFilter();
                 break;
             case ConsumableType.WaterCleaner:
                 FillBottleWithWater(WellWater, CleanWater);

@@ -73,7 +73,8 @@ public class InventoryUI : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             Flashlight.SetActive(!Flashlight.activeSelf);
-            UXobjects.Instance.isFlash = !UXobjects.Instance.isFlash;
+            if (PlayerManager.Instance != null && PlayerManager.Instance.DeviceCharge != null)
+                PlayerManager.Instance.DeviceCharge.ToggleFlash();
         }
     }
 }
