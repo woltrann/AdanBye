@@ -8584,7 +8584,7 @@ GameObject:
   - component: {fileID: 777118253}
   - component: {fileID: 777118252}
   m_Layer: 5
-  m_Name: PanelCharacter
+  m_Name: WatchPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8611,10 +8611,10 @@ RectTransform:
   - {fileID: 899854123}
   m_Father: {fileID: 1514578996}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.0037310282, y: 0.6567629}
-  m_AnchorMax: {x: 0.28504863, y: 0.9999975}
-  m_AnchoredPosition: {x: -99.999146, y: 74.99994}
-  m_SizeDelta: {x: -200, y: -150}
+  m_AnchorMin: {x: 0.0037310282, y: 0.78714776}
+  m_AnchorMax: {x: 0.18143794, y: 0.9999975}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &777118252
 MonoBehaviour:
@@ -8905,7 +8905,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 9.5
+  m_fontSize: 9.85
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10120,6 +10120,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5132068105477346233, guid: 965bf7eb702713946a83e08182194e3c, type: 3}
   m_PrefabInstance: {fileID: 920835223}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &920835225 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9167054537961172192, guid: 965bf7eb702713946a83e08182194e3c, type: 3}
+  m_PrefabInstance: {fileID: 920835223}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937782375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00898cd2299c6d34b828ed357ed5cd94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &921702555
 GameObject:
   m_ObjectHideFlags: 0
@@ -11143,7 +11154,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3.55
+  m_fontSize: 3.7
   m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12569,7 +12580,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25.15
+  m_fontSize: 26.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -15277,7 +15288,7 @@ MonoBehaviour:
   watchChargePercent: {fileID: 811724395}
   flashChargePercent: {fileID: 825923554}
   gassFilterPercent: {fileID: 837284124}
-  deviceCharge: {fileID: 0}
+  deviceCharge: {fileID: 920835225}
 --- !u!114 &1514578999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18551,7 +18562,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3.55
+  m_fontSize: 3.7
   m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -20272,15 +20283,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6511867918545570027, guid: 5d3bff7ee95128648a37cf5a782c3308, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -426.5
+      value: -447.122
       objectReference: {fileID: 0}
     - target: {fileID: 6511867918545570027, guid: 5d3bff7ee95128648a37cf5a782c3308, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12.27
+      value: 12.911
       objectReference: {fileID: 0}
     - target: {fileID: 6511867918545570027, guid: 5d3bff7ee95128648a37cf5a782c3308, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -219.76
+      value: -211.332
       objectReference: {fileID: 0}
     - target: {fileID: 6511867918545570027, guid: 5d3bff7ee95128648a37cf5a782c3308, type: 3}
       propertyPath: m_LocalRotation.w

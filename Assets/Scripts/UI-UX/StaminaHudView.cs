@@ -1,17 +1,26 @@
 using System.Collections;
+using AdanBye.Survival;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Sadece görünüm: stamina doluluğu, tavan işareti ve çökme titreşimi. Durum IStaminaReadout'tan okunur.
+// Sadece görünüm: stamina doluluğu, yorgunluk sınırı ve çökme geri bildirimi. Durum IStaminaReadout'tan okunur.
 // Event yok (değer her karede değişebilir); okuma alloc'suz, değişmeyen değer için UI'ye yazılmaz.
+// Image'lara yalnızca fillAmount/color verilir; fillMethod'dan bağımsızdır (yarım daire de yatay bar da olur).
 public class StaminaHudView : MonoBehaviour
 {
     private const int BindMaxFrames = 120;
 
-    [Tooltip("Image Type = Filled, Fill Method = Horizontal, Fill Origin = Left.")]
+    [Tooltip("Image Type = Filled. Radial180 (saat yarım dairesi) veya Horizontal olabilir.")]
     [SerializeField] private Image staminaFill;
-    [Tooltip("Barın (fill ile aynı rect) çocuğu; X konumu Ceiling/Max'e göre anchor ile kayar.")]
-    [SerializeField] private RectTransform ceilingMarker;
+    [Tooltip("Opsiyonel: staminaFill'in ARKASINDA, soluk renkli yorgunluk sınırı Image'ı (Filled, aynı Fill Method/Origin).")]
+    [SerializeField] private Image ceilingFill;
+    [Header("Renkler (saat göstergeleriyle aynı dil)")]
+    [SerializeField] private Color lowColor = Color.red;
+    [SerializeField] private Color midColor = Color.yellow;
+    [SerializeField] private Color highColor = Color.green;
+    [Tooltip("Çökmüş durumda gösterge rengi (kırmızıya yakın).")]
+    [SerializeField] private Color collapsedColor = new Color(0.8f, 0.1f, 0.1f, 1f);
+    [Header("Çökme geri bildirimi")]
     [Tooltip("Opsiyonel: çökmede alfa titreşimi uygulanacak grup.")]
     [SerializeField] private CanvasGroup collapseFeedback;
     [SerializeField] private float collapsePulseSpeed = 4f;
@@ -19,6 +28,8 @@ public class StaminaHudView : MonoBehaviour
 
     private IStaminaReadout stamina;
     private float shownFill = -1f, shownCeiling = -1f;
+    private bool shownCollapsed;
+    private bool colorShown;
 
     private IEnumerator Start()
     {
@@ -43,30 +54,35 @@ public class StaminaHudView : MonoBehaviour
         float max = stamina.Max;
         if (!(max > 0f)) return;
 
-        float fill = Mathf.Clamp01(stamina.Current / max);
-        if (staminaFill != null && !Mathf.Approximately(fill, shownFill))
-        {
-            staminaFill.fillAmount = fill;
-            shownFill = fill;
-        }
+        float fill = StaminaFillMath.Ratio(stamina.Current, max);
+        bool collapsed = stamina.IsCollapsed;
+        bool fillChanged = !Mathf.Approximately(fill, shownFill);
 
-        float ceiling = Mathf.Clamp01(stamina.Ceiling / max);
-        if (ceilingMarker != null && !Mathf.Approximately(ceiling, shownCeiling))
+        if (staminaFill != null)
         {
-            // Anchor'ı kaydırmak parent genişliğinden bağımsız doğru konumu verir.
-            var anchorMin = ceilingMarker.anchorMin;
-            var anchorMax = ceilingMarker.anchorMax;
-            ceilingMarker.anchorMin = new Vector2(ceiling, anchorMin.y);
-            ceilingMarker.anchorMax = new Vector2(ceiling, anchorMax.y);
-            var pos = ceilingMarker.anchoredPosition;
-            pos.x = 0f;
-            ceilingMarker.anchoredPosition = pos;
+            if (fillChanged) staminaFill.fillAmount = fill;
+            // Renk yalnızca oran ya da çökme durumu değişince yazılır (Image.color set'i grafiği kirletir).
+            if (fillChanged || collapsed != shownCollapsed || !colorShown)
+            {
+                staminaFill.color = collapsed
+                    ? collapsedColor
+                    : StatColorGradient.Evaluate(lowColor, midColor, highColor, fill);
+                colorShown = true;
+            }
+        }
+        shownFill = fill;
+        shownCollapsed = collapsed;
+
+        float ceiling = StaminaFillMath.Ratio(stamina.Ceiling, max);
+        if (ceilingFill != null && !Mathf.Approximately(ceiling, shownCeiling))
+        {
+            ceilingFill.fillAmount = ceiling;
             shownCeiling = ceiling;
         }
 
         if (collapseFeedback != null)
         {
-            collapseFeedback.alpha = stamina.IsCollapsed
+            collapseFeedback.alpha = collapsed
                 ? Mathf.Lerp(collapseMinAlpha, 1f, Mathf.PingPong(Time.unscaledTime * collapsePulseSpeed, 1f))
                 : 1f;
         }

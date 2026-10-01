@@ -579,14 +579,26 @@ PrefabInstance:
       insertIndex: 7
       addedObject: {fileID: 2920120169356295266}
     - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
-      insertIndex: 8
-      addedObject: {fileID: 8337831935819258307}
-    - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
-      insertIndex: 10
+      insertIndex: 9
       addedObject: {fileID: -40745614331312771}
     - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6805996887977639152}
+    - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6084274213767255491}
+    - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9167054537961172192}
+    - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5976578346945515847}
+    - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2112569599306501245}
+    - targetCorrespondingSourceObject: {fileID: 6185028963199419410, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5426230340361652025}
   m_SourcePrefab: {fileID: 100100000, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
 --- !u!82 &3148563809194994747 stripped
 AudioSource:
@@ -651,6 +663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpForce: 5
+  jumpEnabled: 0
 --- !u!114 &846370218409222738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -699,22 +712,6 @@ MonoBehaviour:
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
---- !u!114 &8337831935819258307
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5873985369011075064}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1de236da6c4765e4493b238a26ac11ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCharacter: {fileID: 11400000, guid: bfc7d967b5943ae4bbbc83ead155f53a, type: 2}
-  poisonInterval: 2
-  poisonAmountPerTick: 1
-  isOutSide: 0
 --- !u!114 &-40745614331312771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -745,6 +742,102 @@ MonoBehaviour:
   strength: 1
   verticalRange: 0.17
   yOffset: 0.12
+--- !u!114 &6084274213767255491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873985369011075064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f904496da5045eb4d967261dccdb5ad9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCharacter: {fileID: 0}
+  hungerIntervalSeconds: 7
+  hungerPerTick: 1
+  thirstIntervalSeconds: 5
+  thirstPerTick: 1
+--- !u!114 &9167054537961172192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873985369011075064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00898cd2299c6d34b828ed357ed5cd94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCharacter: {fileID: 0}
+  phoneDrainSeconds: 10
+  phoneChargeSeconds: 10
+  watchDrainSeconds: 15
+  watchChargeSeconds: 15
+  flashDrainSeconds: 7
+  droidIntervalSeconds: 15
+  droidAmountPerTick: 1
+--- !u!114 &5976578346945515847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873985369011075064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3952730c8d03fc438040aa516c431ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  config:
+    Max: 100
+    RunDrainPerSecond: 12
+    RegenPerSecond: 8
+    RegenDelaySeconds: 1
+    RunResumeThreshold: 20
+    CeilingDrainIdlePerSecond: 0.05
+    CeilingDrainRunPerSecond: 0.3
+    CeilingFloor: 25
+    CollapseDurationSeconds: 4
+    CollapseCeilingPenalty: 10
+    PostCollapseStaminaFraction: 0.15
+    FatigueSlowdownThreshold: 0.3
+    FatigueSlowdownMultiplier: 0.85
+  gasAffectsFatigue: 0
+  poisonRatioThreshold: 0.5
+  poisonedFatigueMultiplier: 1.5
+--- !u!114 &2112569599306501245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873985369011075064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f09472cf376a0694dad7da64102cec49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseOutdoorDensity: 0.2
+  maxDensity: 1
+--- !u!114 &5426230340361652025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873985369011075064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b8a1c8b28dd26641a0d3acb7d607734, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCharacter: {fileID: 0}
+  config:
+    FilterDrainPerSecondAtFullDensity: 0.14285715
+    PoisonPerSecondAtFullDensity: 0.5
 --- !u!1001 &6081134428506215639
 PrefabInstance:
   m_ObjectHideFlags: 0
