@@ -5,7 +5,7 @@ using UnityEngine;
 // Tek iş: telefon/saat/fener/gaz filtresi/droid şarjını zaman içinde yönetmek.
 // Eskiden UXobjects coroutine'leri + public alanlarıydı; artık UI sadece Changed event'ini
 // dinleyip değerleri okur. Hesap ChargeableDevice/GasFilter/IntervalTicker'da (saf, testli).
-public class DeviceChargeController : MonoBehaviour
+public class DeviceChargeController : MonoBehaviour, ISaveable
 {
     [SerializeField] private MainCharacter mainCharacter;
 
@@ -59,7 +59,13 @@ public class DeviceChargeController : MonoBehaviour
             Debug.LogWarning("[DeviceChargeController] MainCharacter bulunamadı; droid şarjı güncellenmeyecek.", this);
         }
 
-        // Property'ler Awake'ten önce okunabilsin diye (UI Start'ta bağlanır) burada kuruluyor.
+        EnsureDevices();
+    }
+
+    // RestoreState Awake'ten önce gelebilir; cihazlar tembel ama tek seferlik kurulur.
+    private void EnsureDevices()
+    {
+        if (phone != null) return;
         phone = new ChargeableDevice(PerSecond(phoneDrainSeconds), PerSecond(phoneChargeSeconds));
         watch = new ChargeableDevice(PerSecond(watchDrainSeconds), PerSecond(watchChargeSeconds));
         flash = new ChargeableDevice(PerSecond(flashDrainSeconds), 0f);
@@ -69,6 +75,7 @@ public class DeviceChargeController : MonoBehaviour
 
     private void Update()
     {
+        if (phone == null) EnsureDevices();
         float dt = Time.deltaTime;
 
         // Eski davranış: güneş şarjı açıksa telefon/saat artar, değilse azalır.
@@ -90,6 +97,25 @@ public class DeviceChargeController : MonoBehaviour
         float amount = droidAmountPerTick * ticks;
         if (droidCharging) mainCharacter.IncreaseDroidCharge(amount);
         else mainCharacter.DecreaseDroidCharge(amount);
+    }
+
+    public void CaptureState(SaveData data)
+    {
+        EnsureDevices();
+        data.phoneCharge = phone.Value;
+        data.watchCharge = watch.Value;
+        data.flashCharge = flash.Value;
+        data.gasFilter = gasFilter.Value;
+    }
+
+    public void RestoreState(SaveData data)
+    {
+        EnsureDevices();
+        phone.SetValue(data.phoneCharge);
+        watch.SetValue(data.watchCharge);
+        flash.SetValue(data.flashCharge);
+        gasFilter.SetValue(data.gasFilter);
+        NotifyIfChanged();
     }
 
     public void SetSolarCharging(bool value) => solarCharging = value;

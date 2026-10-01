@@ -115,11 +115,26 @@ public class InteractionManager : MonoBehaviour
         //Examine Diyaloðu oynatýlacak
     }
 
+    private static void RestPlayerAtCamp()
+    {
+        if (PlayerManager.Instance == null)
+        {
+            Debug.LogWarning("[InteractionManager] PlayerManager.Instance yok; kampta stamina dolmadý.");
+            return;
+        }
+
+        var receivers = PlayerManager.Instance.GetComponents<ICampRestReceiver>();
+        if (receivers.Length == 0)
+            Debug.LogWarning("[InteractionManager] Player üzerinde ICampRestReceiver (PlayerStamina) yok; stamina dolmadý.");
+        foreach (var receiver in receivers) receiver.RestAtCamp();
+    }
+
     private void HandleUse(ItemData itemData)
     {
         Debug.Log($"[Use] {itemData.itemName} kullanýldý!");
         if (itemData.itemID == 50)//50 campfire, save point
         {
+            RestPlayerAtCamp(); // Kayýttan ÖNCE: kaydedilen stamina dolu olsun.
             SaveManager.Instance.SaveGame();
             Debug.Log("Oyun kaydedildi!");
         }

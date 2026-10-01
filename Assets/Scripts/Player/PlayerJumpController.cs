@@ -16,6 +16,7 @@ public class PlayerJumpController : MonoBehaviour
 
     private PlayerMotor motor;
     private IGroundedProvider groundedProvider;
+    private IMovementLock movementLock; // opsiyonel: çökmüşken zıplama yok
     private InputAction jumpAction;
 
     public event Action OnJumped;
@@ -24,6 +25,7 @@ public class PlayerJumpController : MonoBehaviour
     {
         motor = GetComponent<PlayerMotor>();
         groundedProvider = GetComponent<IGroundedProvider>();
+        movementLock = GetComponent<IMovementLock>();
 
         if (groundedProvider == null)
             Debug.LogWarning($"{nameof(PlayerJumpController)}: IGroundedProvider bulunamadı (PlayerGroundWaterSensor eksik mi?).");
@@ -47,6 +49,7 @@ public class PlayerJumpController : MonoBehaviour
     private void HandleJumpInput(InputAction.CallbackContext ctx)
     {
         if (!jumpEnabled) return;
+        if (movementLock != null && movementLock.IsMovementLocked) return;
         if (groundedProvider == null ||!groundedProvider.IsGrounded) return;
 
         motor.ApplyImpulse(Vector3.up * jumpForce);

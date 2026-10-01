@@ -38,6 +38,9 @@ namespace AdanBye.Survival
 
         public void Fill() => Value = Max;
 
+        // Kayıttan yükleme: mutlak değer atar (Restore ekleme yapar), aralık dışını sınırlar.
+        public void SetValue(float value) => Set(value);
+
         public void Restore(float amount) => Set(Value + amount);
 
         private void Set(float v) => Value = Math.Max(0f, Math.Min(Max, v));

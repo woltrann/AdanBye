@@ -3,6 +3,13 @@ using System.Collections.Generic;
 [System.Serializable]
 public class SaveData
 {
+    // Sürüm: 0/1 = hayatta kalma alanlarý yok (eski dosya), 2+ = var. Bkz. SaveVersionPolicy.
+    public int saveVersion;
+
+    // Hayatta kalma (saveVersion >= 2)
+    public float currentStamina, staminaCeiling;
+    public float phoneCharge, watchCharge, flashCharge, gasFilter;
+
     // Karakter bilgileri
     public int level;
 

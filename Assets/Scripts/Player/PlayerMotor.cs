@@ -27,6 +27,11 @@ public class PlayerMotor : MonoBehaviour, IVelocityProvider
     // Opsiyonel: swim rise gibi dış kaynaklı bir yükseklik değişimi varsa onu da uygularız.
     private IElevationOffsetProvider elevationProvider;
 
+    // Opsiyonel: stamina gibi bir kaynak koşuyu/hızı sınırlayabilir ya da hareketi kilitleyebilir.
+    // Yoksa (null) eski davranış aynen sürer.
+    private IRunGate runGate;
+    private IMovementLock movementLock;
+
     private InputAction moveAction;
     private InputAction runAction;
 
@@ -38,7 +43,10 @@ public class PlayerMotor : MonoBehaviour, IVelocityProvider
     public Vector3 CurrentVelocity { get; private set; }
     public float MoveSpeed => moveSpeed;
     public float RunSpeed => runSpeed;
-    public bool IsRunning => runInput && moveInput.sqrMagnitude > 0.01f;
+    public bool IsRunning =>
+        runInput && moveInput.sqrMagnitude > 0.01f && (runGate == null || runGate.CanRun) && !IsLocked;
+
+    private bool IsLocked => movementLock != null && movementLock.IsMovementLocked;
 
     private void Awake()
     {
@@ -46,6 +54,8 @@ public class PlayerMotor : MonoBehaviour, IVelocityProvider
         rb.centerOfMass = new Vector3(0, -0.5f, 0); // daha dengeli zıplama
 
         elevationProvider = GetComponent<IElevationOffsetProvider>();
+        runGate = GetComponent<IRunGate>();
+        movementLock = GetComponent<IMovementLock>();
 
         var input = GetComponent<PlayerManager>().InputActions;
         moveAction = input.FindAction("PlayerController/Move");
@@ -84,16 +94,19 @@ public class PlayerMotor : MonoBehaviour, IVelocityProvider
 
         Vector3 moveDir = forward * moveInput.y + right * moveInput.x;
 
+        // Kilitliyken girdi yok sayılır: hedef hız 0 ve dönüş yok (mevcut hız SmoothDamp ile söner).
+        bool hasInput = moveInput.sqrMagnitude >= 0.01f && !IsLocked;
+
         float targetSpeed = 0f;
-        if (moveInput.sqrMagnitude >= 0.01f)
+        if (hasInput)
         {
-            targetSpeed = runInput ? runSpeed : moveSpeed;
+            float speedMultiplier = runGate != null ? runGate.SpeedMultiplier : 1f;
+            targetSpeed = (IsRunning ? runSpeed : moveSpeed) * speedMultiplier;
             float targetAngle = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, rotationSmoothTime);
             rb.MoveRotation(Quaternion.Euler(0f, angle, 0f));
         }
 
-        bool hasInput = moveInput.sqrMagnitude >= 0.01f;
         if (useCurveDrivenMovement && curveSolver != null)
         {
             CurrentVelocity = curveSolver.Evaluate(moveDir, targetSpeed, hasInput, Time.fixedTime);

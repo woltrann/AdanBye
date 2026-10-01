@@ -30,6 +30,12 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    // Tüm Awake'ler bittikten sonra: kayıttan gelen oyuncu durumu (stamina/şarj) bu noktada uygulanabilir.
+    private void Start()
+    {
+        if (SaveManager.Instance != null) SaveManager.Instance.ApplyPendingPlayerState();
+    }
+
     public void OnEnable()
     {
         InputActions.FindActionMap("PlayerController").Enable();

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using AdanBye.Survival;
 using UnityEngine;
 
 public class SaveManager : MonoBehaviour
@@ -15,6 +16,10 @@ public class SaveManager : MonoBehaviour
 
     private string savePath;
 
+    // Dosyadan okunan ama henüz oyuncuya uygulanmamış durum. Awake'te Player bileşenleri hazır
+    // olmayabilir; Player/SaveManager Start'ında (tüm Awake'lerden sonra) uygulanır.
+    private SaveData pendingPlayerState;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -24,6 +29,28 @@ public class SaveManager : MonoBehaviour
         // Initialize the ItemDatabase
         ItemDatabase.Initialize();
         LoadGame();
+    }
+
+    private void Start() => ApplyPendingPlayerState();
+
+    // Eski save (saveVersion < 2) yeni alanları 0 okur; geri yüklenirse oyuncu bayılırdı.
+    // Bu yüzden eski dosyada hiçbir şey uygulanmaz, bileşen varsayılanları kalır.
+    public void ApplyPendingPlayerState()
+    {
+        if (pendingPlayerState == null) return;
+        if (PlayerManager.Instance == null) return; // Player henüz yok; PlayerManager.Start tekrar dener.
+
+        var data = pendingPlayerState;
+        pendingPlayerState = null;
+
+        if (!SaveVersionPolicy.HasSurvivalData(data.saveVersion))
+        {
+            Debug.Log($"[SaveManager] Eski save (v{data.saveVersion}); stamina/şarj varsayılanlarda bırakıldı.");
+            return;
+        }
+
+        foreach (var saveable in PlayerManager.Instance.GetComponents<ISaveable>())
+            saveable.RestoreState(data);
     }
 
     public void SaveGame()
@@ -75,6 +102,18 @@ public class SaveManager : MonoBehaviour
 
         // Day cycle
         data.timeOfDay = dayCycle.CurrentHour / 24f;
+
+        // Oyuncu bileşenleri (stamina, şarjlar) kendi alanlarını yazar.
+        data.saveVersion = SaveVersionPolicy.Current;
+        if (PlayerManager.Instance != null)
+        {
+            foreach (var saveable in PlayerManager.Instance.GetComponents<ISaveable>())
+                saveable.CaptureState(data);
+        }
+        else
+        {
+            Debug.LogWarning("[SaveManager] PlayerManager.Instance yok; stamina/şarj kaydedilmedi.");
+        }
 
         // Write to JSON
         string json = JsonUtility.ToJson(data, true);
@@ -178,6 +217,9 @@ public class SaveManager : MonoBehaviour
                 droidPrefab.transform.position = DroidSpawnPoint;
                 //droidPrefab.transform.rotation = droidSpawnPoint.transform.rotation;
             }
+
+            // Oyuncu bileşenlerine uygulama Start'a ertelenir (Awake sırası belirsiz).
+            pendingPlayerState = data;
 
             Debug.Log("Game loaded successfully!");
         }

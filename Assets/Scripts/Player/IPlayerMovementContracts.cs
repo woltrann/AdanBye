@@ -26,3 +26,32 @@ public interface IElevationOffsetProvider
     // O anki toplam yükseklik ofseti (raycast mesafelerini düzeltmek için)
     float CurrentElevation { get; }
 }
+
+// --- Stamina/hareket kilidi sözleşmeleri (WP-4) ---
+// Motor stamina'yı bilmez; sadece "koşabilir miyim / hız çarpanı / kilitli miyim" sorar.
+
+public interface IRunGate
+{
+    bool CanRun { get; }
+    // Yürüme ve koşu hızına birlikte uygulanır.
+    float SpeedMultiplier { get; }
+}
+
+public interface IMovementLock
+{
+    bool IsMovementLocked { get; }
+}
+
+public interface IStaminaReadout
+{
+    float Current { get; }
+    float Ceiling { get; }
+    float Max { get; }
+    bool IsCollapsed { get; }
+    event System.Action Collapsed;
+}
+
+public interface ICampRestReceiver
+{
+    void RestAtCamp();
+}
