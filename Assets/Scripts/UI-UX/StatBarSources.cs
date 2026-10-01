@@ -37,5 +37,5 @@ public sealed class StaminaSource : IStatBarSource
 
     public float Ratio => StaminaFillMath.Ratio(stamina.Current, stamina.Max);
     public float LimitRatio => StaminaFillMath.Ratio(stamina.Ceiling, stamina.Max);
-    public bool IsAlert => stamina.IsCollapsed;
+    public bool IsAlert => stamina.IsCollapsed || stamina.IsExhausted;
 }

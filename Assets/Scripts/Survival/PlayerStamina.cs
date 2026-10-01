@@ -32,6 +32,8 @@ public class PlayerStamina : MonoBehaviour, IRunGate, IMovementLock, IStaminaRea
     public float Ceiling => Model.Ceiling;
     public float Max => Model.Max;
     public bool IsCollapsed => Model.IsCollapsed;
+    public bool IsExhausted => Model.IsExhausted;
+    public float ExhaustionRemaining => Model.ExhaustionRemaining;
 
     public bool CanRun => Model.CanRun;
     public float SpeedMultiplier => Model.SpeedMultiplier;

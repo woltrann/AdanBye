@@ -48,6 +48,7 @@ public interface IStaminaReadout
     float Ceiling { get; }
     float Max { get; }
     bool IsCollapsed { get; }
+    bool IsExhausted { get; }
     event System.Action Collapsed;
 }
 

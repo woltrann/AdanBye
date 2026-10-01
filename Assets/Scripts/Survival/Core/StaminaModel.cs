@@ -20,6 +20,8 @@ namespace AdanBye.Survival
             timeSinceRun = config.RegenDelaySeconds;
         }
 
+        // Bitkinlik başladığı anda tek sefer (ses/HUD kancası).
+        public event Action Exhausted;
         // Çökme başladığı anda tek sefer.
         public event Action Collapsed;
 
@@ -28,11 +30,16 @@ namespace AdanBye.Survival
         public float Ceiling { get; private set; }
         public bool IsCollapsed { get; private set; }
         public float CollapseRemaining { get; private set; }
-        public bool CanRun => canRun && !IsCollapsed;
+        // Stamina 0'a indi, çökmeden önceki ek süre işliyor (nefes nefese: dolum yok, koşu yok).
+        public bool IsExhausted { get; private set; }
+        public float ExhaustionRemaining { get; private set; }
+        public bool CanRun => canRun && !IsCollapsed && !IsExhausted;
 
         // Çökmede 0 değildir: hareket kilidi ayrı bir sorumluluk (IsCollapsed'ı okuyan taraf).
+        // Bitkinlikte yorgunluk yavaşlatmasının üstüne ek çarpan biner.
         public float SpeedMultiplier =>
-            Ceiling / Max < config.FatigueSlowdownThreshold ? config.FatigueSlowdownMultiplier : 1f;
+            (Ceiling / Max < config.FatigueSlowdownThreshold ? config.FatigueSlowdownMultiplier : 1f)
+            * (IsExhausted ? config.ExhaustedSpeedMultiplier : 1f);
 
         public void Tick(float dt, StaminaActivity activity, float fatigueMultiplier = 1f)
         {
@@ -42,6 +49,12 @@ namespace AdanBye.Survival
             if (IsCollapsed)
             {
                 TickCollapse(dt, fatigueMultiplier);
+                return;
+            }
+
+            if (IsExhausted)
+            {
+                TickExhausted(dt, fatigueMultiplier);
                 return;
             }
 
@@ -64,7 +77,7 @@ namespace AdanBye.Survival
 
             if (Current <= 0f)
             {
-                BeginCollapse();
+                BeginExhaustion();
                 return;
             }
             UpdateRunHysteresis();
@@ -76,6 +89,8 @@ namespace AdanBye.Survival
             Current = config.Max;
             IsCollapsed = false;
             CollapseRemaining = 0f;
+            IsExhausted = false;
+            ExhaustionRemaining = 0f;
             timeSinceRun = config.RegenDelaySeconds;
             canRun = true;
         }
@@ -87,12 +102,38 @@ namespace AdanBye.Survival
             Current = Clamp(current, 0f, Ceiling);
             IsCollapsed = false;
             CollapseRemaining = 0f;
+            // Current 0 ile yüklendiyse bir sonraki Tick bitkinliği doğal olarak yeniden başlatır.
+            IsExhausted = false;
+            ExhaustionRemaining = 0f;
             // Yükleme sonrası dolum hemen başlamasın (yükle-dolum istismarını önler).
             timeSinceRun = 0f;
             canRun = Current >= RunThreshold;
         }
 
         private float RunThreshold => Math.Min(config.RunResumeThreshold, Ceiling);
+
+        private void TickExhausted(float dt, float fatigueMultiplier)
+        {
+            // Dolum yok: kurtulma şansı verilmez, süre bitince kesin çöker. Yorgunluk Idle gibi birikir.
+            DrainCeiling(dt, config.CeilingDrainIdlePerSecond, fatigueMultiplier);
+            Current = 0f;
+            ExhaustionRemaining -= dt;
+            if (ExhaustionRemaining > 0f) return;
+
+            // Büyük dt'de artan süre çökmeye aktarılmaz: çökme kendi süresini baştan alır (tek adımda tutarlı).
+            IsExhausted = false;
+            ExhaustionRemaining = 0f;
+            BeginCollapse();
+        }
+
+        private void BeginExhaustion()
+        {
+            IsExhausted = true;
+            ExhaustionRemaining = config.ExhaustionGraceSeconds;
+            canRun = false;
+            Current = 0f;
+            Exhausted?.Invoke();
+        }
 
         private void TickCollapse(float dt, float fatigueMultiplier)
         {

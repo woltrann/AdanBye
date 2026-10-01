@@ -5,6 +5,7 @@ namespace AdanBye.Survival.Tests
     public class StaminaModelTests
     {
         private const float Tol = 0.001f;
+        private const float ExhaustSeconds = 3f; // StaminaConfig.ExhaustionGraceSeconds varsayılanı
 
         private static StaminaModel Create() => new StaminaModel(new StaminaConfig());
 
@@ -14,13 +15,24 @@ namespace AdanBye.Survival.Tests
             for (int i = 0; i < n; i++) m.Tick(step, a);
         }
 
-        // Tam dolu modeli koşturarak çökmeye getirir.
+        // Tam dolu modeli koşturarak önce bitkinliğe sokar (çökme henüz yok).
+        private static StaminaModel Exhausted(out int exhaustedCount)
+        {
+            var m = Create();
+            int count = 0;
+            m.Exhausted += () => count++;
+            for (int i = 0; i < 200 && !m.IsExhausted; i++) m.Tick(0.1f, StaminaActivity.Run);
+            exhaustedCount = count;
+            return m;
+        }
+
+        // Tam dolu modeli koşturarak çökmeye getirir (0 -> bitkin 3 sn -> çökme).
         private static StaminaModel Collapsed(out int collapseCount)
         {
             var m = Create();
             int count = 0;
             m.Collapsed += () => count++;
-            for (int i = 0; i < 200 && !m.IsCollapsed; i++) m.Tick(0.1f, StaminaActivity.Run);
+            for (int i = 0; i < 300 && !m.IsCollapsed; i++) m.Tick(0.1f, StaminaActivity.Run);
             collapseCount = count;
             return m;
         }
@@ -164,8 +176,8 @@ namespace AdanBye.Survival.Tests
         public void Collapse_AppliesCeilingPenalty()
         {
             var m = Collapsed(out _);
-            // ~8.3 sn koşuda ~2.5 tavan kaybı + 10 ceza.
-            Assert.AreEqual(87.5f, m.Ceiling, 0.1f);
+            // 8.4 sn koşuda 2.52 + 3 sn bitkinlikte (Idle hızı) ~0.15 tavan kaybı + 10 ceza.
+            Assert.AreEqual(87.33f, m.Ceiling, 0.05f);
         }
 
         [Test]
@@ -174,6 +186,7 @@ namespace AdanBye.Survival.Tests
             var m = Create();
             m.Restore(20f, 26f);
             m.Tick(2f, StaminaActivity.Run);
+            m.Tick(ExhaustSeconds, StaminaActivity.Idle);
             Assert.IsTrue(m.IsCollapsed);
             Assert.AreEqual(25f, m.Ceiling, Tol);
         }
@@ -188,15 +201,21 @@ namespace AdanBye.Survival.Tests
             Assert.IsFalse(m.IsCollapsed);
             Assert.AreEqual(1, count);
             // Çökme sırasında da tavan idle hızında düşer; oran güncel tavana uygulanır.
-            Assert.AreEqual(m.Ceiling * 0.15f, m.Current, Tol);
+            Assert.AreEqual(m.Ceiling * 0.5f, m.Current, 0.01f); // uyanış sonrası artık kareler tavanı ~0.005 düşürür
             Assert.Less(m.Ceiling, ceiling + Tol);
         }
 
         [Test]
         public void RunHysteresis_NoFlicker_UntilThreshold()
         {
-            var m = Collapsed(out _);
-            TickFor(m, 4f, StaminaActivity.Idle);
+            // Tavan tabanda (25): uyanınca 12.5 < 20 eşiği, histerezis devrede.
+            var m = Create();
+            m.Restore(20f, 25f);
+            m.Tick(2f, StaminaActivity.Run);
+            m.Tick(ExhaustSeconds, StaminaActivity.Idle);
+            TickFor(m, 4.2f, StaminaActivity.Idle);
+            Assert.IsFalse(m.IsCollapsed);
+            Assert.AreEqual(12.5f, m.Current, Tol);
             Assert.IsFalse(m.CanRun);
 
             // Eşiğe kadar CanRun kapalı kalır; koşu istenirse yürüme sayılır (tüketim yok).
@@ -280,6 +299,153 @@ namespace AdanBye.Survival.Tests
                 Assert.GreaterOrEqual(m.Current, 0f);
             }
             Assert.AreEqual(25f, m.Ceiling, Tol);
+        }
+
+        // --- Bitkinlik (exhausted) ---
+
+        [Test]
+        public void ReachingZero_StartsExhaustion_NotCollapse()
+        {
+            var m = Exhausted(out _);
+            Assert.IsTrue(m.IsExhausted);
+            Assert.IsFalse(m.IsCollapsed);
+            Assert.AreEqual(0f, m.Current);
+            Assert.AreEqual(3f, m.ExhaustionRemaining, Tol);
+            Assert.IsFalse(m.CanRun);
+        }
+
+        [Test]
+        public void Exhausted_FiresExactlyOnce()
+        {
+            var m = Exhausted(out int count);
+            TickFor(m, 2f, StaminaActivity.Run);
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void WhileExhausted_RunDoesNotDrain_AndNoRegen()
+        {
+            var m = Exhausted(out _);
+            float ceiling = m.Ceiling;
+            TickFor(m, 2f, StaminaActivity.Run);
+            TickFor(m, 0.5f, StaminaActivity.Idle);
+            Assert.IsTrue(m.IsExhausted);
+            Assert.AreEqual(0f, m.Current);
+            // Tavan Idle hızında düşer (Run hızı 0.3/sn olsaydı 0.75 düşerdi).
+            Assert.AreEqual(ceiling - 0.05f * 2.5f, m.Ceiling, 0.01f);
+        }
+
+        [Test]
+        public void ExhaustionEnd_CollapsesOnce_WithPenaltyOnce()
+        {
+            var m = Exhausted(out _);
+            int collapses = 0;
+            m.Collapsed += () => collapses++;
+            float ceilingBefore = m.Ceiling;
+
+            TickFor(m, 3.2f, StaminaActivity.Idle);
+            Assert.IsFalse(m.IsExhausted);
+            Assert.IsTrue(m.IsCollapsed);
+            Assert.AreEqual(1, collapses);
+            // Ceza bir kez: 10 + ~0.15 idle kaybı; ikinci ceza olsaydı ~20 düşerdi.
+            Assert.AreEqual(ceilingBefore - 10f, m.Ceiling, 0.3f);
+
+            TickFor(m, 1f, StaminaActivity.Run);
+            Assert.AreEqual(1, collapses);
+        }
+
+        [Test]
+        public void ExactGraceDuration_TriggersCollapse()
+        {
+            var m = Exhausted(out _);
+            int collapses = 0;
+            m.Collapsed += () => collapses++;
+            // 2.5 + 0.5 ikili tabanda tam: float birikim hatası testi flaky yapmasın.
+            m.Tick(2.5f, StaminaActivity.Idle);
+            Assert.IsFalse(m.IsCollapsed);
+            m.Tick(0.5f, StaminaActivity.Idle);
+            Assert.IsTrue(m.IsCollapsed);
+            Assert.AreEqual(1, collapses);
+        }
+
+        [Test]
+        public void WakingUp_RestoresHalfOfCeiling_AndEnablesRun()
+        {
+            var m = Collapsed(out _);
+            TickFor(m, 4.2f, StaminaActivity.Idle);
+            Assert.IsFalse(m.IsCollapsed);
+            Assert.AreEqual(m.Ceiling * 0.5f, m.Current, 0.01f); // uyanış sonrası artık kareler tavanı ~0.005 düşürür
+            Assert.GreaterOrEqual(m.Current, 20f);
+            Assert.IsTrue(m.CanRun);
+        }
+
+        [Test]
+        public void WhileExhausted_SpeedIsFatigueTimesExhaustedMultiplier()
+        {
+            var m = Exhausted(out _);
+            Assert.AreEqual(0.7f, m.SpeedMultiplier, Tol);
+
+            // Tavan eşiğin altındaysa iki çarpan birlikte uygulanır: 0.85 * 0.7.
+            var low = Create();
+            low.Restore(25f, 29f); // CanRun açık olsun diye eşiğin (20) üstünde
+            low.Tick(3f, StaminaActivity.Run);
+            Assert.IsTrue(low.IsExhausted);
+            Assert.AreEqual(0.85f * 0.7f, low.SpeedMultiplier, Tol);
+        }
+
+        [Test]
+        public void RestAtCamp_ClearsExhaustion()
+        {
+            var m = Exhausted(out _);
+            m.RestAtCamp();
+            Assert.IsFalse(m.IsExhausted);
+            Assert.AreEqual(0f, m.ExhaustionRemaining);
+            Assert.AreEqual(100f, m.Current);
+            Assert.IsTrue(m.CanRun);
+        }
+
+        [Test]
+        public void Restore_ClearsExhaustion_ButZeroCurrentReStartsItOnNextTick()
+        {
+            var m = Exhausted(out _);
+            int count = 0;
+            m.Exhausted += () => count++;
+            m.Restore(0f, 80f);
+            Assert.IsFalse(m.IsExhausted);
+            m.Tick(0.1f, StaminaActivity.Idle);
+            Assert.IsTrue(m.IsExhausted);
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void HugeDt_RunningToZero_ThenExhaustionEnd_IsConsistent()
+        {
+            var m = Create();
+            int collapses = 0;
+            m.Collapsed += () => collapses++;
+
+            // Aşan dt bitkinliğe aktarılmaz: bitkinlik tam süresiyle başlar.
+            m.Tick(10f, StaminaActivity.Run);
+            Assert.IsTrue(m.IsExhausted);
+            Assert.IsFalse(m.IsCollapsed);
+            Assert.AreEqual(3f, m.ExhaustionRemaining, Tol);
+
+            // Aşan dt çökmeye de aktarılmaz: çökme tam süresiyle başlar, olay tek sefer.
+            m.Tick(10f, StaminaActivity.Idle);
+            Assert.IsTrue(m.IsCollapsed);
+            Assert.AreEqual(1, collapses);
+            Assert.AreEqual(4f, m.CollapseRemaining, Tol);
+        }
+
+        [Test]
+        public void WhileExhausted_NonPositiveOrNaNDt_HasNoEffect()
+        {
+            var m = Exhausted(out _);
+            m.Tick(0f, StaminaActivity.Run);
+            m.Tick(-1f, StaminaActivity.Run);
+            m.Tick(float.NaN, StaminaActivity.Run);
+            Assert.IsTrue(m.IsExhausted);
+            Assert.AreEqual(3f, m.ExhaustionRemaining, Tol);
         }
     }
 }

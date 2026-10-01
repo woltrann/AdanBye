@@ -38,6 +38,28 @@ durdurur. Yüzme yükselme/batma etkisi (ElevationDelta) kilitten etkilenmez. Su
 - [ ] ESKİ save dosyasıyla yükleme: oyuncu bayılmaz, stamina 100, şarjlar dolu, Console'da "Eski save (v...)" logu.
 - [ ] Zıplama kapalı kalır (jumpEnabled=false).
 
+## Bitkinlik ve bayılma (v2)
+Akış: koş -> stamina 0 -> **3 sn bitkin** (koşu yok, dolum yok, hız x0.7, bar uyarı renginde) -> bayıl (4 sn kilit,
+tavan -10) -> uyan, stamina = tavan x **0.5**. Bitkinken kurtulma şansı yoktur; süre bitince kesin bayılırsın.
+Kamp dinlenmesi ve save yükleme bitkinliği sıfırlar.
+
+**Inspector'da yapman gereken:** PlayerMain.prefab > PlayerStamina > Config içindeki serileştirilmiş değerler
+kodun varsayılanını EZER. Prefab'da `PostCollapseStaminaFraction` hâlâ 0.15 ise elle **0.5** yap. Yeni alanlar
+(ExhaustionGraceSeconds, ExhaustedSpeedMultiplier) prefab'da yoksa Unity varsayılanı (3 / 0.7) yerine 0 gösterebilir:
+0 görürsen değerleri elle gir (ya da bileşende `Reset`). İstersen `RunDrainPerSecond` 12 -> 8 (dolu barla ~12.5 sn koşu).
+
+| Alan | Neyi değiştirir |
+|---|---|
+| ExhaustionGraceSeconds (3) | 0'dan bayılmaya kadar süre; uzatırsan bayılma geç gelir |
+| ExhaustedSpeedMultiplier (0.7) | Bitkin yürüme hızı (yorgunluk yavaşlatmasıyla çarpılır) |
+| PostCollapseStaminaFraction (0.5) | Uyanınca tavanın kaçı dolu; >= 0.2/tavan olunca koşu hemen açılır |
+| RunDrainPerSecond (12) | Koşu ne kadar sürer (100/değer sn) |
+| CollapseCeilingPenalty (10) | Her bayılmada kalıcı tavan kaybı |
+| CollapseDurationSeconds (4) | Bayılma kilidi süresi |
+
+Kod kancası: `PlayerStamina.Exhausted` olayı yok (model olayı var, abonesi yok); `IStaminaReadout.IsExhausted` okunabilir.
+Animator parametresi eklenmedi (kapsam dışı).
+
 ## Bilinen eksikler
 - Çökme animasyon klibi yok (geçici state).
 - Yorgunluk çarpanı sabit 1 (WP-9 bağlayacak).
