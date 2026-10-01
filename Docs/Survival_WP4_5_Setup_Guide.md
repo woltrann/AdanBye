@@ -32,30 +32,59 @@ durdurur. Yüzme yükselme/batma etkisi (ElevationDelta) kilitten etkilenmez. Su
 - [ ] Console'da PlayerStamina/Animator uyarısı yok (ya da yalnızca Animator'ı henüz hazırlamadıysan beklenen uyarı).
 - [ ] Shift ile sürekli koşu: yaklaşık 8 sn sonra (100 / 12) çökme.
 - [ ] Çökmede ~4 sn hareket ve dönüş kilitli, sonra kontrol geri gelir; koşu hemen açılmaz (eşik 20).
-- [ ] Çökme sonrası stamina tavanı 10 düşer; tavan %30 altına inince yürüme/koşu hızı x0.85.
+- [ ] Koşu staminası 0'da bayılma olmaz (sadece koşu kapanır); ana stamina 0'a inince bitkin -> bayılma; uyanınca ana stamina %25. Ana stamina %30 altına inince hız x0.85.
 - [ ] Kamp itemi: stamina ve tavan 100'e döner, ardından save yazılır.
 - [ ] Kamp, kaydet, oyunu kapat/aç: stamina, tavan, telefon/saat/fener şarjı ve gaz filtresi korunur.
 - [ ] ESKİ save dosyasıyla yükleme: oyuncu bayılmaz, stamina 100, şarjlar dolu, Console'da "Eski save (v...)" logu.
 - [ ] Zıplama kapalı kalır (jumpEnabled=false).
 
-## Bitkinlik ve bayılma (v2)
-Akış: koş -> stamina 0 -> **3 sn bitkin** (koşu yok, dolum yok, hız x0.7, bar uyarı renginde) -> bayıl (4 sn kilit,
-tavan -10) -> uyan, stamina = tavan x **0.5**. Bitkinken kurtulma şansı yoktur; süre bitince kesin bayılırsın.
-Kamp dinlenmesi ve save yükleme bitkinliği sıfırlar.
+## Bitkinlik ve bayılma (v3: iki havuz)
+İki ayrı havuz vardır; bayılma YALNIZCA ana staminaya bağlıdır.
 
-**Inspector'da yapman gereken:** PlayerMain.prefab > PlayerStamina > Config içindeki serileştirilmiş değerler
-kodun varsayılanını EZER. Prefab'da `PostCollapseStaminaFraction` hâlâ 0.15 ise elle **0.5** yap. Yeni alanlar
-(ExhaustionGraceSeconds, ExhaustedSpeedMultiplier) prefab'da yoksa Unity varsayılanı (3 / 0.7) yerine 0 gösterebilir:
-0 görürsen değerleri elle gir (ya da bileşende `Reset`). İstersen `RunDrainPerSecond` 12 -> 8 (dolu barla ~12.5 sn koşu).
+| | Koşu staminası (kodda `Current`) | Ana stamina (kodda `Ceiling`) |
+|---|---|---|
+| Neyle azalır | Koşunca (`RunDrainPerSecond`) | Her zaman: dururken/yürürken `CeilingDrainIdlePerSecond`, koşarken `CeilingDrainRunPerSecond` (gaz: fatigueMultiplier ile çarpılır) |
+| Neyle dolar | Durunca, `RegenDelaySeconds` sonra `RegenPerSecond` ile; ana staminayı asla aşamaz | Kendiliğinden ASLA; yalnızca kampta tam dolum (`RestAtCamp`). Uyanınca `WakeMainStaminaFraction` kadar |
+| 0'a inince | Sadece koşu kapanır (yürümeye devam). Bitkinlik/bayılma/yavaşlama YOK. `RunResumeThreshold`'a çıkınca koşu açılır | Bitkinlik: `ExhaustionGraceSeconds` (3 sn) koşu yok, dolum yok, hız x`ExhaustedSpeedMultiplier` -> bayılma (yürüse bile) |
+| Düşükken | - | Oran < `FatigueSlowdownThreshold` (0.30) ise hız x`FatigueSlowdownMultiplier` (0.85) |
 
-| Alan | Neyi değiştirir |
+Akış: ana stamina 0 -> bitkin (3 sn) -> bayıl (`CollapseDurationSeconds`, Collapsed olayı tek sefer) -> uyan:
+ana stamina = Max x `WakeMainStaminaFraction` (0.25), koşu staminası = ana staminanın tamamı. Ceza yok, taban yok.
+Çökme/bitkin süresince ana stamina zaten 0'dır (düşecek bir şey yok); uyku sırasında yorulma modellenmez.
+Kamp ve save yükleme bitkinliği sıfırlar. Save formatı değişmedi (currentStamina = koşu, staminaCeiling = ana).
+
+**Silinen alanlar:** `CeilingFloor`, `CollapseCeilingPenalty`, `PostCollapseStaminaFraction` artık yok (prefab'daki yetim
+YAML zararsız). **Yeni alan:** `WakeMainStaminaFraction` prefab'da yoksa kod varsayılanı 0.25 uygulanır.
+Prefab'daki serileştirilmiş config kod varsayılanını EZER; aşağıdaki değerleri PlayerMain.prefab > PlayerStamina > Config'ten kontrol et.
+
+### Inspector'da ayarlayacağın değerler
+| Alan | Etkisi |
 |---|---|
-| ExhaustionGraceSeconds (3) | 0'dan bayılmaya kadar süre; uzatırsan bayılma geç gelir |
-| ExhaustedSpeedMultiplier (0.7) | Bitkin yürüme hızı (yorgunluk yavaşlatmasıyla çarpılır) |
-| PostCollapseStaminaFraction (0.5) | Uyanınca tavanın kaçı dolu; >= 0.2/tavan olunca koşu hemen açılır |
-| RunDrainPerSecond (12) | Koşu ne kadar sürer (100/değer sn) |
-| CollapseCeilingPenalty (10) | Her bayılmada kalıcı tavan kaybı |
-| CollapseDurationSeconds (4) | Bayılma kilidi süresi |
+| RunDrainPerSecond (12) | Dolu barla koşu süresi = 100 / değer (12 -> 8.3 sn, 8 -> 12.5 sn) |
+| CeilingDrainIdlePerSecond (0.05) | Ana stamina dururken/yürürken kaybı |
+| CeilingDrainRunPerSecond (0.3) | Ana stamina koşarken kaybı |
+| ExhaustionGraceSeconds (3) | 0'dan bayılmaya süre; 0 = anında bayıl |
+| WakeMainStaminaFraction (0.25) | Uyanınca ana stamina (zorunlu uyku az da olsa doldurur) |
+
+### Gerçek-zaman tablosu (Max 100)
+| Senaryo | Ana stamina bitme süresi |
+|---|---|
+| Yalnızca dururken/yürürken (0.05/sn) | 2000 sn = **33 dk** |
+| %30 süre koşarak (0.7x0.05 + 0.3x0.3 = 0.125/sn) | 800 sn = **13 dk** |
+| Sürekli koşu (0.3/sn) | 333 sn = **5.5 dk** |
+
+Koşu staminası dolu barla: RunDrainPerSecond 12 -> 8.3 sn, 8 -> 12.5 sn (koşu ana stamina yönünden de 0.3/sn yer).
+
+Gün süresi (TerrainTest12 dayDuration 3840 sn = **64 dk**) ile karşılaştır: varsayılanlarla yalnızca durarak bile 33 dk'da
+bayılırsın; yani gün sonunda kampa ulaşılıyorsa varsayılanlar ÇOK sert. "Gün sonunda kamp" varsayımıyla öneri (karar senin):
+`CeilingDrainIdlePerSecond` 0.012, `CeilingDrainRunPerSecond` 0.04 -> yalnızca durarak 139 dk, %30 koşuyla
+(0.7x0.012 + 0.3x0.04 = 0.0204/sn) 82 dk, sürekli koşuda 42 dk; yani normal oyunda gün bitmeden bayılma olmaz,
+çok koşan oyuncu gün sonuna yetişemeyebilir. Gaz (fatigueMultiplier) bunu kısaltacağından biraz pay bırakıldı.
+
+### HUD notu
+Stamina barı (`StatKind.Stamina`) = koşu staminası, `limitFill` soluk bölgesi = ana stamina. Ana staminayı ayrı bar
+olarak göstermek istersen yeni bir StatBarView'de `StatKind = Energy` seç (dolu oran = ana stamina/Max).
+Uyarı rengi: bitkin veya bayılmışken yanar.
 
 Kod kancası: `PlayerStamina.Exhausted` olayı yok (model olayı var, abonesi yok); `IStaminaReadout.IsExhausted` okunabilir.
 Animator parametresi eklenmedi (kapsam dışı).

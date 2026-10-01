@@ -2,8 +2,11 @@ using System;
 
 namespace AdanBye.Survival
 {
-    // Gerçekçi stamina: koşmak hızlı tüketir, ayaktayken de tavan (Ceiling) yavaşça düşer,
-    // Current yalnızca Ceiling'e kadar dolar ve Ceiling kendiliğinden artmaz; tam dolum yalnızca RestAtCamp.
+    // İKİ HAVUZ:
+    //  - Koşu staminası (Current): koşunca azalır, durunca dolar; 0'da yalnızca koşu kapanır (bayılma/bitkinlik yok).
+    //  - Ana stamina (Ceiling): aktiviteden bağımsız yavaşça azalır, kendiliğinden artmaz (tam dolum yalnızca RestAtCamp);
+    //    0'a inince bitkinlik -> bayılma (yürüse bile). Koşu staminası her zaman ana staminayı aşamaz.
+    // Alan adları kayıt uyumu için korundu (currentStamina = Current, staminaCeiling = Ceiling).
     // Zamanı dt ile çağıran verir; model sahne/Unity bilmez.
     public sealed class StaminaModel
     {
@@ -20,17 +23,19 @@ namespace AdanBye.Survival
             timeSinceRun = config.RegenDelaySeconds;
         }
 
-        // Bitkinlik başladığı anda tek sefer (ses/HUD kancası).
+        // Ana stamina 0'a indiği anda tek sefer (ses/HUD kancası).
         public event Action Exhausted;
         // Çökme başladığı anda tek sefer.
         public event Action Collapsed;
 
         public float Max => config.Max;
+        // Koşu staminası.
         public float Current { get; private set; }
+        // Ana stamina (eski adıyla yorgunluk tavanı).
         public float Ceiling { get; private set; }
         public bool IsCollapsed { get; private set; }
         public float CollapseRemaining { get; private set; }
-        // Stamina 0'a indi, çökmeden önceki ek süre işliyor (nefes nefese: dolum yok, koşu yok).
+        // Ana stamina 0'a indi, çökmeden önceki ek süre işliyor (nefes nefese: dolum yok, koşu yok).
         public bool IsExhausted { get; private set; }
         public float ExhaustionRemaining { get; private set; }
         public bool CanRun => canRun && !IsCollapsed && !IsExhausted;
@@ -48,13 +53,13 @@ namespace AdanBye.Survival
 
             if (IsCollapsed)
             {
-                TickCollapse(dt, fatigueMultiplier);
+                TickCollapse(dt);
                 return;
             }
 
             if (IsExhausted)
             {
-                TickExhausted(dt, fatigueMultiplier);
+                TickExhausted(dt);
                 return;
             }
 
@@ -75,12 +80,14 @@ namespace AdanBye.Survival
 
             Current = Clamp(Current, 0f, Ceiling);
 
-            if (Current <= 0f)
+            // Bayılma yalnızca ana staminaya bağlı; koşu staminasının 0'ı sadece koşuyu kapatır.
+            if (Ceiling <= 0f)
             {
                 BeginExhaustion();
                 return;
             }
-            UpdateRunHysteresis();
+            if (Current <= 0f) canRun = false;
+            else UpdateRunHysteresis();
         }
 
         public void RestAtCamp()
@@ -98,11 +105,11 @@ namespace AdanBye.Survival
         // Kayıttan yükleme için; bozuk/aralık dışı değerleri sessizce sınırlar.
         public void Restore(float current, float ceiling)
         {
-            Ceiling = Clamp(ceiling, Math.Min(config.CeilingFloor, config.Max), config.Max);
+            Ceiling = Clamp(ceiling, 0f, config.Max);
             Current = Clamp(current, 0f, Ceiling);
             IsCollapsed = false;
             CollapseRemaining = 0f;
-            // Current 0 ile yüklendiyse bir sonraki Tick bitkinliği doğal olarak yeniden başlatır.
+            // Ceiling 0 ile yüklendiyse bir sonraki Tick bitkinliği doğal olarak yeniden başlatır.
             IsExhausted = false;
             ExhaustionRemaining = 0f;
             // Yükleme sonrası dolum hemen başlamasın (yükle-dolum istismarını önler).
@@ -112,10 +119,11 @@ namespace AdanBye.Survival
 
         private float RunThreshold => Math.Min(config.RunResumeThreshold, Ceiling);
 
-        private void TickExhausted(float dt, float fatigueMultiplier)
+        // Bitkinken ve çökmedeyken ana stamina zaten 0'dır (bitkinliği tetikleyen odur); düşürülecek bir şey kalmaz,
+        // bu yüzden bu iki durumda ayrıca tüketim uygulanmaz. Uyku sırasında yorulma modellenmez (basitlik).
+        private void TickExhausted(float dt)
         {
-            // Dolum yok: kurtulma şansı verilmez, süre bitince kesin çöker. Yorgunluk Idle gibi birikir.
-            DrainCeiling(dt, config.CeilingDrainIdlePerSecond, fatigueMultiplier);
+            // Dolum yok: kurtulma şansı verilmez, süre bitince kesin çöker.
             Current = 0f;
             ExhaustionRemaining -= dt;
             if (ExhaustionRemaining > 0f) return;
@@ -133,18 +141,25 @@ namespace AdanBye.Survival
             canRun = false;
             Current = 0f;
             Exhausted?.Invoke();
+            // Grace 0 ise bir sonraki Tick'i beklemeden çök: "0 = anında" sözleşmesi.
+            if (ExhaustionRemaining <= 0f)
+            {
+                IsExhausted = false;
+                ExhaustionRemaining = 0f;
+                BeginCollapse();
+            }
         }
 
-        private void TickCollapse(float dt, float fatigueMultiplier)
+        private void TickCollapse(float dt)
         {
-            // Yorgunluk çökmede de birikir (Idle gibi), ama regen yok.
-            DrainCeiling(dt, config.CeilingDrainIdlePerSecond, fatigueMultiplier);
             CollapseRemaining -= dt;
             if (CollapseRemaining > 0f) return;
 
             IsCollapsed = false;
             CollapseRemaining = 0f;
-            Current = Ceiling * config.PostCollapseStaminaFraction;
+            // Zorunlu uyku az da olsa ana staminayı doldurur; koşu staminası ana staminanın tamamına kadar dolu uyanır.
+            Ceiling = Clamp(config.Max * config.WakeMainStaminaFraction, 0f, config.Max);
+            Current = Ceiling;
             // Hemen dolum başlamasın; toparlanma sonrası da bekleme uygulanır.
             timeSinceRun = 0f;
             UpdateRunHysteresis();
@@ -156,18 +171,13 @@ namespace AdanBye.Survival
             CollapseRemaining = config.CollapseDurationSeconds;
             canRun = false;
             Current = 0f;
-            // Ceza taban altına indirmez; zaten tabandaysa dokunmaz.
-            if (Ceiling > config.CeilingFloor)
-                Ceiling = Math.Max(config.CeilingFloor, Ceiling - config.CollapseCeilingPenalty);
             Collapsed?.Invoke();
         }
 
         private void DrainCeiling(float dt, float perSecond, float fatigueMultiplier)
         {
             if (fatigueMultiplier < 0f) fatigueMultiplier = 0f;
-            // Zaten tabanın altındaysa (ör. Restore) tavanı yukarı çekmemek için erken çık.
-            if (Ceiling <= config.CeilingFloor) return;
-            Ceiling = Math.Max(config.CeilingFloor, Ceiling - perSecond * fatigueMultiplier * dt);
+            Ceiling = Math.Max(0f, Ceiling - perSecond * fatigueMultiplier * dt);
         }
 
         private void Regenerate(float dt)

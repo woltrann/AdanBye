@@ -456,15 +456,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236738501509267823, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -421.658
+      value: -447.366
       objectReference: {fileID: 0}
     - target: {fileID: 4236738501509267823, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 10.055
+      value: 13.063
       objectReference: {fileID: 0}
     - target: {fileID: 4236738501509267823, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -219.544
+      value: -210.749
       objectReference: {fileID: 0}
     - target: {fileID: 4236738501509267823, guid: 47b7d3ade57f40948a93f8b170a7edcf, type: 3}
       propertyPath: m_LocalRotation.w
@@ -796,7 +796,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config:
     Max: 100
-    RunDrainPerSecond: 12
+    RunDrainPerSecond: 8
     RegenPerSecond: 8
     RegenDelaySeconds: 1
     RunResumeThreshold: 20
@@ -806,6 +806,8 @@ MonoBehaviour:
     CollapseDurationSeconds: 4
     CollapseCeilingPenalty: 10
     PostCollapseStaminaFraction: 0.15
+    ExhaustionGraceSeconds: 3
+    ExhaustedSpeedMultiplier: 0.7
     FatigueSlowdownThreshold: 0.3
     FatigueSlowdownMultiplier: 0.85
   gasAffectsFatigue: 0

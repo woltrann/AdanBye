@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public enum StatKind { Hunger, Thirst, Stamina }
+public enum StatKind { Hunger, Thirst, Stamina, Energy }
 
 // StatKind -> kaynak eşlemesinin TEK noktası. Yeni stat: enum'a değer + aşağıya bir satır; StatBarView'e dokunulmaz.
 public static class StatBarSourceFactory
@@ -13,6 +13,7 @@ public static class StatBarSourceFactory
         { StatKind.Hunger,  (p, c) => ResolveCharacter(p, c) is MainCharacter m ? new HungerSource(m) : null },
         { StatKind.Thirst,  (p, c) => ResolveCharacter(p, c) is MainCharacter m ? new ThirstSource(m) : null },
         { StatKind.Stamina, (p, c) => p != null && p.GetComponent<IStaminaReadout>() is IStaminaReadout s ? new StaminaSource(s) : null },
+        { StatKind.Energy,  (p, c) => p != null && p.GetComponent<IStaminaReadout>() is IStaminaReadout s ? new EnergySource(s) : null },
     };
 
     public static IStatBarSource TryCreate(StatKind kind, PlayerManager player, MainCharacter characterOverride)

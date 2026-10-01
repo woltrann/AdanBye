@@ -29,6 +29,7 @@ public sealed class ThirstSource : CharacterStatSource
     protected override float Max => Character.maxThirst;
 }
 
+// Koşu staminası (Current) çubuğu; limitFill'deki soluk bölge ana staminayı (Ceiling) gösterir.
 public sealed class StaminaSource : IStatBarSource
 {
     private readonly IStaminaReadout stamina;
@@ -37,5 +38,17 @@ public sealed class StaminaSource : IStatBarSource
 
     public float Ratio => StaminaFillMath.Ratio(stamina.Current, stamina.Max);
     public float LimitRatio => StaminaFillMath.Ratio(stamina.Ceiling, stamina.Max);
+    public bool IsAlert => stamina.IsCollapsed || stamina.IsExhausted;
+}
+
+// Ana stamina (Ceiling) ayrı bar olarak: 0'a inince bayılma olduğu için asıl "enerji" budur.
+public sealed class EnergySource : IStatBarSource
+{
+    private readonly IStaminaReadout stamina;
+
+    public EnergySource(IStaminaReadout stamina) { this.stamina = stamina; }
+
+    public float Ratio => StaminaFillMath.Ratio(stamina.Ceiling, stamina.Max);
+    public float LimitRatio => 1f;
     public bool IsAlert => stamina.IsCollapsed || stamina.IsExhausted;
 }
