@@ -17,6 +17,35 @@ public static class FilledChangerMigrationTool
 
     private enum Outcome { Convert, RemoveLeftover, SkipPrefabInstance }
 
+    // StatBarView'daki [SerializeField] adlarıyla birebir eşleşmeli; Migrate bunları string ile yazar.
+    private static readonly (string name, SerializedPropertyType type)[] RequiredFields =
+    {
+        ("kind", SerializedPropertyType.Enum),
+        ("fill", SerializedPropertyType.ObjectReference),
+        ("lowColor", SerializedPropertyType.Color),
+        ("midColor", SerializedPropertyType.Color),
+        ("highColor", SerializedPropertyType.Color),
+    };
+
+    // Alan şeması tipe ait (nesneye değil); gizli, kaydedilmeyen probe üzerinde doğrularız. Böylece
+    // gerçek nesneye bileşen eklemeden (yarım durum riski olmadan) ve önizlemede yan etkisiz kontrol edilir.
+    private static string FindSchemaProblem()
+    {
+        var probe = new GameObject("~StatBarViewProbe") { hideFlags = HideFlags.HideAndDontSave };
+        try
+        {
+            var so = new SerializedObject(probe.AddComponent<StatBarView>());
+            foreach (var (name, type) in RequiredFields)
+            {
+                SerializedProperty p = so.FindProperty(name);
+                if (p == null) return $"'{name}' alanı bulunamadı";
+                if (p.propertyType != type) return $"'{name}' alanı beklenen tipte değil (beklenen {type}, bulunan {p.propertyType})";
+            }
+            return null;
+        }
+        finally { Object.DestroyImmediate(probe); }
+    }
+
     [MenuItem(ApplyMenu)]
     private static void Apply() => Run(dryRun: false);
 
@@ -26,13 +55,30 @@ public static class FilledChangerMigrationTool
     private static void Run(bool dryRun)
     {
         var log = new StringBuilder();
-        int changed = 0, skipped = 0;
+        int changed = 0, skipped = 0, failed = 0;
         var dirtyScenes = new HashSet<Scene>();
+        // Yalnızca dönüştürme gereken nesne varsa probe oluştur; boş çalıştırmada gereksiz iş yapma.
+        string schemaProblem = null;
+        bool schemaChecked = false;
 
         foreach (FilledChanger fc in Collect())
         {
             Outcome outcome = Decide(fc);
             string path = HierarchyPath(fc.transform);
+
+            if (outcome == Outcome.Convert)
+            {
+                if (!schemaChecked) { schemaProblem = FindSchemaProblem(); schemaChecked = true; }
+                if (schemaProblem != null)
+                {
+                    // Yıkıcı adımdan önce vazgeç: FilledChanger yerinde kalır, nesne hiç değişmez.
+                    failed++;
+                    string msg = $"StatBarView: {schemaProblem}; bu nesne dönüştürülemez: {path}";
+                    Debug.LogError($"[FilledChangerMigration] {(dryRun ? "ÖNİZLEME: " : "ATLANDI: ")}{msg}", fc);
+                    log.AppendLine($"  ATLANDI (hatalı) {path}: {schemaProblem}");
+                    continue;
+                }
+            }
 
             if (outcome == Outcome.SkipPrefabInstance)
             {
@@ -54,8 +100,8 @@ public static class FilledChangerMigrationTool
         foreach (Scene scene in dirtyScenes)
             if (scene.IsValid()) EditorSceneManager.MarkSceneDirty(scene);
 
-        Debug.Log($"[FilledChangerMigration] {(dryRun ? "ÖNİZLEME" : "TAMAM")}: {changed} değişiklik, {skipped} atlandı."
-            + (changed + skipped > 0 ? "\n" + log : "\n  Dönüştürülecek FilledChanger yok.")
+        Debug.Log($"[FilledChangerMigration] {(dryRun ? "ÖNİZLEME" : "TAMAM")}: {changed} değişiklik, {skipped} atlandı, {failed} atlanan (hatalı)."
+            + (changed + skipped + failed > 0 ? "\n" + log : "\n  Dönüştürülecek FilledChanger yok.")
             + (!dryRun && changed > 0 ? "\n  Sahneyi/prefab'ı KAYDETMEYİ unutma (Ctrl+S)." : ""));
     }
 
